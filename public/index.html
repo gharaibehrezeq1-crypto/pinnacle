@@ -1925,7 +1925,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbot.happy .al{transform:rotate(150deg)}.pnbot.happy .ar{transform:rotate(-150deg)}
 .pnbot.happy .fx.st{display:block}
 .pnbot.happy .bw{animation:btHop .7s cubic-bezier(.3,.7,.4,1) 2}
-.pnbot.wave .ar{animation:btWaveArm .5s ease-in-out 5;transform:rotate(-150deg)}
+.pnbot.wave .ar{animation:btWaveArm .5s ease-in-out 3;transform:rotate(-150deg)}
 .pnbot .legs{transform-origin:100px 170px}
 @keyframes btBob{50%{transform:translateY(-4px)}}
 @keyframes btBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
@@ -1940,7 +1940,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbub small{display:block;font:500 11px var(--font-body,Arial);color:#6e6e73;margin-bottom:2px}
 @media (prefers-reduced-motion:reduce){.pnbot *{animation:none!important}}
 </style>
-<button type="button" class="pnbot" id="pnbot" aria-label="المساعد الصوتي"><svg viewBox="-14 0 228 240" aria-hidden="true">
+<button type="button" class="pnbot" id="pnbot" aria-label="سهل"><svg viewBox="-14 0 228 240" aria-hidden="true">
 <defs><radialGradient id="pbb" cx="36%" cy="28%" r="80%"><stop offset="0" stop-color="#5a5a66"/><stop offset=".35" stop-color="#2c2c34"/><stop offset="1" stop-color="#0c0c10"/></radialGradient>
 <radialGradient id="pbr" cx="78%" cy="86%" r="50%"><stop offset="0" stop-color="#7a6cff" stop-opacity=".55"/><stop offset="1" stop-color="#7a6cff" stop-opacity="0"/></radialGradient>
 <radialGradient id="pbr2" cx="22%" cy="88%" r="45%"><stop offset="0" stop-color="#34d3c0" stop-opacity=".45"/><stop offset="1" stop-color="#34d3c0" stop-opacity="0"/></radialGradient></defs>
@@ -2053,7 +2053,9 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   }
   bot.addEventListener('click',function(ev){if(moved){ev.preventDefault();return;}if(state==='listen'){stop();return;}start();});
   // greeting wave once, shortly after the intro ends
-  var greeted=false;function greet(){if(greeted||document.body.classList.contains('lock'))return;greeted=true;bot.classList.add('wave');setTimeout(function(){if(state==='idle')bot.classList.remove('wave');},2800);}
+  var greeted=false;function greet(){if(greeted||document.body.classList.contains('lock'))return;greeted=true;bot.classList.add('wave');say('<small>'+T('مرحباً','Hi')+'</small>'+T('أنا سهل','I am Sahl'),3500);setTimeout(function(){if(state==='idle')bot.classList.remove('wave');},1600);}
+  // wave with the right hand every ~3.5s while idle
+  setInterval(function(){if(state!=='idle'||document.body.classList.contains('lock')||drag||document.hidden)return;bot.classList.add('wave');setTimeout(function(){if(state==='idle')bot.classList.remove('wave');},1600);},3500);
   var gi=setInterval(function(){if(!document.body.classList.contains('lock')){clearInterval(gi);setTimeout(greet,900);}},400);
 
   // draggable: hold and move anywhere; a short tap still starts listening
