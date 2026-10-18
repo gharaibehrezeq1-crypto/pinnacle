@@ -2044,13 +2044,21 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function setActive(on){active=on;clearTimeout(activeT);
     if(on){setState('listen');activeT=setTimeout(function(){setActive(false);if(always){bub.classList.remove('on');}},9000);}
     else if(state==='listen')setState('idle');}
+  var NAV=/(افتح|افتحلي|وريني|اعرض|روح|خذني|خدني|وديني|open|show me|go to|take me|اشتري|اشتريه|اطلب|ابغا|buy|order)/,BUY=/(اشتري|اشتريه|اطلب|buy|order|شراء)/,lastH='',lastHt=0;
+  function goDevice(key,buy){var cfg=(window.pnDEV||{})[key];if(!cfg)return;
+    location.hash='#/d/'+encodeURIComponent(key);
+    say('<small>'+T('سهل','Sahl')+'</small>'+T('فتحت ','Opening ')+esc(cfg.t[0]+(cfg.t[1]?' '+cfg.t[1]:'')),2500);
+    setTimeout(function(){window.scrollTo(0,0);setTimeout(function(){var el=document.querySelector('.spbuy');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},500);},700);}
   function handleFinal(t){
-    var n=nz(t);if(!n)return;
-    if(WAKE.test(n)){var rest=n.replace(/(مرحبا|اهلا|هاي|يا|هلا|hello|hey|hi|ok|okay)/g,' ').replace(/(سهل|سحل|صحل|sahl|sahel|sahal|sehl)/g,' ').replace(/\s+/g,' ').trim();
-      if(rest.length>1){setActive(false);respond(rest);}
-      else{setActive(true);say('<small>'+T('سهل','Sahl')+'</small>'+T('نعم؟ اسألني…','Yes? Ask me…'));}
-      return;}
-    if(active){setActive(false);respond(n);}
+    var n=nz(t);if(!n)return;var now=Date.now();if(n===lastH&&now-lastHt<2500)return;lastH=n;lastHt=now;
+    var wake=WAKE.test(n),rest=n.replace(/(سهل|سحل|صحل|sahl|sahel|sahal|sehl)/g,' ').replace(/(مرحبا|اهلا|هاي|هلا|hello|hey|hi|okay|ok)/g,' ').replace(/\s+/g,' ').trim();
+    var key=findDevice(rest);
+    if(NAV.test(rest)&&key){setActive(false);goDevice(key,BUY.test(rest));return;}
+    if(NAV.test(rest)){var bm=/(ايفون|ابل|apple|iphone)/.test(rest)?0:/(سامسونج|samsung|جالكسي|galaxy)/.test(rest)?1:/(اوبو|oppo|رينو|reno)/.test(rest)?2:-1;
+      if(bm>-1){setActive(false);location.hash='#/b/'+bm;window.scrollTo(0,0);return;}}
+    if(key||topicOf(rest)){setActive(false);respond(rest);return;}
+    if(wake){setActive(true);say('<small>'+T('سهل','Sahl')+'</small>'+T('نعم؟ اسألني…','Yes? Ask me…'));return;}
+    if(active){setActive(false);respond(rest||n);}
   }
   function runRec(){
     if(!always)return;
@@ -2071,7 +2079,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(always){always=false;clearTimeout(restartT);setActive(false);try{rec&&rec.abort();}catch(e){}bot.classList.remove('always');say(T('أوقفت الاستماع.','Listening is off.'),2000);return;}
     if(!SR){say(T('هذا المتصفح لا يدعم الصوت. جرّب كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}
     always=true;fails=0;bot.classList.add('always');
-    say('<small>'+T('أنا سهل','I am Sahl')+'</small>'+T('أسمعك طول الجلسة. قل «مرحبا سهل» ثم اسأل. اضغط عليّ لإيقافي.','I am listening. Say “Hi Sahl”, then ask. Tap me to stop.'),6000);
+    say('<small>'+T('أنا سهل','I am Sahl')+'</small>'+T('أسمعك طول الجلسة. اسألني عن أي جهاز، أو قل «افتح ايفون 17 برو ماكس». اضغط عليّ لإيقافي.','I am listening. Ask about any phone, or say “open iPhone 17 Pro Max”. Tap me to stop.'),6000);
     runRec();
   }
   function stop(){try{rec&&rec.stop();}catch(e){}}
