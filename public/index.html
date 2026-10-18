@@ -1663,6 +1663,7 @@ document.querySelectorAll('#view-home section.brand .row').forEach(function(row)
   DEV['Reno16 Pro']={b:2,t:['Reno16','Pro'],price:'599',sel:'op16p:white',data:DOP_PRO,cols:[['op16p:black','أسود نجمي','#36383d'],['op16p:white','أبيض بوب','#f6f7f9']]};
   DEV['Reno16']={b:2,t:['Reno16',''],price:'499',sel:'op16:white',data:DOP_16,cols:[['op16:white','أبيض بوب','#f6f7f9'],['op16:twilight','بنفسجي غامق','#3a2c47']]};
   DEV['Reno16 F']={b:2,t:['Reno16','F'],price:'379',sel:'op16f:white',data:DOP_F,cols:[['op16f:white','أبيض بوب','#f6f7f9'],['op16f:twilight','بنفسجي غامق','#3a2c47']]};
+  window.pnDEV=DEV;
   function dots(){var h='<div class="spdots">';COLS.forEach(function(c){var ok=!!window.PNCOL[c[0]];h+='<button type="button" data-c="'+c[0]+'" style="--c:'+c[2]+'" class="'+(c[0]===sel?'sel':'')+'"'+(ok?'':' disabled')+' aria-label="'+c[1]+'"></button>';});
     return h+'</div><div class="spcn">'+COLS.filter(function(c){return c[0]===sel;})[0][1]+'</div>';}
   function pick(k){if(!window.PNCOL[k])return;sel=k;var im=P.querySelector('.spimg img');im.style.opacity=0;setTimeout(function(){im.src=window.PNCOL[k];im.style.opacity=1;},150);
@@ -1934,6 +1935,8 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 @keyframes btWaveArm{0%,100%{transform:rotate(-135deg)}50%{transform:rotate(-170deg)}}
 .pnbub{position:fixed;left:0;top:0;z-index:95;max-width:min(250px,calc(100vw - 28px));padding:10px 14px;border-radius:18px 18px 4px 18px;background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1.5px solid rgba(255,255,255,.95);box-shadow:0 14px 30px -14px rgba(70,50,200,.45),inset 0 2px 0 #fff;font:500 13.5px/1.6 var(--font-body,Arial);color:#1b1440;opacity:0;transform:translateY(8px) scale(.96);pointer-events:none;transition:opacity .25s,transform .25s}
 .pnbub.on{opacity:1;transform:none}
+.pnbub{max-width:min(220px,calc(100vw - 28px))!important;padding:7px 11px!important;font-size:12px!important;line-height:1.55!important;border-radius:14px!important}
+.pnbub .pnans{display:block;font-weight:600}
 .pnbub small{display:block;font:500 11px var(--font-body,Arial);color:#6e6e73;margin-bottom:2px}
 @media (prefers-reduced-motion:reduce){.pnbot *{animation:none!important}}
 </style>
@@ -1968,6 +1971,73 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function done(){setState('idle');}
   function happy(txt){setState('happy');say('<small>'+T('سمعتك','I heard you')+'</small>'+esc(txt),5000);setTimeout(done,1500);}
+  // ---- spec answers: looks up the site's own data, no AI, no cost ----
+  function isEN2(){return window.pnIsEN?!!window.pnIsEN():EN();}
+  function nz(s){return String(s||'').toLowerCase().replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[^a-z0-9؀-ۿ ]/g,' ').replace(/\s+/g,' ').trim();}
+  function tx(a){var E=window.PNEN;return(isEN2()&&E&&E[a])?E[a]:a;}
+  function findDevice(t){
+    var D=window.pnDEV||{},n=nz(t),num=(n.match(/\b(1[5-9]|2[0-9])\b/)||[])[1];
+    var pro=/(برو|pro)/.test(n),max=/(ماكس|max)/.test(n),ult=/(الترا|ultra)/.test(n);
+    var key=null;
+    if(/(ايفون|ايفن|iphone|ابل|apple)/.test(n)&&num){
+      key='iPhone '+num+(pro?(max?' Pro Max':' Pro'):(max?' Pro Max':''));}
+    else if(/(سامسونج|samsung|جالكسي|جلاكسي|galaxy|\bs\s?2[56]\b|اس\s?2[56])/.test(n)){
+      var m=n.match(/(?:\bs|اس)\s?(2[56])/);var sn=m?m[1]:num;if(sn)key='Galaxy S'+sn+' Ultra';}
+    else if(/(اوبو|oppo|رينو|reno)/.test(n)){
+      var rn=num||'16';key='Reno'+rn+(pro?' Pro':(/(^| )(f|اف)( |$)/.test(n)?' F':''));}
+    else if(num&&D['iPhone '+num+(pro?(max?' Pro Max':' Pro'):'')])key='iPhone '+num+(pro?(max?' Pro Max':' Pro'):'');
+    return key&&D[key]?key:null;}
+  function curDevice(){var h=location.hash;if(h.indexOf('#/d/')===0){var k=decodeURIComponent(h.slice(4));if((window.pnDEV||{})[k])return k;}return null;}
+  var TOPICS=[
+   ['price',/(سعر|بكم|كم ثمن|ثمن|price|cost|how much)/],
+   ['colors',/(الوان|لون|colou?rs?)/],
+   ['front',/(سيلفي|امامي|front|selfie)/],
+   ['cam',/(كاميرا|كاميرات|camera|ميغا|ميجا|عدسه|zoom|تقريب|تصوير)/],
+   ['screen',/(شاشه|شاشة|حجم الشاشه|display|screen|انش|inch)/],
+   ['hz',/(تحديث|هرتز|refresh|hz)/],
+   ['bright',/(سطوع|brightness|nits)/],
+   ['cpu',/(معالج|processor|chip|شريحه|cpu|بروسيسور)/],
+   ['ram',/(رام|ram|ذاكره عشوائيه)/],
+   ['battery',/(بطاريه|battery|mah|مللي)/],
+   ['charge',/(شحن|شاحن|charg|واط|watt)/],
+   ['storage',/(تخزين|سعه|storage|جيجا|gb|ترا)/],
+   ['weight',/(وزن|ثقل|weight|وزنه)/],
+   ['dims',/(ابعاد|سماكه|سمك|dimension|thick|حجم الجهاز)/],
+   ['water',/(ماء|مقاومه|water|ip6|غبار|dust)/],
+   ['os',/(نظام|ios|android|اندرويد|اواس|os)/],
+   ['mat',/(مواد|خامه|زجاج|هيكل|material|glass|titanium|تيتانيوم)/]
+  ];
+  function topicOf(n){for(var i=0;i<TOPICS.length;i++)if(TOPICS[i][1].test(n))return TOPICS[i][0];return null;}
+  var SEC={front:['الكاميرا الأمامية'],cam:['الكاميرا الخلفية'],screen:['الشاشة'],hz:['الشاشة'],bright:['الشاشة'],cpu:['المعالج والذاكرة'],ram:['المعالج والذاكرة'],battery:['البطارية'],charge:['الشحن'],storage:['التخزين'],weight:['التصميم والأبعاد'],dims:['التصميم والأبعاد'],water:['التصميم والأبعاد'],os:['التصميم والأبعاد'],mat:['التصميم والأبعاد']};
+  var ROW={screen:['الحجم'],hz:['معدل التحديث'],bright:['السطوع'],cpu:['المعالج'],ram:['الرام RAM'],weight:['الوزن'],dims:['الأبعاد'],water:['مقاومة الماء والغبار'],os:['نظام التشغيل'],mat:['المواد']};
+  function sec(d,name){for(var i=0;i<d.length;i++)if(d[i].k===name)return d[i];return null;}
+  function answer(heardTxt){
+    var D=window.pnDEV||{},n=nz(heardTxt),key=findDevice(heardTxt)||curDevice(),tp=topicOf(n);
+    if(!key){return {h:T('أي جهاز؟ افتح صفحته أو اذكر اسمه.','Which phone? Open its page or say its name.')};}
+    var cfg=D[key],ttl=cfg.t[0]+(cfg.t[1]?' '+cfg.t[1]:'');
+    if(!tp){return {h:T('اسأل مثلاً: الشاشة، الكاميرا، البطارية، الشحن، السعر…','Try: screen, camera, battery, charging, price…'),d:ttl};}
+    var lines=[];
+    if(tp==='price'){lines=[T('يبدأ من '+cfg.price+' دينار','From '+cfg.price+' JOD')];}
+    else if(tp==='colors'){lines=[(cfg.cols||[]).map(function(c){return tx(c[1]);}).join('، ')];}
+    else{
+      var S=sec(cfg.data,SEC[tp][0]);
+      if(S){var want=ROW[tp],rows=S.rows.filter(function(r){return r[1];});
+        if(want){rows=rows.filter(function(r){return want.indexOf(r[0])>-1;});}
+        else{ // narrow within section by words in the question
+          var hit=rows.filter(function(r){var w=nz(r[0]).split(' ').filter(function(x){return x.length>2&&x!=='الكاميرا';});return w.some(function(x){return n.indexOf(x)>-1;});});
+          if(tp!=='cam')hit=[];
+          if(tp==='battery'&&/(فيديو|video)/.test(n))hit=rows.filter(function(r){return /فيديو/.test(r[0]);});
+          if(tp==='charge'&&/(لاسلك|magsafe|wireless)/.test(n))hit=rows.filter(function(r){return /(MagSafe|لاسلك)/i.test(r[0]);});
+          if(hit.length)rows=hit;}
+        if(tp==='battery'||tp==='charge'||tp==='storage'||tp==='front')rows=rows.slice(0,3);else rows=rows.slice(0,4);
+        lines=rows.map(function(r){var lbl=tx(r[0]),v=tx(r[1]);if(tp==='charge'&&!/\d/.test(r[1])&&r[2])v+=' — '+tx(r[2]);return rows.length===1&&want?v:lbl+': '+v;});}
+    }
+    if(!lines.length)return {h:T('ما لقيت هالمواصفة لهذا الجهاز.','I could not find that spec for this phone.'),d:ttl};
+    return {h:lines.map(function(l){return '<div dir="auto">'+esc(l)+'</div>';}).join(''),d:ttl,raw:true};
+  }
+  function respond(txt){setState('happy');var r=answer(txt);
+    var body=r.raw?r.h:esc(r.h);
+    say((r.d?'<small>'+esc(r.d)+'</small>':'')+'<span class="pnans">'+body+'</span>',9000);setTimeout(done,1500);}
   function stop(){try{rec&&rec.stop();}catch(e){}}
   function start(){
     if(!SR){say(T('هذا المتصفح لا يدعم الصوت. جرّب كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}
@@ -1978,7 +2048,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       if(t)lastTxt=t;say('<small>'+T('أسمعك…','Listening…')+'</small>'+esc(lastTxt));if(fin)gotFinal=true;};
     rec.onerror=function(e){var m={'not-allowed':T('اسمح للميكروفون من إعدادات المتصفح ثم جرّب.','Allow the microphone in browser settings, then try again.'),'service-not-allowed':T('اسمح للميكروفون من إعدادات المتصفح ثم جرّب.','Allow the microphone in browser settings, then try again.'),'no-speech':T('ما سمعت شي، جرّب مرة ثانية.','I did not hear anything, try again.'),'audio-capture':T('ما لقيت ميكروفون.','No microphone found.'),'network':T('الصوت يحتاج إنترنت.','Voice needs an internet connection.')}[e.error];
       if(m){say(m,4500);gotFinal=true;lastTxt='';}};
-    rec.onend=function(){if(lastTxt&&!(/^\s*$/.test(lastTxt)))happy(lastTxt);else{if(!bub.classList.contains('on')||/أسمعك|Listening/.test(bub.textContent))say(T('ما سمعت شي، جرّب مرة ثانية.','I did not hear anything, try again.'),3500);done();}};
+    rec.onend=function(){if(lastTxt&&!(/^\s*$/.test(lastTxt)))respond(lastTxt);else{if(!bub.classList.contains('on')||/أسمعك|Listening/.test(bub.textContent))say(T('ما سمعت شي، جرّب مرة ثانية.','I did not hear anything, try again.'),3500);done();}};
     try{rec.start();}catch(e){say(T('تعذّر تشغيل الميكروفون.','Could not start the microphone.'),3500);done();}
   }
   bot.addEventListener('click',function(ev){if(moved){ev.preventDefault();return;}if(state==='listen'){stop();return;}start();});
@@ -2007,7 +2077,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   bot.addEventListener('contextmenu',function(e){e.preventDefault();});bot.addEventListener('pointerup',up);bot.addEventListener('pointercancel',up);
   window.addEventListener('resize',apply);
   apply();setTimeout(apply,300);
-  window.pnBot={setState:setState,say:say};
+  window.pnBot={setState:setState,say:say,ask:answer};
 })();
 </script>
 
