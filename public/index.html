@@ -1906,15 +1906,25 @@ if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='ht
 })();
 </script>
 <style id="pnbot-css">
-.pnbot{position:fixed;right:6px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:95;width:92px;height:97px;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.pnbot{position:fixed;left:0;top:0;z-index:95;width:60px;height:63px;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;visibility:hidden;will-change:transform}
+.pnbot::after{content:"";position:absolute;inset:-8px}
 body.lock .pnbot,.pnbot[hidden]{display:none!important}
-.pnbot svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 8px 10px rgba(40,30,120,.28))}
+.pnbot svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 8px rgba(40,30,120,.25));transition:transform .15s}
+.pnbot.rev svg{transform:scaleX(-1)}
 .pnbot .bw{animation:btBob 3.2s ease-in-out infinite;transform-origin:100px 214px}
 .pnbot .eyes{transform-origin:100px 108px;animation:btBlink 4.6s infinite}
 .pnbot .arm{transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
 .pnbot .al{transform-origin:45px 120px}.pnbot .ar{transform-origin:155px 120px}
+.pnbot .lgL{transform-origin:78px 166px}.pnbot .lgR{transform-origin:122px 166px}
+.pnbot .pup{transition:transform .2s}
 .pnbot .m{display:none}.pnbot .m.sm{display:block}
 .pnbot .fx{display:none}
+.pnbot.walk .bw{animation:btStep .21s ease-in-out infinite alternate}
+.pnbot.walk .lgL{animation:btLegL .42s ease-in-out infinite alternate}
+.pnbot.walk .lgR{animation:btLegR .42s ease-in-out infinite alternate}
+.pnbot.walk .al{animation:btArmL .42s ease-in-out infinite alternate}
+.pnbot.walk .ar{animation:btArmR .42s ease-in-out infinite alternate}
+.pnbot.walk .pup{transform:translateX(3px)}
 .pnbot.listen .m.sm,.pnbot.happy .m.sm{display:none}.pnbot.listen .m.o{display:block}.pnbot.happy .m.bg{display:block}
 .pnbot.listen .al{transform:rotate(112deg)}.pnbot.listen .ar{transform:rotate(-112deg)}
 .pnbot.listen .fx.wv{display:block}
@@ -1924,15 +1934,19 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbot.happy .al{transform:rotate(150deg)}.pnbot.happy .ar{transform:rotate(-150deg)}
 .pnbot.happy .fx.st{display:block}
 .pnbot.happy .bw{animation:btHop .7s cubic-bezier(.3,.7,.4,1) 2}
-.pnbot.wave .ar{animation:btWaveArm .5s ease-in-out 5;transform:rotate(-150deg)}
-.pnbot .legs{transform-origin:100px 170px}
+.pnbot.wave .ar{animation:btWaveArm .5s ease-in-out 2;transform:rotate(-150deg)}
 @keyframes btBob{50%{transform:translateY(-4px)}}
 @keyframes btBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 @keyframes btWave{0%,100%{opacity:.35}50%{opacity:1}}
 @keyframes btLean{50%{transform:translateY(-3px) rotate(-2deg)}}
 @keyframes btHop{0%,100%{transform:translateY(0)}45%{transform:translateY(-22px)}}
 @keyframes btWaveArm{0%,100%{transform:rotate(-135deg)}50%{transform:rotate(-170deg)}}
-.pnbub{position:fixed;right:14px;bottom:calc(186px + env(safe-area-inset-bottom,0px));z-index:95;max-width:min(250px,calc(100vw - 28px));padding:10px 14px;border-radius:18px 18px 4px 18px;background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1.5px solid rgba(255,255,255,.95);box-shadow:0 14px 30px -14px rgba(70,50,200,.45),inset 0 2px 0 #fff;font:500 13.5px/1.6 var(--font-body,Arial);color:#1b1440;opacity:0;transform:translateY(8px) scale(.96);pointer-events:none;transition:opacity .25s,transform .25s}
+@keyframes btStep{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+@keyframes btLegL{from{transform:rotate(-26deg)}to{transform:rotate(26deg)}}
+@keyframes btLegR{from{transform:rotate(26deg)}to{transform:rotate(-26deg)}}
+@keyframes btArmL{from{transform:rotate(20deg)}to{transform:rotate(-20deg)}}
+@keyframes btArmR{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
+.pnbub{position:fixed;left:0;top:0;z-index:96;max-width:min(250px,calc(100vw - 28px));padding:10px 14px;border-radius:18px;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1.5px solid rgba(255,255,255,.95);box-shadow:0 14px 30px -14px rgba(70,50,200,.45),inset 0 2px 0 #fff;font:500 13.5px/1.6 var(--font-body,Arial);color:#1b1440;opacity:0;transform:translateY(6px) scale(.96);pointer-events:none;transition:opacity .25s,transform .25s}
 .pnbub.on{opacity:1;transform:none}
 .pnbub small{display:block;font:500 11px var(--font-body,Arial);color:#6e6e73;margin-bottom:2px}
 @media (prefers-reduced-motion:reduce){.pnbot *{animation:none!important}}
@@ -1942,13 +1956,13 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 <radialGradient id="pbr" cx="78%" cy="86%" r="50%"><stop offset="0" stop-color="#7a6cff" stop-opacity=".55"/><stop offset="1" stop-color="#7a6cff" stop-opacity="0"/></radialGradient>
 <radialGradient id="pbr2" cx="22%" cy="88%" r="45%"><stop offset="0" stop-color="#34d3c0" stop-opacity=".45"/><stop offset="1" stop-color="#34d3c0" stop-opacity="0"/></radialGradient></defs>
 <g class="bw">
-<g class="legs"><path d="M78 166L77 188" stroke="#2a2a30" stroke-width="8" stroke-linecap="round"/><path d="M122 166L123 188" stroke="#2a2a30" stroke-width="8" stroke-linecap="round"/>
-<ellipse cx="74" cy="196" rx="15" ry="8.5" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/><ellipse cx="126" cy="196" rx="15" ry="8.5" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
+<g class="lgL"><path d="M78 166L77 188" stroke="#2a2a30" stroke-width="8" stroke-linecap="round"/><ellipse cx="74" cy="196" rx="15" ry="8.5" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
+<g class="lgR"><path d="M122 166L123 188" stroke="#2a2a30" stroke-width="8" stroke-linecap="round"/><ellipse cx="126" cy="196" rx="15" ry="8.5" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
 <g class="arm al"><path d="M45 120Q36 132 34 142" stroke="#2a2a30" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="34" cy="142" r="11" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
 <g class="arm ar"><path d="M155 120Q164 132 166 142" stroke="#2a2a30" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="166" cy="142" r="11" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
 <circle cx="100" cy="110" r="62" fill="url(#pbb)"/><circle cx="100" cy="110" r="62" fill="url(#pbr)"/><circle cx="100" cy="110" r="62" fill="url(#pbr2)"/>
 <ellipse cx="74" cy="64" rx="22" ry="11" fill="#fff" opacity=".28" transform="rotate(-28 74 64)"/>
-<g class="eyes"><ellipse cx="80" cy="108" rx="13" ry="16" fill="#fff"/><ellipse cx="120" cy="108" rx="13" ry="16" fill="#fff"/><circle cx="80" cy="110" r="7.5" fill="#15151a"/><circle cx="120" cy="110" r="7.5" fill="#15151a"/><circle cx="83" cy="106" r="2.6" fill="#fff"/><circle cx="123" cy="106" r="2.6" fill="#fff"/></g>
+<g class="eyes"><ellipse cx="80" cy="108" rx="13" ry="16" fill="#fff"/><ellipse cx="120" cy="108" rx="13" ry="16" fill="#fff"/><g class="pup"><circle cx="80" cy="110" r="7.5" fill="#15151a"/><circle cx="120" cy="110" r="7.5" fill="#15151a"/><circle cx="83" cy="106" r="2.6" fill="#fff"/><circle cx="123" cy="106" r="2.6" fill="#fff"/></g></g>
 <g class="m sm"><path d="M86 134Q100 148 114 134" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/></g>
 <g class="m o"><ellipse cx="100" cy="138" rx="7" ry="8" fill="#fff"/></g>
 <g class="m bg"><path d="M82 129Q100 160 118 129Z" fill="#fff"/><path d="M90 141Q100 151 110 141Q100 146 90 141Z" fill="#ff8aa8"/></g>
@@ -1962,29 +1976,74 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   var bot=document.getElementById('pnbot'),bub=document.getElementById('pnbub');if(!bot||!bub)return;
   var EN=function(){return (document.documentElement.lang||'').toLowerCase().indexOf('en')===0;};
   var T=function(a,e){return EN()?e:a;};
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,state='idle',hideT=null,lastTxt='',gotFinal=false;
-  function setState(s){state=s;bot.classList.remove('listen','happy','wave');if(s!=='idle')bot.classList.add(s);}
-  function say(html,ms){clearTimeout(hideT);bub.innerHTML=html;bub.classList.add('on');if(ms)hideT=setTimeout(function(){bub.classList.remove('on');},ms);}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,state='idle',hideT=null,lastTxt='';
+  function setState(s){state=s;bot.classList.remove('listen','happy');if(s!=='idle')bot.classList.add(s);}
+  function placeBub(){var r=bot.getBoundingClientRect(),vw=document.documentElement.clientWidth,bw=bub.offsetWidth,bh=bub.offsetHeight;
+    var left=Math.max(14,Math.min(vw-14-bw,r.left+r.width/2-bw/2)),below=r.top<window.innerHeight*0.55;
+    bub.style.left=left+'px';bub.style.top=Math.max(8,below?r.bottom+10:r.top-bh-10)+'px';}
+  function say(html,ms){clearTimeout(hideT);bub.innerHTML=html;placeBub();bub.classList.add('on');if(ms)hideT=setTimeout(function(){bub.classList.remove('on');},ms);}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function done(){setState('idle');}
   function happy(txt){setState('happy');say('<small>'+T('سمعتك','I heard you')+'</small>'+esc(txt),5000);setTimeout(done,1500);}
   function stop(){try{rec&&rec.stop();}catch(e){}}
   function start(){
     if(!SR){say(T('هذا المتصفح لا يدعم الصوت. جرّب كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}
-    rec=new SR();rec.lang=EN()?'en-US':'ar-JO';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
-    lastTxt='';gotFinal=false;
+    rec=new SR();rec.lang=EN()?'en-US':'ar-JO';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;lastTxt='';
     rec.onstart=function(){setState('listen');say('<small>'+T('أسمعك…','Listening…')+'</small>'+T('احكِ الآن','Speak now'));};
-    rec.onresult=function(e){var t='',fin=false;for(var i=e.resultIndex;i<e.results.length;i++){t+=e.results[i][0].transcript;if(e.results[i].isFinal)fin=true;}
-      if(t)lastTxt=t;say('<small>'+T('أسمعك…','Listening…')+'</small>'+esc(lastTxt));if(fin)gotFinal=true;};
-    rec.onerror=function(e){var m={'not-allowed':T('اسمح للميكروفون من إعدادات المتصفح ثم جرّب.','Allow the microphone in browser settings, then try again.'),'service-not-allowed':T('اسمح للميكروفون من إعدادات المتصفح ثم جرّب.','Allow the microphone in browser settings, then try again.'),'no-speech':T('ما سمعت شي، جرّب مرة ثانية.','I did not hear anything, try again.'),'audio-capture':T('ما لقيت ميكروفون.','No microphone found.'),'network':T('الصوت يحتاج إنترنت.','Voice needs an internet connection.')}[e.error];
-      if(m){say(m,4500);gotFinal=true;lastTxt='';}};
-    rec.onend=function(){if(lastTxt&&!(/^\s*$/.test(lastTxt)))happy(lastTxt);else{if(!bub.classList.contains('on')||/أسمعك|Listening/.test(bub.textContent))say(T('ما سمعت شي، جرّب مرة ثانية.','I did not hear anything, try again.'),3500);done();}};
+    rec.onresult=function(e){var t='';for(var i=e.resultIndex;i<e.results.length;i++){t+=e.results[i][0].transcript;}
+      if(t)lastTxt=t;say('<small>'+T('أسمعك…','Listening…')+'</small>'+esc(lastTxt));};
+    rec.onerror=function(e){var al=T('اسمح للميكروفون من إعدادات المتصفح ثم جرّب.','Allow the microphone in browser settings, then try again.');
+      var m={'not-allowed':al,'service-not-allowed':al,'no-speech':T('ما سمعت شي، جرّب مرة ثانية.','I did not hear anything, try again.'),'audio-capture':T('ما لقيت ميكروفون.','No microphone found.'),'network':T('الصوت يحتاج إنترنت.','Voice needs an internet connection.')}[e.error];
+      if(m){say(m,4500);lastTxt='';rec.__err=1;}};
+    rec.onend=function(){if(lastTxt&&!/^\s*$/.test(lastTxt))happy(lastTxt);else{if(!rec.__err)say(T('ما سمعت شي، جرّب مرة ثانية.','I did not hear anything, try again.'),3500);done();}};
     try{rec.start();}catch(e){say(T('تعذّر تشغيل الميكروفون.','Could not start the microphone.'),3500);done();}
   }
-  bot.addEventListener('click',function(){if(state==='listen'){stop();return;}start();});
-  // greeting wave once, shortly after the intro ends
-  var greeted=false;function greet(){if(greeted||document.body.classList.contains('lock'))return;greeted=true;bot.classList.add('wave');setTimeout(function(){if(state==='idle')bot.classList.remove('wave');},2800);}
-  var gi=setInterval(function(){if(!document.body.classList.contains('lock')){clearInterval(gi);setTimeout(greet,900);}},400);
+  bot.addEventListener('click',function(){if(state==='listen'){stop();return;}if(state==='idle')start();});
+
+  /* ---- walking: each page gives the ball its own little strip to pace back and forth ---- */
+  var P={mode:'',x:0,dir:1,pause:0,walking:true},last=0;
+  function vis(e){return !!e&&e.getClientRects().length>0;}
+  function barBottom(){var b=document.getElementById('pnbar');return vis(b)?b.getBoundingClientRect().bottom:48;}
+  function anchor(){
+    var b=document.body,h=location.hash||'',vw=document.documentElement.clientWidth;
+    if(b.classList.contains('lock'))return null;
+    if(b.classList.contains('on-land')){
+      var wm=document.querySelector('.land-wm .wm')||document.querySelector('.land-wm');if(!vis(wm))return null;
+      var r=wm.getBoundingClientRect(),band=r.top-barBottom(),H=Math.max(40,Math.min(72,band-16)),w=H*.95;
+      return {mode:'land',H:H,min:10,max:vw-10-w,top:r.top-10-H};}
+    if(h.indexOf('#/b/')===0){
+      var lg=document.querySelector('#bhero .wm')||document.querySelector('#bhero svg');if(!vis(lg))return null;
+      var r2=lg.getBoundingClientRect(),H2=46,w2=H2*.95;
+      return {mode:'brand',H:H2,min:10,max:vw-10-w2,top:r2.bottom+2};}
+    if(h.indexOf('#/d/')===0){
+      var nm=document.querySelector('.spname');if(!vis(nm))return null;
+      var rg=document.createRange();rg.selectNodeContents(nm);var rs=rg.getClientRects(),mn=1e9;
+      for(var i=0;i<rs.length;i++){if(rs[i].width>0&&rs[i].left<mn)mn=rs[i].left;}
+      if(mn>=1e9)return null;var nr=nm.getBoundingClientRect(),room=mn-18,H3=room>=58?46:36,w3=H3*.95;
+      var min=8,max=Math.max(min,mn-8-w3);
+      return {mode:'dev',H:H3,min:min,max:max,top:nr.top+nr.height/2-H3/2};}
+    return null;
+  }
+  function tick(t){
+    var dt=Math.min(60,t-(last||t))/1000;last=t;var a=anchor();
+    if(!a||a.top+a.H<barBottom()-4||a.top>window.innerHeight){bot.style.visibility='hidden';if(!a)bub.classList.remove('on');requestAnimationFrame(tick);return;}
+    bot.style.visibility='visible';var w=a.H*.95;
+    bot.style.width=w+'px';bot.style.height=a.H+'px';
+    if(P.mode!==a.mode){P.mode=a.mode;P.x=a.min;P.dir=1;P.pause=0;}
+    var idle=state==='idle',range=a.max-a.min,reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if(idle&&range>3&&!reduce){
+      if(P.pause>0){P.pause-=dt;P.walking=false;if(P.pause<=0){P.dir=-P.dir;P.walking=true;}}
+      else{P.walking=true;P.x+=P.dir*34*dt;
+        if(P.x>=a.max){P.x=a.max;P.pause=.9;}else if(P.x<=a.min){P.x=a.min;P.pause=.9;}}
+    }else{P.walking=false;if(range<=3)P.x=a.min+range/2;}
+    P.x=Math.max(a.min,Math.min(a.max,P.x));
+    bot.classList.toggle('walk',idle&&P.walking);
+    bot.classList.toggle('rev',idle&&P.dir<0);
+    bot.classList.toggle('wave',idle&&P.pause>0&&a.mode==='land');
+    bot.style.transform='translate3d('+P.x.toFixed(1)+'px,'+a.top.toFixed(1)+'px,0)';
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
   window.pnBot={setState:setState,say:say};
 })();
 </script>
