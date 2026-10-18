@@ -1914,6 +1914,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbot .eyes{transform-origin:100px 108px;animation:btBlink 4.6s infinite}
 .pnbot .arm{transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
 .pnbot .al{transform-origin:45px 120px}.pnbot .ar{transform-origin:155px 120px}
+.pnbot.always::after{content:'';position:absolute;top:8px;right:10px;width:10px;height:10px;border-radius:50%;background:#34c759;box-shadow:0 0 0 3px rgba(52,199,89,.28);animation:btWave 1.6s ease-in-out infinite}
 .pnbot .m{display:none}.pnbot .m.sm{display:block}
 .pnbot .fx{display:none}
 .pnbot.listen .m.sm,.pnbot.happy .m.sm{display:none}.pnbot.listen .m.o{display:block}.pnbot.happy .m.bg{display:block}
@@ -2038,6 +2039,41 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function respond(txt){setState('happy');var r=answer(txt);
     var body=r.raw?r.h:esc(r.h);
     say((r.d?'<small>'+esc(r.d)+'</small>':'')+'<span class="pnans">'+body+'</span>',9000);setTimeout(done,1500);}
+  // ---- always-on listening (wake word "سهل" / "Sahl") ----
+  var always=false,active=false,activeT=null,restartT=null,fails=0,WAKE=/(^| )(سهل|سحل|صحل|sahl|sahel|sahal|sehl)( |$)/;
+  function setActive(on){active=on;clearTimeout(activeT);
+    if(on){setState('listen');activeT=setTimeout(function(){setActive(false);if(always){bub.classList.remove('on');}},9000);}
+    else if(state==='listen')setState('idle');}
+  function handleFinal(t){
+    var n=nz(t);if(!n)return;
+    if(WAKE.test(n)){var rest=n.replace(/(مرحبا|اهلا|هاي|يا|هلا|hello|hey|hi|ok|okay)/g,' ').replace(/(سهل|سحل|صحل|sahl|sahel|sahal|sehl)/g,' ').replace(/\s+/g,' ').trim();
+      if(rest.length>1){setActive(false);respond(rest);}
+      else{setActive(true);say('<small>'+T('سهل','Sahl')+'</small>'+T('نعم؟ اسألني…','Yes? Ask me…'));}
+      return;}
+    if(active){setActive(false);respond(n);}
+  }
+  function runRec(){
+    if(!always)return;
+    rec=new SR();rec.lang=EN()?'en-US':'ar-JO';rec.interimResults=true;rec.continuous=true;rec.maxAlternatives=1;
+    rec.onstart=function(){fails=0;};
+    rec.onresult=function(e){var fin='',intr='';
+      for(var i=e.resultIndex;i<e.results.length;i++){var tr=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=' '+tr;else intr+=' '+tr;}
+      if(active&&intr&&!fin)say('<small>'+T('أسمعك…','Listening…')+'</small>'+esc(intr.trim()));
+      if(fin.trim())handleFinal(fin);};
+    rec.onerror=function(e){
+      if(e.error==='not-allowed'||e.error==='service-not-allowed'){always=false;bot.classList.remove('always');say(T('اسمح للميكروفون من إعدادات المتصفح ثم اضغط عليّ.','Allow the microphone in browser settings, then tap me.'),4500);}
+      else if(e.error==='audio-capture'){always=false;bot.classList.remove('always');say(T('ما لقيت ميكروفون.','No microphone found.'),3500);}
+      else if(e.error==='network'){say(T('الصوت يحتاج إنترنت.','Voice needs an internet connection.'),3500);}};
+    rec.onend=function(){if(!always)return;fails++;clearTimeout(restartT);restartT=setTimeout(runRec,Math.min(4000,250*fails));};
+    try{rec.start();}catch(e){clearTimeout(restartT);restartT=setTimeout(runRec,1000);}
+  }
+  function toggleAlways(){
+    if(always){always=false;clearTimeout(restartT);setActive(false);try{rec&&rec.abort();}catch(e){}bot.classList.remove('always');say(T('أوقفت الاستماع.','Listening is off.'),2000);return;}
+    if(!SR){say(T('هذا المتصفح لا يدعم الصوت. جرّب كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}
+    always=true;fails=0;bot.classList.add('always');
+    say('<small>'+T('أنا سهل','I am Sahl')+'</small>'+T('أسمعك طول الجلسة. قل «مرحبا سهل» ثم اسأل. اضغط عليّ لإيقافي.','I am listening. Say “Hi Sahl”, then ask. Tap me to stop.'),6000);
+    runRec();
+  }
   function stop(){try{rec&&rec.stop();}catch(e){}}
   function start(){
     if(!SR){say(T('هذا المتصفح لا يدعم الصوت. جرّب كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}
@@ -2051,7 +2087,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     rec.onend=function(){if(lastTxt&&!(/^\s*$/.test(lastTxt)))respond(lastTxt);else{if(!bub.classList.contains('on')||/أسمعك|Listening/.test(bub.textContent))say(T('ما سمعت شي، جرّب مرة ثانية.','I did not hear anything, try again.'),3500);done();}};
     try{rec.start();}catch(e){say(T('تعذّر تشغيل الميكروفون.','Could not start the microphone.'),3500);done();}
   }
-  bot.addEventListener('click',function(ev){if(moved){ev.preventDefault();return;}if(state==='listen'){stop();return;}start();});
+  bot.addEventListener('click',function(ev){if(moved){ev.preventDefault();return;}toggleAlways();});
   // greeting wave once, shortly after the intro ends
   var greeted=false;function greet(){if(greeted||document.body.classList.contains('lock'))return;greeted=true;bot.classList.add('wave');say('<small>'+T('مرحباً','Hi')+'</small>'+T('أنا سهل','I am Sahl'),3500);setTimeout(function(){if(state==='idle')bot.classList.remove('wave');},1600);}
   // wave with the right hand every ~3.5s while idle
@@ -2079,7 +2115,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   bot.addEventListener('contextmenu',function(e){e.preventDefault();});bot.addEventListener('pointerup',up);bot.addEventListener('pointercancel',up);
   window.addEventListener('resize',apply);
   apply();setTimeout(apply,300);
-  window.pnBot={setState:setState,say:say,ask:answer};
+  window.pnBot={setState:setState,say:say,ask:answer,final:handleFinal};
 })();
 </script>
 
