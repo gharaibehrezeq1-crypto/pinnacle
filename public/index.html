@@ -1839,7 +1839,7 @@ if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='ht
     var wa='https://wa.me/'+(WA_NUMBER||'')+'?text='+encodeURIComponent(orderText(v,id,ds));
     h+='<div class="pcconf" id="pcconf"><p>'+T('راجع فاتورتك، ثم اضغط تأكيد ليصلنا طلبك على واتساب.','Review your invoice, then confirm to send it to us on WhatsApp.')+'</p><a id="pcok" class="pcb2" href="'+esc(wa)+'" target="_blank" rel="noopener">'+WAI+'<span>'+T('تأكيد وإرسال عبر واتساب','Confirm & send on WhatsApp')+'</span></a><button type="button" class="pcedit" id="pcedit">'+T('تعديل الطلب','Edit order')+'</button></div></div>';
     var rc=panel().querySelector('#pcrc');rc.innerHTML=h;
-    var sl=rc.querySelector('.pcslot');if(sl){window.scrollBy({top:sl.getBoundingClientRect().top-70,behavior:'smooth'});}
+    var sl=rc.querySelector('.pcslot');if(sl){var tp=document.querySelector('#view-device .top'),hh=tp?tp.getBoundingClientRect().bottom:110;window.scrollBy({top:sl.getBoundingClientRect().top-(hh+16),behavior:'smooth'});}
     setTimeout(function(){var cf=rc.querySelector('#pcconf');if(cf){cf.classList.add('in');var bt=cf.getBoundingClientRect().bottom-window.innerHeight+16;if(bt>0)window.scrollBy({top:bt,behavior:'smooth'});}},2900);
   }
   function orderText(v,id,ds){
