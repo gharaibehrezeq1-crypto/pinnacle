@@ -1965,9 +1965,11 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   var NU={'واحد':1,'وحده':1,'احد':1,'اثنين':2,'اثنان':2,'اثنتين':2,'ثنين':2,'اثن':2,'ثلاثه':3,'ثلاث':3,'تلاته':3,'تلات':3,'ثلات':3,'اربعه':4,'اربع':4,'خمسه':5,'خمس':5,'سته':6,'ست':6,'سبعه':7,'سبع':7,'ثمانيه':8,'ثمان':8,'تمانيه':8,'تمان':8,'تمن':8,'ثمن':8,'تسعه':9,'تسع':9};
   var NUK=Object.keys(NU).sort(function(a,b){return b.length-a.length;}).join('|');
   function numw(n){
+    n=n.replace(new RegExp('(^| )و('+NUK+')(?=(?:طعش|تعش|طاشر|تاشر|طاش|تاش|طشر|تشر|اشر|عشره|عشر|عش)( |$))','g'),'$1و $2');
     n=n.replace(new RegExp('(^| )('+NUK+') ?و ?عشرين(?= |$)','g'),function(m,a,u){return a+(20+NU[u]);});
     n=n.replace(new RegExp('(^| )('+NUK+') ?و ?ثلاثين(?= |$)','g'),function(m,a,u){return a+(30+NU[u]);});
-    n=n.replace(new RegExp('(^| )('+NUK+')(?:طعش|تعش|طاشر|تاشر|اشر|عشر|عشره)(?= |$)','g'),function(m,a,u){return a+(10+NU[u]);});
+    n=n.replace(new RegExp('(^| )('+NUK+')(?: ?)(?:طعش|تعش|طاشر|تاشر|طاش|تاش|طشر|تشر|اشر|عشره|عشر|عش)(?= |$)','g'),function(m,a,u){return a+(10+NU[u]);});
+    n=n.replace(/(^| )(?:سفنتين|سفنطين|سفنتن)(?= |$)/g,'$117').replace(/(^| )(?:ايتين|ايطين)(?= |$)/g,'$118').replace(/(^| )سكستين(?= |$)/g,'$116').replace(/(^| )3(1[5-9]|2[0-9])(?= |$)/g,'$1$2').replace(/ رقم /g,' ');
     n=n.replace(/(^| )(?:احد ?عش|احداعش|احد ?عشر)(?= |$)/g,'$111').replace(/(^| )(?:اثنا ?عشر|اثنعش|اطنعش)(?= |$)/g,'$112');
     n=n.replace(/(^| )عشرين(?= |$)/g,'$120').replace(/(^| )ثلاثين(?= |$)/g,'$130').replace(/(^| )عشره(?= |$)/g,'$110');
     return n;}
@@ -1975,17 +1977,17 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function findDevices(t){
     var n=numw(nz(t)),keys=[],miss=[],m,re,AL='(?:و|ب|ل|ف)?(?:ال)?';
     function add(k,fam,label){if(D()[k]){if(keys.indexOf(k)<0)keys.push(k);}else if(!miss.some(function(x){return x.label===label;}))miss.push({label:label,fam:fam});}
-    function variant(s){s=s||'';return /(ماكس|max)/.test(s)?' Pro Max':/(برو|pro)/.test(s)?' Pro':'';}
-    var VAR='(برو ?ماكس|pro ?max|برو|pro|ماكس|max|بلس|plus|اير|air|e)?';
+    function variant(s){s=s||'';return /(ماكس|مكس|max)/.test(s)?' Pro Max':/(برو|pro)/.test(s)?' Pro':'';}
+    var VAR='(برو ?م[اآ]?كس|pro ?max|برو+|pro|م[اآ]?كس|max|بلس|plus|اير|air|e)?';
     re=new RegExp('(?:^| )'+AL+'(?:ايفون|ايفن|ايفونن|iphone|اي فون|ايفو)\\s*(1[0-9]|2[0-9])\\s*'+VAR,'g');
     while((m=re.exec(n)))add('iPhone '+m[1]+variant(m[2]),0,'iPhone '+m[1]+(m[2]?' '+m[2]:''));
-    re=new RegExp('(?:^| )'+AL+'(1[5-9]|2[0-9]) ?(برو ?ماكس|pro ?max|برو|pro|ماكس|max)(?= |$)','g');
+    re=new RegExp('(?:^| )'+AL+'(1[5-9]|2[0-9]) ?(برو ?م[اآ]?كس|pro ?max|برو+|pro|م[اآ]?كس|max)(?= |$)','g');
     while((m=re.exec(n)))add('iPhone '+m[1]+variant(m[2]),0,'iPhone '+m[1]+' '+m[2]);
     re=new RegExp('(?:^| )(?:'+AL+'(?:s|اس|ايس|es|اس اس)|سامسونج|سامسونغ|samsung|جالكسي|جلاكسي|galaxy|galaxy s)\\s*-?\\s*(2[0-9])(?:\\s*(الترا|ultra|التر|اولترا|ولترا|بلس|plus))?(?= |$)','g');
     while((m=re.exec(n)))add(/(بلس|plus)/.test(m[2]||'')?'-':'Galaxy S'+m[1]+' Ultra',1,'Galaxy S'+m[1]+(/(بلس|plus)/.test(m[2]||'')?' Plus':' Ultra'));
     re=new RegExp('(?:^| )'+AL+'(?:ultra|الترا|التر|اولترا|ولترا) ?(?:s|اس|ايس)? ?(2[0-9])(?= |$)','g');
     while((m=re.exec(n)))add('Galaxy S'+m[1]+' Ultra',1,'Galaxy S'+m[1]+' Ultra');
-    re=new RegExp('(?:^| )'+AL+'(?:رينو|reno|رنو)\\s*(1[0-9])\\s*(برو|pro|اف|f)?(?= |$)','g');
+    re=new RegExp('(?:^| )'+AL+'(?:ري?ينو|reno|رنو)\\s*(1[0-9])\\s*(برو|pro|اف|f)?(?= |$)','g');
     while((m=re.exec(n)))add('Reno'+m[1]+(/(برو|pro)/.test(m[2]||'')?' Pro':/^(اف|f)$/.test(m[2]||'')?' F':''),2,'Reno '+m[1]);
     return {keys:keys,miss:miss,n:n};}
   // a model-like phrase was said but did not resolve to a phone we sell
@@ -1996,12 +1998,13 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function chipsFor(keys){return '<div class="pnch">'+keys.map(function(k){return '<button type="button" data-k="'+esc(k)+'">'+esc(dn(k))+'</button>';}).join('')+'</div>';}
   function pickDevice(t,fam,label,cb){ // ask which phone, with tap buttons
     var list=Object.keys(D()).filter(function(k){return brandOf(k)===fam;});if(!list.length)list=Object.keys(D());
+    var mn=label?Number((String(label).match(/\d+/)||[0])[0]):0;if(mn)list.sort(function(a,b){var na=Number((a.match(/\d+/)||[0])[0]),nb=Number((b.match(/\d+/)||[0])[0]);return Math.abs(na-mn)-Math.abs(nb-mn);});
     pendText=t||'';
-    say('<small>'+esc(label?T('ما عندنا ','We do not have ')+label:T('أي جهاز تقصد؟','Which phone do you mean?'))+'</small><span class="pnans"><div dir="auto">'+esc(label?T('تقصد واحد من هدول؟','Did you mean one of these?'):T('اختر من هنا:','Pick one:'))+'</div></span>'+chipsFor(list),16000);}
+    say('<small>'+esc(label?T('سمعتك: ','I heard: ')+label:T('أي جهاز تقصد؟','Which phone do you mean?'))+'</small><span class="pnans"><div dir="auto">'+esc(label?T('هذا مش عندنا، يمكن ما سمعتك منيح. قصدك واحد من هدول؟','We do not carry that one; maybe I misheard. Did you mean one of these?'):T('اختر من هنا:','Pick one:'))+'</div></span>'+chipsFor(list),16000);}
   function findBrand(n){return /(ايفون|ابل|apple|iphone)/.test(n)?0:/(سامسونج|samsung|جالكسي|galaxy)/.test(n)?1:/(اوبو|oppo|رينو|reno)/.test(n)?2:/(هواوي|huawei|هونر|honor|انفينكس|infinix|تكنو|tecno)/.test(n)?-2:-1;}
   // --- topics ---
   var TOPICS=[
-   ['price',/(سعر|اسعار|بكم|بكام|كم ثمن|ثمن|كم يكلف|كلفه|price|cost|how much)/],
+   ['price',/(سعر|اسعار|بكم|بكام|كم بدو|كم بدها|كم بيطلع|كم بتطلع|كم يطلع|بيطلع كم|بدو كم|كم ثمن|ثمن|كم يكلف|كلفه|price|cost|how much)/],
    ['colors',/(الوان|لون|colou?rs?)/],
    ['front',/(سيلفي|امامي|امامه|front cam|selfie)/],
    ['video',/(فيديو|video|4k|8k|تصوير فيديو)/],
@@ -2077,6 +2080,16 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   var ord=null;
   function normPhone(v){var d=dg(v).replace(/\D/g,'');if(d.indexOf('00962')===0)d=d.slice(5);else if(d.indexOf('962')===0)d=d.slice(3);if(d.charAt(0)==='0')d=d.slice(1);return /^7[789]\d{7}$/.test(d)?'0'+d:'';}
   var NUMW={'صفر':0,'سفر':0,'واحد':1,'اثنين':2,'اثنان':2,'ثنتين':2,'ثلاثه':3,'تلاته':3,'اربعه':4,'اربع':4,'خمسه':5,'خمس':5,'سته':6,'ست':6,'سبعه':7,'سبع':7,'ثمانيه':8,'ثمان':8,'تمانيه':8,'تسعه':9,'تسع':9};
+  var UW={'صفر':0,'سفر':0,'زيرو':0,'zero':0,'واحد':1,'وحده':1,'وحد':1,'one':1,'اثنين':2,'اثنان':2,'اثنتين':2,'ثنتين':2,'اتنين':2,'ثنين':2,'تنين':2,'two':2,'ثلاثه':3,'ثلاث':3,'تلاته':3,'تلات':3,'ثلات':3,'تلت':3,'three':3,'اربعه':4,'اربع':4,'اربعا':4,'four':4,'خمسه':5,'خمس':5,'five':5,'سته':6,'ست':6,'six':6,'سبعه':7,'سبع':7,'seven':7,'ثمانيه':8,'ثمان':8,'تمانيه':8,'تمان':8,'تمن':8,'ثمن':8,'eight':8,'تسعه':9,'تسع':9,'nine':9};
+  var TW={'عشره':10,'عشر':10,'عشرين':20,'ثلاثين':30,'تلاتين':30,'اربعين':40,'خمسين':50,'ستين':60,'سبعين':70,'ثمانين':80,'تمانين':80,'تسعين':90,'احدعش':11,'احداعش':11,'اثنعش':12,'اطنعش':12,'ثلطعش':13,'تلطعش':13,'اربعطعش':14,'خمسطعش':15,'ستطعش':16,'سبعطعش':17,'ثمنطعش':18,'تمنطعش':18,'تسعطعش':19};
+  function digitsAll(t){var w=nz(t).split(' '),o='',i,x,y,u;
+    for(i=0;i<w.length;i++){x=w[i];if(/^\d+$/.test(x)){o+=x;continue;}
+      if(x.charAt(0)==='و'&&x.length>3&&(TW[x.slice(1)]!==undefined||UW[x.slice(1)]!==undefined))x=x.slice(1);
+      if(UW[x]!==undefined){u=UW[x];y=w[i+1];if(y&&y.charAt(0)==='و'){y=y.slice(1)||w[i+2];}
+        if(y&&TW[y]>=20){o+=String(TW[y]+u);i+=(w[i+1]==='و'?2:1);continue;}
+        o+=u;continue;}
+      if(TW[x]!==undefined)o+=String(TW[x]);}
+    return o;}
   function digitsOf(t){var s=dg(t),d=s.replace(/\D/g,'');if(d.length>=9)return d;var w=nz(t).split(' ').map(function(x){return NUMW[x];}).filter(function(x){return x!==undefined;});return w.length>=9?w.join(''):d;}
   function grab(raw){var f={},m;
     m=raw.match(/(?:اسمي|اسمى|انا اسمي|my name is|name is|i am|i'm)\s+(.+?)(?=\s+(?:عنواني|عنوان|ساكن|رقمي|رقم|هاتفي|تلفوني|موبايلي|وعنواني|my address|address|phone|number|قديش|كم|بدي|ورقمي)(?=\s|$)|$)/i);
@@ -2119,11 +2132,14 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
    ['yes','نعم|ايوه|ايوا|اه|اكيد|يلا|طبعا|تمام ابدا|ok|okay|yes|yeah|اوك'],
    ['hello','مرحبا|مرحبتين|اهلا|اهلين|هلا|هلا والله|هاي|هلو|يا هلا|اهلا وسهلا|اهلا بيك|hello|hi|hey'],
    ['think','بفكر|رح افكر|بدي افكر|بعدين|مو متاكد|مش متاكد|لسا بفكر|ما قررت|think about it|not sure|maybe later|later'],
-   ['lost','محتار|مش عارف|مو عارف|ما بعرف|ما بعرف اي|ساعدني اختار|انصحني|شو تنصحني|ايش تنصحني|اي جهاز يناسبني|شو الانسب|اختار لي|اي واحد اشتري|اي واحد احسن|شو الافضل|اي جهاز افضل|which should i buy|help me choose|recommend|what do you recommend|ما عرفت اختار'],
+   ['lost','محتار|مش عارف|مو عارف|ما بعرف|ما بعرف اي|ساعدني اختار|انصحني|شو تنصحني|ايش تنصحني|اي جهاز يناسبني|شو الانسب|اختار لي|اي واحد اشتري|اي واحد احسن|شو الافضل|اي جهاز افضل|احلي اشي|احسن اشي|افضل اشي|اقوي اشي|شو الحلو عندكم|شو المميز|شو الي بتنصح|شو اللي بتنصح|which should i buy|help me choose|recommend|what do you recommend|ما عرفت اختار'],
    ['expensive','غالي|غاليه|كتير غالي|كثير غالي|مرتفع|السعر عالي|سعره عالي|الاسعار عاليه|مبالغ فيه|expensive|too much|pricey|too expensive'],
    ['trust','مضمون|موثوق|نصب|نصابين|احتيال|امان|امن|اثق|ثقه|هل انتم موثوقين|مقلد|مزور|safe|trust|scam|legit|fake|reliable'],
    ['discount','خصم|خصومات|تخفيض|تنزيل|اخر سعر|فصال|فاصل|عروض|عرض|كوبون|discount|offer|deal|last price|best price|اقل سعر ممكن'],
    ['hesit','ليش ما|ما اشتريت|مش مقتنع|مو مقتنع|مش عاجبني|ما عجبني|مش عاجبه|ما عجبه|مش عارف اشتري|بدي اشوف غيره|بدي اشوف شي ثاني|سبب ثاني|شي ثاني'],
+   ['compet','محل ثاني|بمحل ثاني|عند غيركم|عند غيرك|ارخص عند|لقيته ارخص|شفته ارخص|لقيته بسعر اقل|محل تاني|احسن عند'],
+   ['whyyou','ليش اشتري منكم|ليش منكم|شو يميزكم|شو المميز عندكم|ليش عندكم|ايش يميزكم'],
+   ['aspect','ما عجبتني|ما عجبني|مش عاجبتني|مش حلو|مو حلو|مش قد التوقعات|ما بدكيش|بدكيش|ما بدي هاد|مابدي'],
    ['compare_h','بدي اقارن|بدي اقارن بين الاجهزه|بدي اقارن بين اجهزه']
   ];
   var SOCRE=SOC.map(function(x){return [x[0],new RegExp('(?:^| )(?:'+x[1].split('|').map(nz).filter(Boolean).join('|')+')(?: |$)')];});
@@ -2149,17 +2165,30 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function mainMP(k){var s=sec(D()[k].data,'الكاميرا الخلفية');if(!s)return 0;var m=0;s.rows.forEach(function(r){var x=String(r[1]).match(/(\d+)\s*MP/i);if(x&&Number(x[1])>m&&/(الرئيسية|Main)/i.test(r[0]))m=Number(x[1]);});return m;}
   function mAh(k){var s=sec(D()[k].data,'البطارية');if(!s)return 0;var m=0;s.rows.forEach(function(r){if(/(السعة|Capacity)/i.test(r[0])){var x=String(r[1]).replace(/,/g,'').match(/\d+/);if(x)m=Number(x[0]);}});return m;}
   function screenIn(k){var s=sec(D()[k].data,'الشاشة');var x=s&&s.rows[0]?String(s.rows[0][1]).match(/[\d.]+/):null;return x?Number(x[0]):0;}
-  function adviceFor(need){var all=Object.keys(D()).filter(priceOf),best=null,lines=[],why='';
+  var sess={need:null,budget:0,fu:0};
+  function diffLine(a,b){var o=[],pa=priceOf(a),pb=priceOf(b);if(pa>pb)o.push(T('بتوفر ','You save ')+(pa-pb)+T(' دينار','JOD'));
+    var sa=screenIn(a),sb=screenIn(b);if(sa>sb)o.push(dn(a)+T(' شاشته أكبر ('+sa+' مقابل '+sb+')',' has the bigger screen ('+sa+' vs '+sb+')'));
+    var ma=mainMP(a),mb=mainMP(b);if(ma>mb)o.push(dn(a)+T(' كاميرته '+ma+'MP مقابل '+mb+'MP',' camera '+ma+'MP vs '+mb+'MP'));
+    var ba=mAh(a),bb=mAh(b);if(bb>ba&&ba)o.push(dn(b)+T(' بطاريته أكبر ('+bb+'mAh)',' has the bigger battery ('+bb+'mAh)'));
+    return o.length?T('الفرق: ','Difference: ')+o.join(' · '):'';}
+  function adviceFor(need){var all=Object.keys(D()).filter(priceOf),best=null,lines=[],why='',note='';if(sess.budget){var inb=all.filter(function(k){return priceOf(k)<=sess.budget;});if(inb.length)all=inb;else note=T('ما في جهاز ضمن ميزانيتك، هذا الأقرب: ','Nothing fits your budget; closest: ');}
     if(need==='cam'){best=all.slice().sort(function(a,b){return mainMP(b)-mainMP(a)||priceOf(a)-priceOf(b);})[0];if(best)why=T('كاميرا رئيسية ','Main camera ')+mainMP(best)+'MP';}
     else if(need==='bat'){best=all.slice().sort(function(a,b){return mAh(b)-mAh(a);})[0];if(best)why=T('بطارية ','Battery ')+mAh(best)+'mAh';}
     else if(need==='cheap'){best=all.slice().sort(function(a,b){return priceOf(a)-priceOf(b);})[0];if(best)why=T('الأوفر عندنا','Our best value');}
     else if(need==='screen'){var mx=Math.max.apply(null,all.map(screenIn));var big=all.filter(function(k){return screenIn(k)===mx;}).sort(function(a,b){return priceOf(a)-priceOf(b);});best=big[0];if(best)why=T('شاشة ','Screen ')+mx+T(' إنش','"');}
     else if(need==='game'){best=all.filter(function(k){return /A20 Pro|Snapdragon 8 Elite Gen 5/i.test(JSON.stringify(D()[k].data));}).sort(function(a,b){return priceOf(a)-priceOf(b);})[0];if(best)why=T('أحدث معالج عندنا','Newest chip we have');}
     if(!best)return false;ctx.key=best;ask='order';
-    var l=[dn(best)+': '+fmtP(best)+' '+T('دينار','JOD')+' · '+why];var sp=specLine(best);if(sp&&need!=='bat'&&need!=='screen')l.push(sp);
-    l.push(T('الدفع عند الاستلام بعد ما تفحص الجهاز. بدك أبدأ لك الطلب؟','Pay on delivery after checking the phone. Shall I start your order?'));
+    var l=[note+dn(best)+': '+fmtP(best)+' '+T('دينار','JOD')+' · '+why];var sp=specLine(best);if(sp&&need!=='bat'&&need!=='screen')l.push(sp);
+    var cl=(D()[best].cols||[]).map(function(c){return tx(c[1]);}).slice(0,5).join('، ');if(cl)l.push(T('الألوان: ','Colors: ')+cl);
+    l.push(T('الدفع عند الاستلام بعد ما تفحص الجهاز. أي لون بتحب وأبدأ لك الطلب؟','Pay on delivery after checking the phone. Which color, and I will start your order?'));if(0)l.push(T('الدفع عند الاستلام بعد ما تفحص الجهاز. بدك أبدأ لك الطلب؟','Pay on delivery after checking the phone. Shall I start your order?'));
     sayQ(T('أنسب خيار لك','Best pick for you'),l,[[T('ابدأ الطلب','Start order'),'اطلب'],[T('شوف غيره','Show another'),'محتار ساعدني اختار'],[T('أقارن','Compare'),'بدي اقارن']],18000);return true;}
-  function discover(){ask='need';sayQ(T('خليني أساعدك','Let me help'),[T('شو أهم شي عندك بالجهاز؟','What matters most to you?')],[[T('التصوير','Camera'),'اهم شي عندي التصوير'],[T('البطارية','Battery'),'اهم شي عندي البطارية'],[T('أقل سعر','Lowest price'),'اهم شي عندي السعر'],[T('شاشة كبيرة','Big screen'),'اهم شي عندي الشاشه'],[T('أداء قوي','Performance'),'اهم شي عندي الاداء']],16000);}
+  function discover(first){ask='need';sayQ(first?T('أهلاً، أنا سهل','Hi, I am Sahl'):T('خليني أساعدك','Let me help'),[first?T('بساعدك تختار الجهاز المناسب بدقيقة. شو أهم شي عندك فيه؟','I will help you pick the right phone in a minute. What matters most to you?'):T('شو أهم شي عندك بالجهاز؟','What matters most to you?')],[[T('التصوير','Camera'),'اهم شي عندي التصوير'],[T('البطارية','Battery'),'اهم شي عندي البطارية'],[T('أقل سعر','Lowest price'),'اهم شي عندي السعر'],[T('شاشة كبيرة','Big screen'),'اهم شي عندي الشاشه'],[T('أداء قوي','Performance'),'اهم شي عندي الاداء']].concat(first?[[T('أشوف الأجهزة','Show phones'),'شو الاجهزه اللي عندكم']]:[]),18000);}
+  function fuHtml(tp,k){sess.fu++;if(sess.fu%2!==1||!k)return '';var q,c;
+    if(tp==='cam'||tp==='front'||tp==='video'){q=T('بتصور كتير؟ للسوشال ولا تصوير احترافي؟','Do you shoot a lot? For social or pro work?');c=[[T('للسوشال','Social'),'اهم شي عندي تصوير سوشال'],[T('احترافي','Pro'),'اهم شي عندي تصوير احترافي'],[T('السعر أهم','Price first'),'اهم شي عندي السعر']];}
+    else if(tp==='battery'||tp==='charge'){q=T('بتكون كتير برا البيت؟','Are you out a lot?');c=[[T('أيوه كتير','Yes, a lot'),'اهم شي عندي البطاريه'],[T('عادي','Normal'),'اهم شي عندي السعر']];}
+    else if(tp==='price'){q=T('الميزانية مناسبة؟','Does it fit your budget?');c=[[T('مناسبة، ابدأ الطلب','Yes, order'),'اطلب'],[T('غالي','Too much'),'السعر غالي']];}
+    else{q=T('ليش بتسأل عن هالمواصفة؟ للألعاب ولا للتصوير ولا للشغل؟','Why this spec? Gaming, photos or work?');c=[[T('ألعاب','Gaming'),'اهم شي عندي الاداء'],[T('تصوير','Photos'),'اهم شي عندي التصوير'],[T('شغل','Work'),'اهم شي عندي البطاريه']];}
+    ask='need';return '<div class="pnfu" dir="auto" style="margin-top:6px;font-size:11.5px;color:#4a4170">'+esc(q)+'</div>'+qchips(c);}
   function reasons(first){ask='why';sayQ(T('سهل','Sahl'),[first?T('لاحظت إنك بتتصفح من شوي. شو اللي مخليك ما تطلب لهلأ؟ خبرني وبساعدك.','You have been browsing a while. What is holding you back? Tell me and I will help.'):T('لسا بتفكر؟ شو السبب؟ خبرني وبساعدك.','Still thinking? What is the reason? Tell me and I will help.')],[[T('السعر غالي','Too expensive'),'السعر غالي'],[T('محتار بين الموديلات','Cannot choose'),'محتار ساعدني اختار'],[T('بدي أقارن','Compare'),'بدي اقارن'],[T('خايف من الدفع','Worried about payment'),'مضمون؟'],[T('سبب ثاني','Other'),'سبب ثاني']],20000);}
   function soc(id,n){
     var k=curP(),nm=k?dn(k):'';
@@ -2169,7 +2198,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(id==='hello'){say(out('',[pick(['أهلاً وسهلاً! شو الجهاز اللي بتفكر فيه؟','هلا فيك! اسألني عن أي جهاز أو سعر.','يا هلا! أنا سهل، جاهز أساعدك.'])]),6000);ok_();return;}
     if(id==='how'){say(out('',[pick(['تمام الحمد لله، الله يسلمك! وانت كيفك؟ شو بقدر أساعدك؟','الحمد لله بخير! شو الجهاز اللي بتدور عليه؟'])]),7000);ok_();return;}
     if(id==='fine'){say(out('',['الحمد لله! شو بقدر أساعدك فيه اليوم؟']),6000);ok_();return;}
-    if(id==='thanks'){if(ctx.key&&!ord&&priceOf(ctx.key)){ask='order';sayQ('',[T('عفواً! بدك أبدأ لك طلب '+dn(ctx.key)+'؟','You are welcome! Shall I start an order for '+dn(ctx.key)+'?')],[[T('نعم، ابدأ','Yes, start'),'اطلب'],[T('لا شكراً','No thanks'),'لا شكرا']],9000);}else say(out('',[pick(['عفواً! أي خدمة ثانية؟','العفو، هذا واجبنا! بدك شي ثاني؟','أهلاً فيك، أنا هون إذا احتجت شي.'])]),6000);ok_();return;}
+    if(id==='thanks'){if(ctx.key&&!ord&&priceOf(ctx.key)&&sess.off!==ctx.key){sess.off=ctx.key;ask='order';sayQ('',[T('عفواً! بدك أبدأ لك طلب '+dn(ctx.key)+'؟','You are welcome! Shall I start an order for '+dn(ctx.key)+'?')],[[T('نعم، ابدأ','Yes, start'),'اطلب'],[T('لا شكراً','No thanks'),'لا شكرا']],9000);}else say(out('',[pick(['عفواً! أي خدمة ثانية؟','العفو، هذا واجبنا! بدك شي ثاني؟','أهلاً فيك، أنا هون إذا احتجت شي.'])]),6000);ok_();return;}
     if(id==='bye'){say(out('',['مع السلامة! نورتنا، وأنا هون إذا احتجت أي شي.']),6000);return;}
     if(id==='who'){say(out('',['أنا سهل، مساعد Pinnacle. بجاوبك عن أسعار ومواصفات الأجهزة، وبسجل طلبك بالصوت.']),9000);ok_();return;}
     if(id==='can'){say(out('',['اسألني عن سعر أو شاشة أو كاميرا أو بطارية أي جهاز، أو قارن بين جهازين، أو قلي "بدي اشتري" وبسجل طلبك.']),11000);ok_();return;}
@@ -2177,10 +2206,14 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(id==='no'){ask=null;say(out('',[pick(['ولا يهمك! وإذا احتجت شي أنا هون.','براحتك، ما في أي التزام.'])]),6000);return;}
     if(id==='lost'){discover();return;}
     if(id==='think'||id==='hesit'){reasons(false);return;}
+    if(id==='compet'){ask='order';sayQ(T('قارن براحتك','Compare freely'),[T('أجهزتنا من الوكيل الرسمي بالأردن، وبتفحص الجهاز بإيدك قبل ما تدفع، مع استبدال 3 أيام إذا العبوة مغلقة.','Our phones are from the official agent in Jordan; you check it before paying, with 3-day exchange if the box is sealed.'),T('قلّي أي جهاز شفته وبساعدك تقارنه معنا.','Tell me which phone you saw and I will help you compare.')],[[T('اختار لي جهاز','Help me choose'),'محتار ساعدني اختار'],[T('ابدأ الطلب','Start order'),'اطلب']],16000);return;}
+    if(id==='whyyou'){soc('trust',n);return;}
+    if(id==='aspect'){ask='aspect';sayQ(T('فهمت عليك','I get you'),[T('شو بالزبط اللي ما عجبك؟ قلّي وبلاقي لك البديل.','What exactly did you not like? Tell me and I will find the alternative.')],[[T('السعر','Price'),'اهم شي عندي السعر'],[T('الكاميرا','Camera'),'اهم شي عندي التصوير'],[T('البطارية','Battery'),'اهم شي عندي البطاريه'],[T('حجم الشاشة','Screen size'),'اهم شي عندي الشاشه'],[T('الألوان والشكل','Look & colors'),'شو الوان الجهاز']],16000);return;}
     if(id==='compare_h'){ask=null;sayQ(T('بقارن لك','Compare'),[T('قولي جهازين وبقارنهم، مثلاً: "قارن بين ايفون 17 برو ماكس واس 26 الترا".','Name two phones, e.g. "compare iPhone 17 Pro Max and S26 Ultra".')],null,12000);return;}
     if(id==='expensive'){var al=altsCheaper(k);ask='order';var l=[];
       if(k)l.push(T('فاهم عليك. ','I understand. ')+nm+': '+fmtP(k)+' '+T('دينار.','JOD.'));else l.push(T('فاهم عليك. هاي أوفر خيارات عندنا:','I understand. Our best-value options:'));
       al.forEach(function(x){l.push(dn(x)+': '+fmtP(x)+' '+T('دينار','JOD')+(specLine(x)?' · '+specLine(x):''));});
+      if(k&&al[0]){var df=diffLine(k,al[0]);if(df)l.push(df);}
       l.push(T('وما في دفع مسبق: بتستلم، بتفحص الجهاز، وبعدين بتدفع.','No upfront payment: you receive it, check it, then pay.'));
       sayQ(T('خيارات تناسبك','Options for you'),l,al.map(function(x){return [dn(x),'اطلب '+dn(x)];}).concat(k?[[T('كمل بهذا','Keep this one'),'اطلب']]:[]),18000);return;}
     if(id==='trust'){ask='order';var l2=[T('موقع آمن وأجهزتنا من الوكيل الرسمي في الأردن.','Safe site, and our phones come from the official agent in Jordan.'),T('الدفع عند الاستلام: بتفحص الجهاز بإيدك وبعدين بتدفع.','Cash on delivery: you check the phone in your hands, then pay.'),T('وفي استبدال خلال 3 أيام إذا العبوة مغلقة، ودعم 7 أيام.','Exchange within 3 days if the box is sealed, plus 7-day support.')];
@@ -2188,8 +2221,13 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(id==='discount'){ask='order';var l3=[T('الأسعار المعروضة هي سعرنا النهائي، وما عندي صلاحية أعطي خصم.','Listed prices are our final prices; I cannot offer a discount.'),T('بس بقدر أدلك على خيار أوفر بنفس الاستخدام، والدفع عند الاستلام بعد الفحص.','But I can point you to a cheaper option that fits your use, with cash on delivery after checking.')];
       sayQ(T('بخصوص السعر','About the price'),l3,[[T('أرني الأوفر','Show cheaper'),'السعر غالي'],[T('ابدأ الطلب','Start order'),'اطلب']],16000);return;}
   }
-  function onNeed(n){var m=n.match(/اهم شي عندي (.+)/);if(!m)return false;var w=m[1];
-    return adviceFor(/تصوير|كاميرا/.test(w)?'cam':/بطاريه/.test(w)?'bat':/سعر/.test(w)?'cheap':/شاشه/.test(w)?'screen':'game');}
+  function needOf(w){return /تصوير|كاميرا|سوشال|احترافي/.test(w)?'cam':/بطاريه|بره|كتير برا/.test(w)?'bat':/سعر|رخيص|اوفر/.test(w)?'cheap':/شاشه/.test(w)?'screen':'game';}
+  function onNeed(n){
+    var bm=n.match(/^ميزانيتي (?:لحد|حدود) (\d{3,4})$/),op=/^ميزانيتي مفتوحه$/.test(n);
+    if((bm||op)&&sess.need){sess.budget=op?0:Number(bm[1]);var nd=sess.need;return adviceFor(nd);}
+    var m=n.match(/اهم شي عندي (.+)/);if(!m)return false;var nd2=needOf(m[1]);sess.need=nd2;
+    if(nd2==='cheap'||sess.budget)return adviceFor(nd2);
+    ask='budget2';sayQ(T('تمام','Okay'),[T('وكم ميزانيتك تقريباً؟ هيك بختار لك الأنسب.','And roughly what is your budget? So I can pick the best fit.')],[[T('لحد 500','Up to 500'),'ميزانيتي لحد 500'],[T('لحد 800','Up to 800'),'ميزانيتي لحد 800'],[T('لحد 1100','Up to 1100'),'ميزانيتي لحد 1100'],[T('مفتوحة','Open'),'ميزانيتي مفتوحه']],14000);return true;}
   function process(t){
     var raw=light(t),n=nz(t);if(!n)return;
     n=n.replace(/(^| )(يا )?(سهل|سحل|صحل|sahl|sahel|sehl)( |$)/g,' ').replace(/(^| )(مرحبا|اهلا|هلا|هاي|hello|hey|hi)( |$)/g,' ').replace(/\s+/g,' ').trim();
@@ -2203,7 +2241,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       var asked=ord.ask,isQ=/(قديش|كم|بكم|شو|ايش|وش|what|how|هل)/.test(n)&&(tp||faq(n));
       if(!isQ){
         if(asked==='n'&&!ord.n){var nm=raw.replace(/^(اسمي|انا|my name is|i am)\s+/i,'').trim();if(nm.length>=3&&!/\d/.test(nm))ord.n=nm;}
-        if(asked==='p'&&!ord.p){var p2=normPhone(digitsOf(t));if(p2)ord.p=p2;else{say(out('',[T('ما فهمت الرقم، قله رقم بصيغة 07XXXXXXXX.','I did not get the number, say it as 07XXXXXXXX.')]));return;}}
+        if(asked==='p'&&!ord.p){var dgt=digitsAll(t),p2=normPhone(dgt);if(!p2){ord.pb=(ord.pb||'')+dgt;p2=normPhone(ord.pb)||normPhone(ord.pb.slice(-10))||normPhone(ord.pb.slice(-9));}if(p2){ord.p=p2;ord.pb='';}else{if(ord.pb.length>12)ord.pb='';say(out('',[ord.pb?T('سجلت '+ord.pb.length+' أرقام: '+ord.pb+'. كمّل باقي الرقم.','Got '+ord.pb.length+' digits: '+ord.pb+'. Say the rest.'):T('ما فهمت الرقم، قله رقم بصيغة 07XXXXXXXX.','I did not get the number, say it as 07XXXXXXXX.')]));return;}}
         if(asked==='a'&&!ord.a){var ad=raw.replace(/^(عنواني|العنوان|address)\s+/i,'').trim();if(ad.length>=8)ord.a=ad;else{say(out('',[T('العنوان قصير، اذكر المدينة والحي والشارع.','Address too short, say city, area and street.')]));return;}}
         askNext();return;}
       var pre=[];if(tp==='price')pre=[dn(ord.key)+': '+fmtP(ord.key)+' '+T('دينار','JOD')];else if(faq(n))pre=[faq(n)];
@@ -2214,7 +2252,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var sid=socOf(n0,fd,tp);if(sid){if(sid!=='yes'&&sid!=='no'&&sid!=='thanks')ask=(sid==='think'||sid==='hesit')?'why':ask;soc(sid,n0);return;}
     if(ask==='budget'&&/^\d{3,4}$/.test(n0)){ask=null;process(n0+' دينار');return;}
     if(/(ميزانيتي|ميزانيه|budget)/.test(n0)&&!/\d{3}/.test(n0)&&!keys.length){ask='budget';sayQ(T('خليني أساعدك','Let me help'),[T('كم ميزانيتك بالدينار تقريباً؟','Roughly what is your budget in JOD?')],[['400','400 دينار'],['600','600 دينار'],['800','800 دينار'],['1000','1000 دينار']],12000);return;}
-    if(/(بدي|ابغي|اريد|محتاج|ادور علي|دور لي علي).*(جهاز|موبايل|تلفون|هاتف).*(تصوير|كاميرا|بطاريه|العاب|رخيص|شاشه كبيره|اداء)/.test(n0)&&!keys.length){var nd=/تصوير|كاميرا/.test(n0)?'cam':/بطاريه/.test(n0)?'bat':/رخيص/.test(n0)?'cheap':/شاشه/.test(n0)?'screen':'game';if(adviceFor(nd))return;}
+    if(/(بدي|ابغي|اريد|محتاج|ادور علي|دور لي علي).*(جهاز|موبايل|تلفون|هاتف|اشي).*(تصوير|صور|كاميرا|بطاريه|العاب|رخيص|شاشه كبيره|اداء)/.test(n0)&&!keys.length){var nd=/تصوير|صور|كاميرا/.test(n0)?'cam':/بطاريه/.test(n0)?'bat':/رخيص/.test(n0)?'cheap':/شاشه/.test(n0)?'screen':'game';if(adviceFor(nd))return;}
     // ----- model-like words that did not resolve: ask, never guess -----
     if(!ord&&unresolved(fd)){pickDevice(t,famOf(fd.n),'');return;}
     // ----- unavailable device (e.g. iPhone 16) -----
@@ -2251,6 +2289,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     // ----- store info -----
     var f=(!keys.length&&!tp&&!fd.miss.length)?faq(n):null;if(f){say(out(T('سهل','Sahl'),[f]),9000);return;}
     // ----- lists, cheapest, budget -----
+    if(fd.miss.length&&!keys.length){pickDevice(t,fd.miss[0].fam,fd.miss[0].label);return;}
     var all=Object.keys(D()),pool=all;
     if(br>=0&&br<3)pool=all.filter(function(k){return brandOf(k)===br;});
     if(br===-2&&!keys.length){say(out('',[T('هذي الماركة قريباً. المتوفر الآن: آيفون، سامسونج، أوبو.','That brand is coming soon. Available now: iPhone, Samsung, OPPO.')]),6000);return;}
@@ -2263,6 +2302,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       var ls=pool.map(function(k){return dn(k)+': '+fmtP(k);});say(out(br>=0&&br<3?BRN[br]:T('الأجهزة المتوفرة','Available phones'),ls),12000);return;}
     // ----- device missing from the store -----
     if(fd.miss.length&&!keys.length){pickDevice(t,fd.miss[0].fam,fd.miss[0].label);return;}
+    if(!keys.length&&br>=0&&br<3&&tp&&pool.length>1){var bl=[];pool.forEach(function(k){var rs=rowsFor(k,tp,n);if(rs.length)bl.push(dn(k)+': '+rs.map(function(r){return rs.length>1?r[0]+' '+r[1]:r[1];}).join(' · '));});if(bl.length){say(out(BRN[br],bl),14000);ok_();return;}}
     // ----- specs for one or several devices -----
     var use=keys.length?keys:[(curKey()||ctx.key)].filter(Boolean);
     if(!use.length){
@@ -2284,7 +2324,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       var sz2=rowsFor(k1,'screen',n)[0],cp=rowsFor(k1,'cpu',n)[0],bt2=rowsFor(k1,'battery',n)[0];[sz2,cp,bt2].forEach(function(r){if(r)rs2.push(r);});}
     if(!rs2.length){say(out(head,[T('ما لقيت هالمعلومة. جرّب: الشاشة، الكاميرا، البطارية، الشحن، السعر.','Not found. Try: screen, camera, battery, charging, price.')]),7000);return;}
     lines=rs2.map(function(r){return rs2.length===1&&r[0]!==T('السعر','Price')&&tp&&ROW[tp]?r[1]:r[0]+': '+r[1];});
-    say(out(head,lines),10000);ok_();}
+    say(out(head,lines)+fuHtml(tp,k1),tp?16000:10000);ok_();}
   function ok_(){setState('happy');setTimeout(done,1400);}
   function showHearing(t){say(out(T('أسمعك…','Listening…'),[t]));}
   function respond(txt){process(txt);}
@@ -2455,8 +2495,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(ord)everOrd=true;
     if(!quiet())return;
     var now=Date.now(),idle=now-lastAct,site=now-SITE0;
+    // 0) proactive opener: guide the visitor like a salesman
+    if(!usedBot&&!sget('pnbo')&&site>25000&&!everOrd){sset('pnbo',1);lastNudge=now;discover(true);return;}
     // 1) why didn't you buy
-    if(!everOrd&&site>100000&&idle>12000&&dwell<2&&now-lastDwell>200000&&now-lastNudge>12000){dwell++;sset('pnbd',dwell);lastDwell=now;lastNudge=now;reasons(dwell===1);return;}
+    if(!everOrd&&site>70000&&idle>12000&&dwell<2&&now-lastDwell>200000&&now-lastNudge>12000){dwell++;sset('pnbd',dwell);lastDwell=now;lastNudge=now;reasons(dwell===1);return;}
     // 2) page dwell on a phone page
     var ck=curKey();
     if(ck&&!everOrd&&now-pgT>50000&&idle>10000&&pgKey!==ck){pgKey=ck;ctx.key=ck;ask='order';lastNudge=now;sayQ(dn(ck),[T('عجبك الجهاز؟ بدك أبدأ لك الطلب؟ الدفع عند الاستلام بعد الفحص.','Like it? Shall I start your order? Pay on delivery after checking.')],[[T('ابدأ الطلب','Start order'),'اطلب'],[T('السعر غالي','Too expensive'),'السعر غالي'],[T('شوف غيره','See others'),'محتار ساعدني اختار']],16000);return;}
