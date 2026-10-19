@@ -2355,6 +2355,14 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     // ----- social / sales -----
     var n0=n||nz(t);act2();
     if(onNeed(n0))return;
+    if(/(وكيل|وكلاء|موزع|وكاله)/.test(n0)&&(br>=0||br===-2||/(مين|من هو|من هي|اسم|شو|ايش|وش|اعرف|who)/.test(n0))&&!/(اشتري|اطلب)/.test(n0)){
+      var AG={0:[T('آيفون','iPhone'),T('من الجهات المعتمدة لبيع منتجات آبل في الأردن: Cell Bay (Apple Authorized Reseller). ولا أملك اسم الموزّع الرسمي المعلن لدى آبل.','An Apple Authorized Reseller in Jordan: Cell Bay. I do not have the name of Apple\'s announced distributor.')],
+        1:[T('سامسونج','Samsung'),T('وكيل سامسونج الرسمي في الأردن هو شركة BMS، وهي الشريك الرسمي لسامسونج في الأردن.','Samsung\'s official partner in Jordan is BMS.')],
+        2:[T('أوبو','OPPO'),T('لدى أوبو مكتب خاص بها في عمّان للمبيعات والتسويق وخدمة ما بعد البيع. ولا أملك اسم موزّع محدد معلن.','OPPO has its own office in Amman for sales, marketing and after-sales service. I do not have a named distributor.')]};
+      var bi2=br>=0?br:(br===-2?-2:(keys.length?brandOf(keys[0]):(curKey()?brandOf(curKey()):-1)));
+      if(bi2===-2){say(out('',[T('هذه العلامة ستتوفر قريباً، ولا أملك اسم وكيلها المؤكد حالياً.','This brand is coming soon; I do not have its confirmed agent yet.')]),7000);return;}
+      if(AG[bi2]){ask='order';sayQ(AG[bi2][0],[AG[bi2][1]],[[T('ابدأ الطلب','Start order'),'اطلب'],[T('اختر لي جهازاً','Help me choose'),'محتار ساعدني اختار']],14000);return;}
+      sayQ(T('الوكلاء','Agents'),[AG[1][0]+': '+AG[1][1],AG[0][0]+': '+AG[0][1],AG[2][0]+': '+AG[2][1]],null,22000);return;}
     var bcap=n0.match(/(?:ما|مش|لا) (?:بدي|ابغي|اريد|ابي|بزيد|ازيد|اتعدي|اتخطي|بتعدي|بتخطي)[^0-9]{0,18}?(?:اغلي|اكتر|اكثر|فوق|عن|من|علي)[^0-9]{0,8}(\d{3,4})/)||n0.match(/(?:معي|عندي|ميزانيتي|ميزانيه|رصيدي|حدودي|مصاري|مبلغ)[^0-9]{0,14}(\d{3,4})/);
     if(bcap&&!keys.length){sess.budget=Number(bcap[1]);ask='order';if(adviceFor(sess.need||'best'))return;}
     var sid=socOf(n0,fd,tp);if(sid){if(sid!=='yes'&&sid!=='no'&&sid!=='thanks')ask=(sid==='think'||sid==='hesit')?'why':ask;soc(sid,n0);return;}
@@ -2614,7 +2622,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function askMic(){var asked=false;try{asked=sessionStorage.getItem('pnask')==='1';}catch(_){}
     if(always||userOff||document.body.classList.contains('pnoff')||document.body.classList.contains('lock'))return;
     try{sessionStorage.setItem('pnask','1');}catch(_){}
-    sayQ(T('أهلاً بك، أنا سهل','Hi, I am Sahl'),[T('هل تودّ تفعيل الميكروفون لتتحدث معي وأجيبك بالصوت؟','Would you like to enable the microphone so we can talk?')],[[T('نعم، فعّل الميكروفون','Yes, enable the mic'),'__micyes'],[T('لا، شكراً','No thanks'),'__micno']],30000);}
+    sayQ(T('أهلاً بك، أنا سهل','Hi, I am Sahl'),[T('هل ترغب بتفعيل الميكروفون للدردشة؟','Would you like to enable the microphone to chat?')],[[T('نعم، فعّل الميكروفون','Yes, enable the mic'),'__micyes'],[T('لا، شكراً','No thanks'),'__micno']],30000);}
   (function(){var wi=setInterval(function(){if(!document.body.classList.contains('lock')){clearInterval(wi);setTimeout(function(){if(!always)askMic();},1500);}},400);})();
   // ===== close button: the customer can remove Sahl from the screen =====
   try{localStorage.removeItem('pnoff');if(/[?&]sahl=1/.test(location.search))sessionStorage.removeItem('pnoff');if(sessionStorage.getItem('pnoff')==='1'){document.body.classList.add('pnoff');userOff=true;}}catch(e){}
