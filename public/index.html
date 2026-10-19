@@ -1910,12 +1910,16 @@ if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='ht
 .pnbot{position:fixed;left:0;top:0;z-index:95;width:92px;height:97px;padding:0;border:0;background:none;cursor:grab;-webkit-tap-highlight-color:transparent;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;will-change:transform}
 body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbot svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 8px 10px rgba(40,30,120,.28))}
-.pnbot .bw{animation:btBob 3.2s ease-in-out infinite;transform-origin:100px 214px}
-.pnbot .eyes{transform-origin:100px 108px;animation:btBlink 4.6s infinite}
+.pnbot .bw{animation:btBob 3.2s ease-in-out infinite;transform-origin:100px 228px}
+.pnbot .eyes{transform-origin:100px 96px;animation:btBlink 4.6s infinite}
 .pnbot .arm{transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
-.pnbot .al{transform-origin:45px 120px}.pnbot .ar{transform-origin:155px 120px}
+.pnbot .al{transform-origin:68px 162px}.pnbot .ar{transform-origin:132px 162px}
+.pnbot .dot{transform-box:fill-box;transform-origin:50% 100%;animation:btDot 1.15s cubic-bezier(.3,.1,.4,1) infinite}
+.pnbot .dsh{transform-box:fill-box;transform-origin:50% 50%;animation:btDsh 1.15s cubic-bezier(.3,.1,.4,1) infinite}
+.pnbot.happy .dot,.pnbot.happy .dsh{animation-duration:.55s}
+.pnbot.listen .dot{animation-duration:.8s}
 .pnbot.always.rest::after{opacity:.45}
-.pnbot.always::after{content:'';position:absolute;top:8px;right:10px;width:10px;height:10px;border-radius:50%;background:#34c759;box-shadow:0 0 0 3px rgba(52,199,89,.28);animation:btWave 1.6s ease-in-out infinite}
+.pnbot.always::after{content:'';position:absolute;top:30px;right:2px;width:10px;height:10px;border-radius:50%;background:#34c759;box-shadow:0 0 0 3px rgba(52,199,89,.28);animation:btWave 1.6s ease-in-out infinite}
 .pnbot .m{display:none}.pnbot .m.sm{display:block}
 .pnbot .fx{display:none}
 .pnbot.listen .m.sm,.pnbot.happy .m.sm{display:none}.pnbot.listen .m.o{display:block}.pnbot.happy .m.bg{display:block}
@@ -1929,6 +1933,8 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbot.happy .bw{animation:btHop .7s cubic-bezier(.3,.7,.4,1) 2}
 .pnbot.wave .ar{animation:btWaveArm .5s ease-in-out 3;transform:rotate(-150deg)}
 .pnbot .legs{transform-origin:100px 170px}
+@keyframes btDot{0%,100%{transform:translateY(0) scale(1.14,.86)}12%{transform:translateY(0) scale(1,1)}50%{transform:translateY(-15px) scale(.94,1.06)}88%{transform:translateY(0) scale(1,1)}}
+@keyframes btDsh{0%,100%{transform:scale(1.1);opacity:.2}50%{transform:scale(.6);opacity:.08}}
 @keyframes btBob{50%{transform:translateY(-4px)}}
 @keyframes btBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 @keyframes btWave{0%,100%{opacity:.35}50%{opacity:1}}
@@ -1943,23 +1949,32 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){.pnbot *{animation:none!important}}
 </style>
 <button type="button" class="pnbot" id="pnbot" aria-label="سهل"><svg viewBox="-14 0 228 240" aria-hidden="true">
-<defs><radialGradient id="pbb" cx="36%" cy="28%" r="80%"><stop offset="0" stop-color="#5a5a66"/><stop offset=".35" stop-color="#2c2c34"/><stop offset="1" stop-color="#0c0c10"/></radialGradient>
-<radialGradient id="pbr" cx="78%" cy="86%" r="50%"><stop offset="0" stop-color="#7a6cff" stop-opacity=".55"/><stop offset="1" stop-color="#7a6cff" stop-opacity="0"/></radialGradient>
-<radialGradient id="pbr2" cx="22%" cy="88%" r="45%"><stop offset="0" stop-color="#34d3c0" stop-opacity=".45"/><stop offset="1" stop-color="#34d3c0" stop-opacity="0"/></radialGradient></defs>
+<defs>
+<linearGradient id="rbH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4a58"/><stop offset=".45" stop-color="#25252d"/><stop offset="1" stop-color="#0e0e13"/></linearGradient>
+<radialGradient id="rbD" cx="36%" cy="28%" r="80%"><stop offset="0" stop-color="#6a6a78"/><stop offset=".35" stop-color="#2c2c34"/><stop offset="1" stop-color="#0c0c10"/></radialGradient>
+<radialGradient id="rbV" cx="82%" cy="90%" r="55%"><stop offset="0" stop-color="#7a6cff" stop-opacity=".6"/><stop offset="1" stop-color="#7a6cff" stop-opacity="0"/></radialGradient>
+<radialGradient id="rbT" cx="18%" cy="92%" r="50%"><stop offset="0" stop-color="#34d3c0" stop-opacity=".5"/><stop offset="1" stop-color="#34d3c0" stop-opacity="0"/></radialGradient>
+</defs>
 <g class="bw">
-<g class="legs"><path d="M78 166L77 188" stroke="#2a2a30" stroke-width="8" stroke-linecap="round"/><path d="M122 166L123 188" stroke="#2a2a30" stroke-width="8" stroke-linecap="round"/>
-<ellipse cx="74" cy="196" rx="15" ry="8.5" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/><ellipse cx="126" cy="196" rx="15" ry="8.5" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
-<g class="arm al"><path d="M45 120Q36 132 34 142" stroke="#2a2a30" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="34" cy="142" r="11" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
-<g class="arm ar"><path d="M155 120Q164 132 166 142" stroke="#2a2a30" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="166" cy="142" r="11" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
-<circle cx="100" cy="110" r="62" fill="url(#pbb)"/><circle cx="100" cy="110" r="62" fill="url(#pbr)"/><circle cx="100" cy="110" r="62" fill="url(#pbr2)"/>
-<ellipse cx="74" cy="64" rx="22" ry="11" fill="#fff" opacity=".28" transform="rotate(-28 74 64)"/>
-<g class="eyes"><ellipse cx="80" cy="108" rx="13" ry="16" fill="#fff"/><ellipse cx="120" cy="108" rx="13" ry="16" fill="#fff"/><circle cx="80" cy="110" r="7.5" fill="#15151a"/><circle cx="120" cy="110" r="7.5" fill="#15151a"/><circle cx="83" cy="106" r="2.6" fill="#fff"/><circle cx="123" cy="106" r="2.6" fill="#fff"/></g>
-<g class="m sm"><path d="M86 134Q100 148 114 134" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/></g>
-<g class="m o"><ellipse cx="100" cy="138" rx="7" ry="8" fill="#fff"/></g>
-<g class="m bg"><path d="M82 129Q100 160 118 129Z" fill="#fff"/><path d="M90 141Q100 151 110 141Q100 146 90 141Z" fill="#ff8aa8"/></g>
+<g class="legs"><path d="M86 192L85 212" stroke="#2a2a30" stroke-width="8" stroke-linecap="round"/><path d="M114 192L115 212" stroke="#2a2a30" stroke-width="8" stroke-linecap="round"/>
+<ellipse cx="82" cy="219" rx="14" ry="7.5" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/><ellipse cx="118" cy="219" rx="14" ry="7.5" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
+<g class="arm al"><path d="M68 162Q55 174 52 188" stroke="#2a2a30" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="52" cy="190" r="10" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
+<g class="arm ar"><path d="M132 162Q145 174 148 188" stroke="#2a2a30" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="148" cy="190" r="10" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/></g>
+<rect x="68" y="146" width="64" height="52" rx="20" fill="url(#rbH)"/><rect x="68" y="146" width="64" height="52" rx="20" fill="url(#rbV)"/><rect x="68" y="146" width="64" height="52" rx="20" fill="url(#rbT)"/>
+<circle cx="100" cy="172" r="7" fill="#f4f4f7" opacity=".9"/><circle cx="100" cy="172" r="3" fill="#7a6cff"/>
+<rect x="91" y="138" width="18" height="12" rx="4" fill="#1b1b21"/>
+<ellipse cx="38" cy="98" rx="8" ry="14" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/><ellipse cx="162" cy="98" rx="8" ry="14" fill="#f4f4f7" stroke="#d6d6dc" stroke-width="1.5"/>
+<rect x="42" y="52" width="116" height="92" rx="34" fill="url(#rbD)"/><rect x="42" y="52" width="116" height="92" rx="34" fill="url(#rbV)"/><rect x="42" y="52" width="116" height="92" rx="34" fill="url(#rbT)"/>
+<ellipse cx="72" cy="62" rx="22" ry="8" fill="#fff" opacity=".26" transform="rotate(-14 72 62)"/>
+<g class="eyes"><ellipse cx="78" cy="96" rx="12" ry="15" fill="#fff"/><ellipse cx="122" cy="96" rx="12" ry="15" fill="#fff"/><circle cx="78" cy="98" r="7" fill="#15151a"/><circle cx="122" cy="98" r="7" fill="#15151a"/><circle cx="81" cy="94" r="2.5" fill="#fff"/><circle cx="125" cy="94" r="2.5" fill="#fff"/></g>
+<g class="m sm"><path d="M88 123Q100 134 112 123" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/></g>
+<g class="m o"><ellipse cx="100" cy="127" rx="6.5" ry="7.5" fill="#fff"/></g>
+<g class="m bg"><path d="M84 119Q100 148 116 119Z" fill="#fff"/><path d="M91 131Q100 140 109 131Q100 136 91 131Z" fill="#ff8aa8"/></g>
+<ellipse class="dsh" cx="100" cy="50" rx="13" ry="3.4" fill="#000" opacity=".14"/>
+<g class="dot"><circle cx="100" cy="24" r="10" fill="url(#rbD)"/><circle cx="100" cy="24" r="10" fill="url(#rbV)"/><ellipse cx="96.5" cy="20" rx="3.6" ry="2.2" fill="#fff" opacity=".45"/></g>
 </g>
-<g class="fx wv" fill="none" stroke-linecap="round" stroke-width="5"><path d="M-6 70Q-14 92 -6 114" stroke="#7a6cff"/><path d="M-14 56Q-30 92 -14 128" stroke="#34d3c0"/><path d="M206 70Q214 92 206 114" stroke="#7a6cff"/><path d="M214 56Q230 92 214 128" stroke="#34d3c0"/></g>
-<g class="fx st"><path d="M24 40l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill="#7a6cff"/><path d="M176 30l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#34d3c0"/></g>
+<g class="fx wv" fill="none" stroke-linecap="round" stroke-width="5"><path d="M-6 76Q-14 98 -6 120" stroke="#7a6cff"/><path d="M-14 62Q-30 98 -14 134" stroke="#34d3c0"/><path d="M206 76Q214 98 206 120" stroke="#7a6cff"/><path d="M214 62Q230 98 214 134" stroke="#34d3c0"/></g>
+<g class="fx st"><path d="M20 44l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill="#7a6cff"/><path d="M178 34l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#34d3c0"/></g>
 </svg></button>
 <div class="pnbub" id="pnbub" role="status" aria-live="polite"></div>
 <script id="pnbot-js">
@@ -2051,6 +2066,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       T0.forEach(function(w){if(ln.indexOf(w)>-1)sc+=3;if(sn.indexOf(w)>-1)sc+=1.5;if(vn.indexOf(w)>-1)sc+=1;});
       if(sc>=3)best.push([sc,[tx(r[0]),tx(r[1])]]);});});
     best.sort(function(a,b){return b[0]-a[0];});return best.slice(0,4).map(function(x){return x[1];});}
+  function searchAll(n){var o=[];Object.keys(D()).forEach(function(k){var r=searchRows(k,n)[0];if(r)o.push(dn(k)+': '+r[0]+' '+r[1]);});return o.slice(0,8);}
   // --- store info ---
   var FAQ=[
    [/(توصيل|يوصل|توصلو|توصلون|delivery|deliver|شحن الطلب|وقت التوصيل)/,'توصيل لباب البيت لجميع مناطق الأردن.','Door delivery to all areas in Jordan.'],
@@ -2172,8 +2188,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     // ----- specs for one or several devices -----
     var use=keys.length?keys:[(curKey()||ctx.key)].filter(Boolean);
     if(!use.length){
-      if(tp||toks(n).length){say(out('',[T('عن أي جهاز؟ اذكر اسمه أو افتح صفحته.','Which phone? Say its name or open its page.')]),5000);return;}
-      return;}
+      if(tp){var ln=[];all.forEach(function(k){var rs=rowsFor(k,tp,n);if(rs.length)ln.push(dn(k)+': '+rs.map(function(r){return rs.length>1?r[0]+' '+r[1]:r[1];}).join(' · '));});
+        if(ln.length){say(out(T('كل الأجهزة','All phones'),ln),14000);ok_();return;}}
+      var hs=searchAll(n);if(hs.length){say(out(T('كل الأجهزة','All phones'),hs),12000);ok_();return;}
+      say(out('',[T('ما فهمت قصدك. اسألني عن سعر أو شاشة أو كاميرا أو بطارية أو شحن، أو اذكر اسم الجهاز.','I did not get that. Ask about price, screen, camera, battery, charging, or name a phone.')]),6000);return;}
     ctx.key=use[use.length-1];
     var lines=[],head='';
     if(use.length>1){ // comparison
@@ -2195,7 +2213,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   // ================= Ear: keeps listening all session, restarts itself =================
   var always=false,recOn=false,pend=false,restartT=null,startedAt=0,fast=0,intT=null,lastInterim='',handledN='',handledAt=0,calmT=null;
   function commit(t){var n=nz(t);if(!n)return;var now=Date.now();
-    if(handledN&&now-handledAt<3500&&(n===handledN||n.indexOf(handledN)===0||handledN.indexOf(n)===0))return;
+    if(handledN&&now-handledAt<1800&&(n===handledN||n.indexOf(handledN)===0||handledN.indexOf(n)===0))return;
     handledN=n;handledAt=now;lastInterim='';clearTimeout(calmT);if(state==='listen')setState('idle');process(t);}
   function runRec(){
     if(!always||recOn)return;pend=false;clearTimeout(restartT);
@@ -2218,7 +2236,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   setInterval(function(){if(always&&!recOn&&!pend)runRec();},2000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&always){try{rec&&rec.abort();}catch(e){}recOn=false;pend=false;runRec();}});
   // ================= Server engine: reliable mic (VAD → WAV) + Whisper + LLM, with local fallback =================
-  var engine='server',srvFail=0,busy=false,hist=[],wake=null;
+  var engine='server',srvFail=0,busy=false,busyAt=0,hist=[],wake=null;
   var mic={stream:null,ctx:null,src:null,node:null};
   function allKeys(){return Object.keys(D());}
   function knowledge(t){
@@ -2286,9 +2304,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       if(vad.silent>950||Date.now()-vad.t0>13000){var b=vad.buf,v=vad.voiced;vad.sp=false;vad.buf=[];vad.pre=[];vad.hot=0;
         if(v<380){if(state==='listen')setState('idle');bub.classList.remove('on');return;}
         sendAudio(wav16(b,sr));}}}
+  function tmo(ms){if(!window.AbortController)return undefined;var c=new AbortController();setTimeout(function(){try{c.abort();}catch(e){}},ms);return c.signal;}
   function sendAudio(blob){
-    busy=true;say(out(T('أفكر…','Thinking…'),['…']));
-    fetch('/api/voice?lang='+(EN()?'en':'ar'),{method:'POST',headers:{'content-type':'audio/wav'},body:blob})
+    busy=true;busyAt=Date.now();say(out(T('أفكر…','Thinking…'),['…']));
+    fetch('/api/voice?lang='+(EN()?'en':'ar'),{method:'POST',headers:{'content-type':'audio/wav'},body:blob,signal:tmo(14000)})
     .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
     .then(function(j){srvFail=0;var t=String(j.text||'').trim();
       if(t.length<2){busy=false;setState('idle');say(out('',[T('ما سمعت شي واضح، جرّب مرة ثانية.','I did not catch that, try again.')]),2500);return;}
@@ -2308,7 +2327,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     try{mic.stream&&mic.stream.getTracks().forEach(function(t){t.stop();});}catch(e){}try{mic.ctx&&mic.ctx.close();}catch(e){}
     mic={stream:null,ctx:null,src:null,node:null};vad.sp=false;vad.buf=[];vad.pre=[];try{wake&&wake.release();}catch(e){}wake=null;}
   function fallbackLocal(){engine='local';stopMic();if(always){say(out(T('سهل','Sahl'),[T('انتقلت للوضع الاحتياطي للصوت.','Switched to backup voice mode.')]),3500);runRec();}}
-  setInterval(function(){if(!always||engine!=='server')return;var tr=mic.stream&&mic.stream.getAudioTracks()[0];
+  setInterval(function(){if(busy&&Date.now()-busyAt>25000)busy=false;if(!always||engine!=='server')return;var tr=mic.stream&&mic.stream.getAudioTracks()[0];
     if(!tr||tr.readyState!=='live'){stopMic();startMic().catch(function(){});return;}
     if(mic.ctx&&mic.ctx.state!=='running'&&!document.hidden)mic.ctx.resume();
     if(!wake&&navigator.wakeLock&&!document.hidden){try{navigator.wakeLock.request('screen').then(function(w){wake=w;w.addEventListener&&w.addEventListener('release',function(){wake=null;});}).catch(function(){});}catch(e){}}},2000);
@@ -2317,10 +2336,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(always){always=false;clearTimeout(restartT);try{rec&&rec.abort();}catch(e){}recOn=false;stopMic();bot.classList.remove('always','rest');setState('idle');say(T('أوقفت الاستماع.','Listening is off.'),2000);return;}
     always=true;fast=0;bot.classList.add('always');
     say(out(T('أنا سهل','I am Sahl'),[T('أسمعك طول الجلسة. اسألني عن أي شي بالموقع، أو قل «بدي ايفون…» لأجهّز طلبك. اضغط عليّ لإيقافي.','I listen all session. Ask me anything about the store, or say “I want an iPhone…” to order. Tap me to stop.')]),8000);
-    function local(){engine='local';if(!SR){always=false;bot.classList.remove('always');say(T('هذا المتصفح لا يدعم الصوت. جرّب كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}runRec();}
+    function local(){engine='local';say(out(T('سهل','Sahl'),[T('أسمعك طول الجلسة (وضع احتياطي). اسألني عن أي جهاز.','Listening all session (backup mode). Ask about any phone.')]),6000);if(!SR){always=false;bot.classList.remove('always');say(T('هذا المتصفح لا يدعم الصوت. جرّب كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}runRec();}
     if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)||!(window.AudioContext||window.webkitAudioContext)){local();return;}
     fetch('/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:'{"text":""}'}).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(function(){
-      engine='server';srvFail=0;
+      engine='server';srvFail=0;say(out(T('سهل','Sahl'),[T('أسمعك طول الجلسة (متصل بالسيرفر الذكي). اسألني عن أي شي، أو قل «بدي ايفون…» لأجهّز طلبك.','Listening all session (smart server connected). Ask me anything, or say “I want an iPhone…” to order.')]),7000);
       return startMic().then(function(){bot.classList.add('rest');setTimeout(function(){bot.classList.remove('rest');},50);},function(e){
         if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError')){always=false;bot.classList.remove('always');say(T('اسمح للميكروفون من إعدادات المتصفح ثم اضغط عليّ.','Allow the microphone in browser settings, then tap me.'),5000);}
         else local();});

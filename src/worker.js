@@ -35,6 +35,7 @@ Rules:
   "back" / "home" / "language" = navigation.
 - If the customer wants a phone that is not in KEYS (for example an iPhone 16), set action "none", and say it is not available and mention the closest available ones.
 - If the customer compares phones or asks which is best/cheapest/biggest, answer using DATA and name the phone.
+- Never ask which phone the customer means unless truly impossible: if no phone is named, use STATE.current, then STATE.last; if both are empty, answer for the relevant phones from DATA (briefly, a few names), or for all phones.
 - Output JSON only.`;
 
 const SCHEMA = {
