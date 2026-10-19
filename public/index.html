@@ -1927,6 +1927,8 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbub.on{opacity:1;transform:none}
 .pnbub{max-width:min(250px,calc(100vw - 28px))!important;max-height:46vh;overflow:auto;padding:7px 11px!important;font-size:12px!important;line-height:1.55!important;border-radius:14px!important}
 .pnbub .pnans{display:block;font-weight:600}
+.pnbub .pnch{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.pnbub .pnch button{pointer-events:auto;border:1.5px solid #d9d4ff;background:#f4f2ff;color:#1b1440;border-radius:999px;padding:4px 10px;font:600 11.5px/1.3 var(--font-body,Arial);cursor:pointer}
 .pnbub small{display:block;font:500 11px var(--font-body,Arial);color:#6e6e73;margin-bottom:2px}
 @media (prefers-reduced-motion:reduce){.pnbot *{animation:none!important}}
 </style>
@@ -1957,20 +1959,43 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   var BRN=['Apple','Samsung','OPPO'];
   function curKey(){var h=location.hash;if(h.indexOf('#/d/')===0){var k=decodeURIComponent(h.slice(4));if(D()[k])return k;}return null;}
   var lastKey=null;
-  // --- find devices mentioned (several allowed) ---
+  // --- Arabic number words (10-30) -> digits ---
+  var NU={'واحد':1,'وحده':1,'احد':1,'اثنين':2,'اثنان':2,'اثنتين':2,'ثنين':2,'اثن':2,'ثلاثه':3,'ثلاث':3,'تلاته':3,'تلات':3,'ثلات':3,'اربعه':4,'اربع':4,'خمسه':5,'خمس':5,'سته':6,'ست':6,'سبعه':7,'سبع':7,'ثمانيه':8,'ثمان':8,'تمانيه':8,'تمان':8,'تمن':8,'ثمن':8,'تسعه':9,'تسع':9};
+  var NUK=Object.keys(NU).sort(function(a,b){return b.length-a.length;}).join('|');
+  function numw(n){
+    n=n.replace(new RegExp('(^| )('+NUK+') ?و ?عشرين(?= |$)','g'),function(m,a,u){return a+(20+NU[u]);});
+    n=n.replace(new RegExp('(^| )('+NUK+') ?و ?ثلاثين(?= |$)','g'),function(m,a,u){return a+(30+NU[u]);});
+    n=n.replace(new RegExp('(^| )('+NUK+')(?:طعش|تعش|طاشر|تاشر|اشر|عشر|عشره)(?= |$)','g'),function(m,a,u){return a+(10+NU[u]);});
+    n=n.replace(/(^| )(?:احد ?عش|احداعش|احد ?عشر)(?= |$)/g,'$111').replace(/(^| )(?:اثنا ?عشر|اثنعش|اطنعش)(?= |$)/g,'$112');
+    n=n.replace(/(^| )عشرين(?= |$)/g,'$120').replace(/(^| )ثلاثين(?= |$)/g,'$130').replace(/(^| )عشره(?= |$)/g,'$110');
+    return n;}
+  // --- find devices mentioned (several allowed); tolerant of how speech recognition writes names ---
   function findDevices(t){
-    var n=nz(t),keys=[],miss=[],m,re;
-    function add(k,label){if(D()[k]){if(keys.indexOf(k)<0)keys.push(k);}else if(miss.indexOf(label)<0)miss.push(label);}
+    var n=numw(nz(t)),keys=[],miss=[],m,re,AL='(?:و|ب|ل|ف)?(?:ال)?';
+    function add(k,fam,label){if(D()[k]){if(keys.indexOf(k)<0)keys.push(k);}else if(!miss.some(function(x){return x.label===label;}))miss.push({label:label,fam:fam});}
     function variant(s){s=s||'';return /(ماكس|max)/.test(s)?' Pro Max':/(برو|pro)/.test(s)?' Pro':'';}
-    re=/(?:ايفون|ايفن|iphone|اي فون)\s*(1[0-9]|2[0-9])\s*(برو ?ماكس|pro ?max|برو|pro|ماكس|max|بلس|plus|اير|air|e)?/g;
-    while((m=re.exec(n)))add('iPhone '+m[1]+variant(m[2]),'iPhone '+m[1]+(m[2]?' '+m[2]:''));
-    re=/(?:^| )(1[5-9]|2[0-9]) ?(برو ?ماكس|pro ?max|برو|pro|ماكس|max)(?= |$)/g;
-    while((m=re.exec(n)))add('iPhone '+m[1]+variant(m[2]),'iPhone '+m[1]+' '+m[2]);
-    re=/(?:^| )(?:s|اس|سامسونج|samsung|جالكسي|جلاكسي|galaxy|galaxy s)\s*(2[0-9])(?: ?(الترا|ultra|بلس|plus))?/g;
-    while((m=re.exec(n)))add('Galaxy S'+m[1]+' Ultra','Galaxy S'+m[1]);
-    re=/(?:رينو|reno|اوبو رينو|oppo reno)\s*(1[0-9])\s*(برو|pro|اف|f)?(?= |$)/g;
-    while((m=re.exec(n)))add('Reno'+m[1]+(/(برو|pro)/.test(m[2]||'')?' Pro':/^(اف|f)$/.test(m[2]||'')?' F':''),'Reno '+m[1]);
-    return {keys:keys,miss:miss};}
+    var VAR='(برو ?ماكس|pro ?max|برو|pro|ماكس|max|بلس|plus|اير|air|e)?';
+    re=new RegExp('(?:^| )'+AL+'(?:ايفون|ايفن|ايفونن|iphone|اي فون|ايفو)\\s*(1[0-9]|2[0-9])\\s*'+VAR,'g');
+    while((m=re.exec(n)))add('iPhone '+m[1]+variant(m[2]),0,'iPhone '+m[1]+(m[2]?' '+m[2]:''));
+    re=new RegExp('(?:^| )'+AL+'(1[5-9]|2[0-9]) ?(برو ?ماكس|pro ?max|برو|pro|ماكس|max)(?= |$)','g');
+    while((m=re.exec(n)))add('iPhone '+m[1]+variant(m[2]),0,'iPhone '+m[1]+' '+m[2]);
+    re=new RegExp('(?:^| )(?:'+AL+'(?:s|اس|ايس|es|اس اس)|سامسونج|سامسونغ|samsung|جالكسي|جلاكسي|galaxy|galaxy s)\\s*-?\\s*(2[0-9])(?:\\s*(الترا|ultra|التر|اولترا|ولترا|بلس|plus))?(?= |$)','g');
+    while((m=re.exec(n)))add(/(بلس|plus)/.test(m[2]||'')?'-':'Galaxy S'+m[1]+' Ultra',1,'Galaxy S'+m[1]+(/(بلس|plus)/.test(m[2]||'')?' Plus':' Ultra'));
+    re=new RegExp('(?:^| )'+AL+'(?:ultra|الترا|التر|اولترا|ولترا) ?(?:s|اس|ايس)? ?(2[0-9])(?= |$)','g');
+    while((m=re.exec(n)))add('Galaxy S'+m[1]+' Ultra',1,'Galaxy S'+m[1]+' Ultra');
+    re=new RegExp('(?:^| )'+AL+'(?:رينو|reno|رنو)\\s*(1[0-9])\\s*(برو|pro|اف|f)?(?= |$)','g');
+    while((m=re.exec(n)))add('Reno'+m[1]+(/(برو|pro)/.test(m[2]||'')?' Pro':/^(اف|f)$/.test(m[2]||'')?' F':''),2,'Reno '+m[1]);
+    return {keys:keys,miss:miss,n:n};}
+  // a model-like phrase was said but did not resolve to a phone we sell
+  function unresolved(fd){var n=fd.n;if(fd.keys.length||fd.miss.length)return false;
+    return /(ultra|الترا|التر|اولترا|ولترا)/.test(n)||new RegExp('(?:^| )(?:ال)?(?:s|اس|ايس) ?\\d{2}').test(n)||/(برو ?ماكس|pro ?max)/.test(n)||(/(ايفون|iphone|رينو|reno|سامسونج|galaxy|جالكسي)/.test(n)&&/(?:^| )\d{2}(?= |$)/.test(n));}
+  function famOf(n){return /(ultra|الترا|التر|اولترا|ولترا|سامسونج|galaxy|جالكسي|(?:^| )(?:s|اس|ايس) ?\d)/.test(n)?1:/(رينو|reno|اوبو|oppo)/.test(n)?2:0;}
+  var pendText='',pendKey=null;
+  function chipsFor(keys){return '<div class="pnch">'+keys.map(function(k){return '<button type="button" data-k="'+esc(k)+'">'+esc(dn(k))+'</button>';}).join('')+'</div>';}
+  function pickDevice(t,fam,label,cb){ // ask which phone, with tap buttons
+    var list=Object.keys(D()).filter(function(k){return brandOf(k)===fam;});if(!list.length)list=Object.keys(D());
+    pendText=t||'';
+    say('<small>'+esc(label?T('ما عندنا ','We do not have ')+label:T('أي جهاز تقصد؟','Which phone do you mean?'))+'</small><span class="pnans"><div dir="auto">'+esc(label?T('تقصد واحد من هدول؟','Did you mean one of these?'):T('اختر من هنا:','Pick one:'))+'</div></span>'+chipsFor(list),16000);}
   function findBrand(n){return /(ايفون|ابل|apple|iphone)/.test(n)?0:/(سامسونج|samsung|جالكسي|galaxy)/.test(n)?1:/(اوبو|oppo|رينو|reno)/.test(n)?2:/(هواوي|huawei|هونر|honor|انفينكس|infinix|تكنو|tecno)/.test(n)?-2:-1;}
   // --- topics ---
   var TOPICS=[
@@ -2082,7 +2107,8 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var raw=light(t),n=nz(t);if(!n)return;
     n=n.replace(/(^| )(يا )?(سهل|سحل|صحل|sahl|sahel|sehl)( |$)/g,' ').replace(/(^| )(مرحبا|اهلا|هلا|هاي|hello|hey|hi)( |$)/g,' ').replace(/\s+/g,' ').trim();
     var CANCEL=/(الغي|الغاء|كنسل|لا بدي|ما بدي|cancel|stop order|never mind)/;
-    var fd=findDevices(t),keys=fd.keys,br=findBrand(n),tp=topicOf(n);
+    var fd=findDevices(t);if(pendKey){fd={keys:[pendKey],miss:[],n:fd.n};pendKey=null;}
+    var keys=fd.keys,br=findBrand(n),tp=topicOf(n);
     // ----- order in progress: next utterance fills the missing field -----
     if(ord){
       if(CANCEL.test(n)){ord=null;say(out('',[T('تمام، ألغيت الطلب.','Okay, order cancelled.')]),3000);return;}
@@ -2095,14 +2121,15 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
         askNext();return;}
       var pre=[];if(tp==='price')pre=[dn(ord.key)+': '+fmtP(ord.key)+' '+T('دينار','JOD')];else if(faq(n))pre=[faq(n)];
       say(out('',pre.concat(['—'])));setTimeout(function(){askNext();},0);return;}
+    // ----- model-like words that did not resolve: ask, never guess -----
+    if(!ord&&unresolved(fd)){pickDevice(t,famOf(fd.n),'');return;}
     // ----- unavailable device (e.g. iPhone 16) -----
     var key=keys[0]||null;
     var BUYV=/(اشتري|اشتريه|اطلب|اطلبه|شراء|اكمل الطلب|اكمل عمليه|buy|order|purchase|checkout)/;
     var WANT=/(بدي|اريد|ابغي|ابغا|ابي|i want|i would like|i need)/,NOTBUY=/(اعرف|اسال|اشوف|افهم|معلومات|مواصفات|اقارن|الفرق|ايش|شو الفرق)/;
     var isBuy=BUYV.test(n)||(WANT.test(n)&&(keys.length||fd.miss.length||(ctx.key&&/(اياه|اياها)/.test(n)))&&!NOTBUY.test(n)&&(!tp||tp==='price'));
     if(isBuy){
-      if(!keys.length&&fd.miss.length){var av=Object.keys(D()).filter(function(k){return brandOf(k)===(/iphone/i.test(fd.miss[0])?0:/galaxy/i.test(fd.miss[0])?1:2);});
-        say(out(T('هذا الموديل مش متوفر','Not available'),[T('المتوفر: ','Available: ')+av.map(dn).join('، ')]),9000);return;}
+      if(!keys.length&&fd.miss.length){pickDevice(t,fd.miss[0].fam,fd.miss[0].label);return;}
       var k0=key||ctx.key||curKey();
       if(!k0){say(out('',[T('أي جهاز تحب تطلب؟','Which phone would you like to order?')]),5000);return;}
       ctx.key=k0;ord={key:k0,n:'',p:'',a:'',color:''};var g2=grab(raw);if(g2.n)ord.n=g2.n;if(g2.p)ord.p=g2.p;if(g2.a)ord.a=g2.a;
@@ -2115,6 +2142,9 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       if(/^(رجوع|ارجع|back)/.test(n)||/(ارجع|رجوع)/.test(n)&&!keys.length){history.back();return;}
       if(/(الرئيسيه|home|الصفحه الاولي|البدايه)/.test(n)){location.hash='#/';return;}
       if(/(english|انجليزي|عربي|arabic|اللغه|language)/.test(n)){var lg=document.getElementById('pnlang');if(lg)lg.click();return;}
+      if(keys.length&&tp&&keys.length===1&&tp!=='price'){ // "show me the screen of X": open the phone and answer from its data
+        var k5=keys[0],t5=t.replace(/(افتح لي|افتحلي|افتح|وريني|ورجيني|ورني|اعرض لي|اعرض|show me|open)/g,' ');ctx.key=k5;
+        openDevice(k5,null);pendKey=k5;setTimeout(function(){process(t5);},350);return;}
       if(keys.length){ctx.key=keys[0];say(out('',[T('فتحت ','Opening ')+dn(keys[0])]),2500);openDevice(keys[0],BUYV.test(n)||/(شراء|سله|السله|الطلب)/.test(n)?scrollBuy:null);return;}
       if(br>-1&&br<3&&!tp){location.hash='#/b/'+br;window.scrollTo(0,0);say(out('',[T('فتحت ','Opening ')+BRN[br]]),2500);return;}
       var cur=curKey()||ctx.key;
@@ -2138,8 +2168,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(!keys.length&&!tp&&(/(الاجهزه|اجهزه|اجهزتكم|موديلات|متوفر|عندكم|عندك|available|models|catalog|what do you have|all phones)/.test(n)||(br>=0&&br<3))){
       var ls=pool.map(function(k){return dn(k)+': '+fmtP(k);});say(out(br>=0&&br<3?BRN[br]:T('الأجهزة المتوفرة','Available phones'),ls),12000);return;}
     // ----- device missing from the store -----
-    if(fd.miss.length&&!keys.length){var avb=all.filter(function(k){return brandOf(k)===(/iphone/i.test(fd.miss[0])?0:/galaxy/i.test(fd.miss[0])?1:2);});
-      say(out(T('هذا الموديل مش متوفر','Not available'),[T('المتوفر: ','Available: ')+avb.map(dn).join('، ')]),9000);return;}
+    if(fd.miss.length&&!keys.length){pickDevice(t,fd.miss[0].fam,fd.miss[0].label);return;}
     // ----- specs for one or several devices -----
     var use=keys.length?keys:[(curKey()||ctx.key)].filter(Boolean);
     if(!use.length){
@@ -2209,7 +2238,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     return L.join('\n');}
   function applyAI(t,res,cb){
     if(!res||(!res.say&&(!res.action||res.action==='none'))){process(t);cb&&cb();return;}
-    var key=D()[res.device]?res.device:null;if(key)ctx.key=key;
+    var key=D()[res.device]?res.device:null;var fkk=findDevices(t).keys;if(fkk.length&&fkk.indexOf(key)<0)key=fkk[0];if(key)ctx.key=key;
     hist.push({r:'u',t:t});hist.push({r:'a',t:res.say||''});if(hist.length>8)hist=hist.slice(-8);
     var act=res.action||'none';
     if(act==='order'){
@@ -2240,7 +2269,11 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(/(افتح|وريني|اشتري|اطلب|بدي|اريد|ابغي|قارن|الفرق|افضل|احسن|انسب|انصح|ينصح|ارخص|اغلي|اكبر|اصغر|اقوي|اسرع|اي جهاز|اي واحد|الاحسن|مقارنه|vs|better|best|compare|which|recommend)/.test(n))return false;
     var ks=findDevices(t).keys;if(!ks.length){var c=curKey()||ctx.key;if(c)ks=[c];}
     return ks.length>0&&rowsFor(ks[0],tp,n).length>0;}
-  function route(t,cb){if(ord||engine!=='server'||deterministic(t)){process(t);cb&&cb();return;}askServer(t,cb);}
+  function localOnly(t){var fd=findDevices(t),n=fd.n;
+    if(fd.miss.length||unresolved(fd))return true;
+    if(fd.keys.length&&/(افتح|افتحلي|وريني|ورجيني|ورني|اعرض|روح|خذني|خدني|وديني|open|show me|show|go to|اشتري|اطلب|بدي|اريد|buy|order)/.test(n)&&!/(قارن|الفرق|افضل|احسن|انصح|compare|better|best|recommend)/.test(n))return true;
+    return false;}
+  function route(t,cb){if(ord||engine!=='server'||deterministic(t)||localOnly(t)){process(t);cb&&cb();return;}askServer(t,cb);}
   // --- recording ---
   function wav16(frames,sr){
     var len=0,i,j;frames.forEach(function(f){len+=f.length;});var all=new Float32Array(len),o=0;frames.forEach(function(f){all.set(f,o);o+=f.length;});
@@ -2260,7 +2293,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(!vad.sp){vad.pre.push(f);if(vad.pre.length>8)vad.pre.shift();
       if(rms>thr){vad.hot++;if(vad.hot>=2){vad.sp=true;vad.buf=vad.pre.slice();vad.voiced=0;vad.silent=0;vad.t0=Date.now();setState('listen');say(out(T('أسمعك…','Listening…'),['…']));}}else vad.hot=0;}
     else{vad.buf.push(f);if(rms>thr*.7){vad.voiced+=ms;vad.silent=0;}else vad.silent+=ms;
-      if(vad.silent>950||Date.now()-vad.t0>13000){var b=vad.buf,v=vad.voiced;vad.sp=false;vad.buf=[];vad.pre=[];vad.hot=0;
+      if(vad.silent>750||Date.now()-vad.t0>13000){var b=vad.buf,v=vad.voiced;vad.sp=false;vad.buf=[];vad.pre=[];vad.hot=0;
         if(v<380){if(state==='listen')setState('idle');bub.classList.remove('on');return;}
         sendAudio(wav16(b,sr));}}}
   function tmo(ms){if(!window.AbortController)return undefined;var c=new AbortController();setTimeout(function(){try{c.abort();}catch(e){}},ms);return c.signal;}
@@ -2322,6 +2355,8 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     bub.style.transform='translate3d('+x+'px,'+y+'px,0)';}
   function apply(){clampPos();bot.style.transform=TR();placeBub();}
   bub.style.transition='opacity .25s';
+  bub.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-k]');if(!b)return;var k=b.getAttribute('data-k'),t0=pendText;pendText='';
+    if(D()[k]){ctx.key=k;if(t0&&topicOf(nz(t0))){pendKey=k;process(t0);}else{say(out('',[T('فتحت ','Opening ')+dn(k)]),2500);openDevice(k,null);}}});
   new MutationObserver(placeBub).observe(bub,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
   bot.addEventListener('pointerdown',function(e){clampPos();drag={id:e.pointerId,sx:e.clientX,sy:e.clientY,px:pos.x,py:pos.y};moved=false;try{bot.setPointerCapture(e.pointerId);}catch(_){}});
   bot.addEventListener('pointermove',function(e){if(!drag||e.pointerId!==drag.id)return;var dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
@@ -2368,7 +2403,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     }
     requestAnimationFrame(loop);}
   loadSheets();requestAnimationFrame(loop);
-  window.pnBot={setState:setState,say:say,final:process};
+  window.pnBot={setState:setState,say:say,final:process,find:findDevices};
 })();
 </script>
 
