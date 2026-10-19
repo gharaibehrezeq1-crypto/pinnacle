@@ -66,7 +66,7 @@ async function voice(req, env) {
   const audio = b64(buf);
   const hint = lang === 'en'
     ? 'iPhone 17 Pro Max, iPhone 18, Samsung Galaxy S26 Ultra, OPPO Reno 16, price, camera, battery, charging, screen.'
-    : 'آيفون 17 برو ماكس، آيفون 18 برو، سامسونج جالاكسي S26 الترا، أوبو رينو 16، سعر، كاميرا، بطارية، شحن، شاشة، بدي اشتري، اسمي، عنواني.';
+    : 'آيفون سبعطعش برو ماكس، آيفون تمنطعش برو، آيفون 17، سامسونج جالكسي إس 26 ألترا، إس 25 ألترا، أوبو رينو 16 برو، رينو 16 إف، كم سعره، كم بطاريته، الكاميرا، الشاشة، الشحن، التخزين، الألوان، أريد أن أشتري، اسمي، رقم هاتفي صفر سبعة تسعة، عنواني عمان.';
   let r;
   try { r = await env.AI.run(STT, { audio, language: lang, task: 'transcribe', vad_filter: true, initial_prompt: hint }); }
   catch (e) { r = await env.AI.run(STT, { audio, language: lang }); }

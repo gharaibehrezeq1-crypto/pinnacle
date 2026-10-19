@@ -2055,7 +2055,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   // --- store info ---
   var FAQ=[
    [/(توصيل|يوصل|توصلو|توصلون|delivery|deliver|شحن الطلب|وقت التوصيل)/,'توصيل لباب البيت لجميع مناطق الأردن.','Door delivery to all areas in Jordan.'],
-   [/(دفع|الدفع|كاش|cash|payment|pay|بطاقه|فيزا|visa)/,'الدفع عند الاستلام: تدفع بعد ما تتأكد من الجهاز بإيدك.','Cash on delivery: you pay after checking the phone in your hands.'],
+   [/(دفع|الدفع|كاش|cash|payment|pay|بطاقه|فيزا|visa)/,'الدفع عند الاستلام: تدفع بعد أن تتأكد من الجهاز بنفسك.','Cash on delivery: you pay after checking the phone in your hands.'],
    [/(استبدال|ارجاع|استرجاع|ارجع|exchange|return|refund)/,'استبدال خلال 3 أيام إذا كانت العبوة ما زالت مغلقة.','Exchange within 3 days if the box is still sealed.'],
    [/(ضمان|عطل|دعم|صيانه|warranty|support|damage|broken)/,'دعم خلال 7 أيام: تواصل مباشر لو صار أي عطل بعد الفتح.','7-day support: contact us directly if any fault appears after opening.'],
    [/(وكيل|رسمي|اصلي|اصليه|original|official|agent|genuine)/,'أجهزتنا من الوكيل الرسمي في الأردن.','Our phones come from the official agent in Jordan.'],
@@ -2427,7 +2427,9 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(fd.miss.length||unresolved(fd))return true;
     if(fd.keys.length&&/(افتح|افتحلي|وريني|ورجيني|ورني|اعرض|روح|خذني|خدني|وديني|open|show me|show|go to|اشتري|اطلب|بدي|اريد|buy|order)/.test(n)&&!/(قارن|الفرق|افضل|احسن|انصح|compare|better|best|recommend)/.test(n))return true;
     return false;}
-  function route(t,cb){if(ord||engine!=='server'||deterministic(t)||localOnly(t)){process(t);cb&&cb();return;}askServer(t,cb);}
+  // all answers come from the local, verified brain (the AI server is used only to transcribe speech)
+  function junk(t){if(EN())return false;var la=(t.match(/[A-Za-z]/g)||[]).length,ar=(t.match(/[؀-ۿ]/g)||[]).length;return la>0&&ar<3&&!/(iphone|galaxy|reno|oppo|samsung|ultra|pro|max|s ?2\d|plus|mah|hz|ok|yes|no)/i.test(t);}
+  function route(t,cb){process(t);cb&&cb();}
   // --- recording ---
   function wav16(frames,sr){
     var len=0,i,j;frames.forEach(function(f){len+=f.length;});var all=new Float32Array(len),o=0;frames.forEach(function(f){all.set(f,o);o+=f.length;});
@@ -2456,7 +2458,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     fetch('/api/voice?lang='+(EN()?'en':'ar'),{method:'POST',headers:{'content-type':'audio/wav'},body:blob,signal:tmo(14000)})
     .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
     .then(function(j){srvFail=0;var t=String(j.text||'').trim();
-      if(t.length<2){busy=false;setState('idle');say(out('',[T('لم أسمع بوضوح، حاول مرة أخرى.','I did not catch that, try again.')]),2500);return;}
+      if(t.length<2||junk(t)){busy=false;setState('idle');say(out('',[T('لم أسمع بوضوح، حاول مرة أخرى.','I did not catch that, try again.')]),2500);return;}
       showHeard(t);setState('idle');route(t,function(){busy=false;});})
     .catch(function(){busy=false;srvFail++;setState('idle');if(srvFail>=2)fallbackLocal();else say(out('',[T('تعذّر الاتصال، حاول مرة أخرى.','Connection problem, try again.')]),2500);});}
   function showHeard(t){say(out(T('سمعت','Heard'),['«'+t+'»']));}
