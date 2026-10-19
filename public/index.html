@@ -1907,6 +1907,17 @@ if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='ht
 })();
 </script>
 <style id="pnbot-css">
+.pnform{position:fixed;inset:0;z-index:94;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(24,18,48,.42);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.pnfc{width:min(100%,380px);box-sizing:border-box;padding:18px 16px 16px;border-radius:24px;background:rgba(255,255,255,.97);border:1.5px solid rgba(255,255,255,.95);box-shadow:0 20px 60px rgba(60,40,140,.35);font-family:inherit;color:#1d1740;max-height:92vh;overflow:auto}
+.pnfc h3{margin:0 0 4px;font-size:18px;font-weight:700}.pnfc .pnfs{margin:0 0 12px;font-size:13px;opacity:.7;line-height:1.5}
+.pnfc label{display:block;margin:0 0 10px;font-size:13px;font-weight:600}
+.pnfc input,.pnfc textarea{display:block;width:100%;box-sizing:border-box;margin-top:5px;border:1.5px solid rgba(139,109,255,.28);border-radius:14px;background:#fff;padding:11px 12px;font:400 16px inherit;font-family:inherit;color:#1d1740;outline:0}
+.pnfc input:focus,.pnfc textarea:focus{border-color:#8b6dff;box-shadow:0 0 0 3px rgba(139,109,255,.22)}
+body.pnfo .pnbot,body.pnfo .pnbub{z-index:93!important}
+.pnform{align-items:flex-start;padding-top:max(14px,6vh)}
+.pnfe{min-height:18px;margin:0 0 6px;font-size:12.5px;color:#c0334d}
+.pnfb{display:flex;gap:8px}.pnfb button{flex:1;border:0;border-radius:14px;padding:12px 10px;font:600 15px inherit;font-family:inherit;cursor:pointer}
+#pfok{background:linear-gradient(135deg,#8b6dff,#5d8bff);color:#fff}#pfx{flex:0 0 auto;background:rgba(139,109,255,.12);color:#4a3aa8}
 .pnbot{position:fixed;left:0;top:0;z-index:95;width:76px;height:124px;padding:0;border:0;background:none;cursor:grab;-webkit-tap-highlight-color:transparent;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;will-change:transform}
 body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbot .pnw{position:relative;width:100%;height:100%}
@@ -2110,13 +2121,30 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(m)f.a=m[1].trim();
     var ph=raw.match(/(?:\+?962|00962|0)?\s?7[789][\d\s-]{7,10}/);if(ph&&normPhone(ph[0]))f.p=normPhone(ph[0]);
     return f;}
+  function closeForm(){document.body.classList.remove('pnfo');var m=document.getElementById('pnform');if(m&&m.parentNode)m.parentNode.removeChild(m);}
+  function syncForm(){var m=document.getElementById('pnform');if(!m||!ord)return;var f=[['pfn',ord.n],['pfp',ord.p],['pfa',ord.a]];f.forEach(function(x){var el=document.getElementById(x[0]);if(el&&x[1]&&!el.value)el.value=x[1];});}
   function askNext(prefix){
-    if(!ord.n){ord.ask='n';say(out(dn(ord.key),[(prefix||'')+T('ما اسمك الكامل؟','What is your full name?')]));return;}
-    if(!ord.p){ord.ask='p';say(out(dn(ord.key),[(prefix||'')+T('ما رقم هاتفك؟ (07XXXXXXXX)','Your phone number? (07XXXXXXXX)')]));return;}
-    if(!ord.a){ord.ask='a';say(out(dn(ord.key),[(prefix||'')+T('ما عنوانك بالتفصيل؟ (المدينة، الحي، الشارع)','Your full address? (city, area, street)')]));return;}
-    finishOrder();}
+    if(!ord)return;ord.ask='modal';ord.modal=true;
+    var m=document.getElementById('pnform'),fresh=!m;
+    if(!m){m=document.createElement('div');m.id='pnform';m.className='pnform';
+      m.innerHTML='<div class="pnfc" role="dialog" aria-modal="true" dir="auto"><h3>'+esc(T('بيانات الطلب','Order details'))+'</h3><p class="pnfs">'+esc(dn(ord.key)+' — '+T('اكتب بياناتك ثم اضغط تأكيد.','type your details, then press Confirm.'))+'</p>'
+       +'<label>'+esc(T('الاسم الكامل','Full name'))+'<input id="pfn" type="text" autocomplete="name"></label>'
+       +'<label>'+esc(T('رقم الهاتف','Phone number'))+'<input id="pfp" type="tel" inputmode="numeric" autocomplete="tel" placeholder="07XXXXXXXX" dir="ltr"></label>'
+       +'<label>'+esc(T('العنوان بالتفصيل','Full address'))+'<textarea id="pfa" rows="2" placeholder="'+esc(T('المدينة، الحي، الشارع','City, area, street'))+'"></textarea></label>'
+       +'<div class="pnfe" id="pfe"></div><div class="pnfb"><button type="button" id="pfok">'+esc(T('تأكيد الطلب','Confirm order'))+'</button><button type="button" id="pfx">'+esc(T('إلغاء','Cancel'))+'</button></div></div>';
+      document.body.appendChild(m);document.body.classList.add('pnfo');
+      document.getElementById('pfx').addEventListener('click',function(){ord=null;closeForm();say(out('',[T('حسناً، تم إلغاء الطلب.','Okay, order cancelled.')]),3000);});
+      document.getElementById('pfok').addEventListener('click',function(){
+        var n=document.getElementById('pfn').value.trim(),p=normPhone(document.getElementById('pfp').value),a=document.getElementById('pfa').value.trim(),e=document.getElementById('pfe');
+        if(n.length<3||/\d/.test(n)){e.textContent=T('اكتب الاسم الكامل (بدون أرقام).','Enter your full name (no digits).');document.getElementById('pfn').focus();return;}
+        if(!p){e.textContent=T('رقم الهاتف غير صحيح، مثال: 0791234567','Invalid phone, e.g. 0791234567');document.getElementById('pfp').focus();return;}
+        if(a.length<8){e.textContent=T('العنوان قصير، اذكر المدينة والحي والشارع.','Address too short: city, area, street.');document.getElementById('pfa').focus();return;}
+        if(!ord)return;ord.n=n;ord.p=p;ord.a=a;ord.modal=false;closeForm();finishOrder();});}
+    syncForm();
+    say(out(dn(ord.key),[(prefix||'')+T('سجّل اسمك ورقم هاتفك وعنوانك في النموذج.','Please enter your name, phone and address in the form.')]),9000);
+    if(fresh)setTimeout(function(){var f=document.getElementById(!ord.n?'pfn':!ord.p?'pfp':'pfa');if(f&&!/Mobi|Android|iPhone/i.test(navigator.userAgent))f.focus();},200);}
   function setVal(el,v){if(!el)return;var proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;var st=Object.getOwnPropertyDescriptor(proto,'value').set;st.call(el,v);el.dispatchEvent(new Event('input',{bubbles:true}));}
-  function finishOrder(){var o=ord;ord=null;
+  function finishOrder(){var o=ord;ord=null;closeForm();
     say(out(dn(o.key),[T('جاري تجهيز فاتورتك…','Preparing your invoice…')]));
     openDevice(o.key,function(){
       if(o.color){var dots=document.querySelectorAll('.spdots button');for(var i=0;i<dots.length;i++){if(nz(dots[i].getAttribute('aria-label')||'').indexOf(nz(o.color))>-1){dots[i].click();break;}}}
@@ -2267,9 +2295,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var keys=fd.keys,br=findBrand(n),tp=topicOf(n);
     // ----- order in progress: next utterance fills the missing field -----
     if(ord){
-      if(CANCEL.test(n)){ord=null;say(out('',[T('حسناً، تم إلغاء الطلب.','Okay, order cancelled.')]),3000);return;}
+      if(CANCEL.test(n)){ord=null;closeForm();say(out('',[T('حسناً، تم إلغاء الطلب.','Okay, order cancelled.')]),3000);return;}
       var g=grab(raw);if(g.n&&!ord.n)ord.n=g.n;if(g.p&&!ord.p)ord.p=g.p;if(g.a&&!ord.a)ord.a=g.a;
       var asked=ord.ask,isQ=/(قديش|كم|بكم|شو|ايش|وش|what|how|هل)/.test(n)&&(tp||faq(n));
+      if(ord.modal&&!isQ){syncForm();return;}
       if(!isQ){
         if(asked==='n'&&!ord.n){var nm=raw.replace(/^(اسمي|انا|my name is|i am)\s+/i,'').trim();if(nm.length>=3&&!/\d/.test(nm))ord.n=nm;}
         if(asked==='p'&&!ord.p){var dgt=digitsAll(t),p2=normPhone(dgt);if(!p2){ord.pb=(ord.pb||'')+dgt;p2=normPhone(ord.pb)||normPhone(ord.pb.slice(-10))||normPhone(ord.pb.slice(-9));}if(p2){ord.p=p2;ord.pb='';}else{if(ord.pb.length>12)ord.pb='';say(out('',[ord.pb?T('سجّلتُ '+ord.pb.length+' أرقام: '+ord.pb+'. كمّل باقي الرقم.','Got '+ord.pb.length+' digits: '+ord.pb+'. Say the rest.'):T('لم أفهم الرقم، قله بصيغة 07XXXXXXXX.','I did not get the number, say it as 07XXXXXXXX.')]));return;}}
@@ -2501,10 +2530,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(always){userOff=true;try{localStorage.setItem('pnmic','0');}catch(e){}always=false;clearTimeout(restartT);try{rec&&rec.abort();}catch(e){}recOn=false;stopMic();bot.classList.remove('always','rest');setState('idle');say(T('تم إيقاف الاستماع.','Listening is off.'),2000);return;}
     always=true;userOff=false;fast=0;bot.classList.add('always');
     stat(out(T('أنا سهل','I am Sahl'),[T('أنا أستمع إليك طوال الجلسة. اسألني عن أي شيء في الموقع، أو قل «أريد آيفون…» لأجهّز طلبك. اضغط عليّ لإيقاف الاستماع.','I listen all session. Ask me anything about the store, or say “I want an iPhone…” to order. Tap me to stop.')]),8000);
-    function local(){engine='local';stat(out(T('سهل','Sahl'),[T('أنا أستمع إليك (وضع احتياطي). اسألني عن أي جهاز.','Listening all session (backup mode). Ask about any phone.')]),6000);if(!SR){always=false;bot.classList.remove('always');say(T('هذا المتصفح لا يدعم الصوت. جرّب متصفح كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}runRec();}
+    function local(){engine='local';stat(out(T('سهل','Sahl'),[T('أنا أستمع إليك. اسألني عن أي جهاز، أو قل «أريد آيفون…» لأجهّز طلبك.','I am listening. Ask about any phone, or say “I want an iPhone…” to order.')]),6000);if(!SR){always=false;bot.classList.remove('always');say(T('هذا المتصفح لا يدعم الصوت. جرّب متصفح كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}runRec();}
     if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)||!(window.AudioContext||window.webkitAudioContext)){local();return;}
     var pe='';try{pe=localStorage.getItem('pnengine')||'';}catch(e){}
-    if(pe==='local'){local();return;}
+    if(pe==='local'||(pe===''&&SR)){local();return;}
     fetch('/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:'{"text":""}'}).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(function(){
       engine='server';srvFail=0;stat(out(T('سهل','Sahl'),[T('أنا أستمع إليك (متصل بالخادم الذكي). اسألني عن أي شيء، أو قل «أريد آيفون…» لأجهّز طلبك.','Listening all session (smart server connected). Ask me anything, or say “I want an iPhone…” to order.')]),7000);
       return startMic().then(function(){try{localStorage.setItem('pnmic','1');}catch(e){}bot.classList.add('rest');setTimeout(function(){bot.classList.remove('rest');},50);},function(e){
