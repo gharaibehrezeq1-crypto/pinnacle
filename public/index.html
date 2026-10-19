@@ -2217,12 +2217,114 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   }
   setInterval(function(){if(always&&!recOn&&!pend)runRec();},2000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&always){try{rec&&rec.abort();}catch(e){}recOn=false;pend=false;runRec();}});
+  // ================= Server engine: reliable mic (VAD → WAV) + Whisper + LLM, with local fallback =================
+  var engine='server',srvFail=0,busy=false,hist=[],wake=null;
+  var mic={stream:null,ctx:null,src:null,node:null};
+  function allKeys(){return Object.keys(D());}
+  function knowledge(t){
+    var n=nz(t),fd=findDevices(t),keys=fd.keys.slice(0,3),tp=topicOf(n),all=allKeys(),L=[];
+    var cur=curKey();if(cur&&keys.indexOf(cur)<0&&keys.length<3)keys.push(cur);
+    if(ctx.key&&keys.indexOf(ctx.key)<0&&keys.length<3)keys.push(ctx.key);
+    L.push('STORE: '+FAQ.map(function(f){return isEN2()?f[2]:f[1];}).join(' | '));
+    L.push('KEYS: '+all.join(' ; '));
+    L.push('CATALOG (key | brand | price JOD | colors):');
+    all.forEach(function(k){L.push(k+' | '+BRN[brandOf(k)]+' | '+priceOf(k)+' | '+(D()[k].cols||[]).map(function(c){return tx(c[1]);}).join(', '));});
+    L.push('QUICK SUMMARY (all phones):');
+    all.forEach(function(k){var a=[];['screen','cpu','battery'].forEach(function(tt){var r=rowsFor(k,tt,'')[0];if(r)a.push(r[0]+' '+r[1]);});var c=rowsFor(k,'cam','')[0];if(c)a.push('main cam '+c[1]);L.push(k+': '+a.join('; '));});
+    if(tp&&!fd.keys.length)all.forEach(function(k){var rs=rowsFor(k,tp,n);if(rs.length)L.push('TOPIC '+k+': '+rs.map(function(r){return r[0]+' '+r[1];}).join('; '));});
+    keys.forEach(function(k){L.push('FULL SPECS '+k+':');D()[k].data.forEach(function(S){var rows=S.rows.filter(function(r){return r[1];}).map(function(r){return tx(r[0])+'='+tx(r[1])+(r[2]&&r[2].length<70?' ('+tx(r[2])+')':'');});if(rows.length)L.push(' '+tx(S.k)+': '+rows.join('; '));});});
+    return L.join('\n');}
+  function applyAI(t,res,cb){
+    if(!res||(!res.say&&(!res.action||res.action==='none'))){process(t);cb&&cb();return;}
+    var key=D()[res.device]?res.device:null;if(key)ctx.key=key;
+    hist.push({r:'u',t:t});hist.push({r:'a',t:res.say||''});if(hist.length>8)hist=hist.slice(-8);
+    var act=res.action||'none';
+    if(act==='order'){
+      var k0=key||ctx.key||curKey();
+      if(!k0){say(out('',[res.say||T('أي جهاز تحب تطلب؟','Which phone would you like to order?')]),6000);cb&&cb();return;}
+      ctx.key=k0;ord={key:k0,n:'',p:'',a:'',color:''};
+      var nm=String(res.name||'').trim(),ph=normPhone(digitsOf(String(res.phone||''))),ad=String(res.address||'').trim(),g=grab(light(t));
+      if(nm.length>=3&&!/\d/.test(nm))ord.n=nm;else if(g.n)ord.n=g.n;
+      if(ph)ord.p=ph;else if(g.p)ord.p=g.p;
+      if(ad.length>=8)ord.a=ad;else if(g.a)ord.a=g.a;
+      (D()[k0].cols||[]).forEach(function(c){if(res.color&&nz(res.color)&&nz(c[1]).indexOf(nz(res.color))>-1)ord.color=c[1];});
+      askNext(res.say?res.say+' · ':'');cb&&cb();return;}
+    say(out(key?dn(key):'',[res.say||'…']),11000);ok_();
+    if((act==='open_device'||act==='buy')&&key){openDevice(key,act==='buy'?scrollBuy:null);}
+    else if(act==='brand'&&key){location.hash='#/b/'+brandOf(key);window.scrollTo(0,0);}
+    else if(act==='back')history.back();
+    else if(act==='home')location.hash='#/';
+    else if(act==='language'){var lg=document.getElementById('pnlang');if(lg)lg.click();}
+    cb&&cb();}
+  function askServer(t,cb){
+    var ac=window.AbortController?new AbortController():null,to=setTimeout(function(){try{ac&&ac.abort();}catch(e){}},9000);
+    fetch('/api/ask',{method:'POST',headers:{'content-type':'application/json'},signal:ac?ac.signal:undefined,
+      body:JSON.stringify({text:t,data:knowledge(t),state:{page:location.hash,current:curKey()||'',last:ctx.key||'',lang:isEN2()?'en':'ar'},history:hist})})
+    .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
+    .then(function(res){clearTimeout(to);applyAI(t,res,cb);})
+    .catch(function(){clearTimeout(to);process(t);cb&&cb();});}
+  function route(t,cb){if(ord||engine!=='server'){process(t);cb&&cb();return;}askServer(t,cb);}
+  // --- recording ---
+  function wav16(frames,sr){
+    var len=0,i,j;frames.forEach(function(f){len+=f.length;});var all=new Float32Array(len),o=0;frames.forEach(function(f){all.set(f,o);o+=f.length;});
+    var ratio=sr/16000,n=Math.floor(len/ratio),pcm=new Int16Array(n);
+    for(i=0;i<n;i++){var p=i*ratio,i0=Math.floor(p),fr=p-i0,a=all[i0],b=all[Math.min(len-1,i0+1)],v=a+(b-a)*fr;v=Math.max(-1,Math.min(1,v*1.6));pcm[i]=v<0?v*32768:v*32767;}
+    var buf=new ArrayBuffer(44+n*2),dv=new DataView(buf);
+    function ws(off,s){for(var k=0;k<s.length;k++)dv.setUint8(off+k,s.charCodeAt(k));}
+    ws(0,'RIFF');dv.setUint32(4,36+n*2,true);ws(8,'WAVE');ws(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);dv.setUint32(24,16000,true);dv.setUint32(28,32000,true);dv.setUint16(32,2,true);dv.setUint16(34,16,true);ws(36,'data');dv.setUint32(40,n*2,true);
+    for(j=0;j<n;j++)dv.setInt16(44+j*2,pcm[j],true);
+    return new Blob([buf],{type:'audio/wav'});}
+  var vad={pre:[],buf:[],sp:false,hot:0,voiced:0,silent:0,floor:0.008,t0:0};
+  function onFrame(f,sr){
+    var s=0,i;for(i=0;i<f.length;i++)s+=f[i]*f[i];var rms=Math.sqrt(s/f.length),ms=f.length/sr*1000;
+    if(!vad.sp&&rms<vad.floor*2.2)vad.floor=Math.max(0.003,vad.floor*0.96+rms*0.04);
+    var thr=Math.max(0.014,vad.floor*3.4);
+    if(busy||!always||engine!=='server'){vad.pre=[];vad.sp=false;vad.hot=0;return;}
+    if(!vad.sp){vad.pre.push(f);if(vad.pre.length>8)vad.pre.shift();
+      if(rms>thr){vad.hot++;if(vad.hot>=2){vad.sp=true;vad.buf=vad.pre.slice();vad.voiced=0;vad.silent=0;vad.t0=Date.now();setState('listen');say(out(T('أسمعك…','Listening…'),['…']));}}else vad.hot=0;}
+    else{vad.buf.push(f);if(rms>thr*.7){vad.voiced+=ms;vad.silent=0;}else vad.silent+=ms;
+      if(vad.silent>950||Date.now()-vad.t0>13000){var b=vad.buf,v=vad.voiced;vad.sp=false;vad.buf=[];vad.pre=[];vad.hot=0;
+        if(v<380){if(state==='listen')setState('idle');bub.classList.remove('on');return;}
+        sendAudio(wav16(b,sr));}}}
+  function sendAudio(blob){
+    busy=true;say(out(T('أفكر…','Thinking…'),['…']));
+    fetch('/api/voice?lang='+(EN()?'en':'ar'),{method:'POST',headers:{'content-type':'audio/wav'},body:blob})
+    .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
+    .then(function(j){srvFail=0;var t=String(j.text||'').trim();
+      if(t.length<2){busy=false;setState('idle');say(out('',[T('ما سمعت شي واضح، جرّب مرة ثانية.','I did not catch that, try again.')]),2500);return;}
+      showHeard(t);setState('idle');route(t,function(){busy=false;});})
+    .catch(function(){busy=false;srvFail++;setState('idle');if(srvFail>=2)fallbackLocal();else say(out('',[T('تعذّر الاتصال، جرّب مرة ثانية.','Connection problem, try again.')]),2500);});}
+  function showHeard(t){say(out(T('سمعت','Heard'),['«'+t+'»']));}
+  function startMic(){
+    return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1}}).then(function(st){
+      var AC=window.AudioContext||window.webkitAudioContext;mic.stream=st;mic.ctx=new AC();mic.src=mic.ctx.createMediaStreamSource(st);
+      mic.node=mic.ctx.createScriptProcessor(2048,1,1);var sr=mic.ctx.sampleRate;
+      mic.node.onaudioprocess=function(e){onFrame(new Float32Array(e.inputBuffer.getChannelData(0)),sr);};
+      mic.src.connect(mic.node);mic.node.connect(mic.ctx.destination);
+      if(mic.ctx.state==='suspended')mic.ctx.resume();
+      try{if(navigator.wakeLock)navigator.wakeLock.request('screen').then(function(w){wake=w;}).catch(function(){});}catch(e){}
+    });}
+  function stopMic(){try{mic.node&&mic.node.disconnect();}catch(e){}try{mic.src&&mic.src.disconnect();}catch(e){}
+    try{mic.stream&&mic.stream.getTracks().forEach(function(t){t.stop();});}catch(e){}try{mic.ctx&&mic.ctx.close();}catch(e){}
+    mic={stream:null,ctx:null,src:null,node:null};vad.sp=false;vad.buf=[];vad.pre=[];try{wake&&wake.release();}catch(e){}wake=null;}
+  function fallbackLocal(){engine='local';stopMic();if(always){say(out(T('سهل','Sahl'),[T('انتقلت للوضع الاحتياطي للصوت.','Switched to backup voice mode.')]),3500);runRec();}}
+  setInterval(function(){if(!always||engine!=='server')return;var tr=mic.stream&&mic.stream.getAudioTracks()[0];
+    if(!tr||tr.readyState!=='live'){stopMic();startMic().catch(function(){});return;}
+    if(mic.ctx&&mic.ctx.state!=='running'&&!document.hidden)mic.ctx.resume();
+    if(!wake&&navigator.wakeLock&&!document.hidden){try{navigator.wakeLock.request('screen').then(function(w){wake=w;w.addEventListener&&w.addEventListener('release',function(){wake=null;});}).catch(function(){});}catch(e){}}},2000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&always&&engine==='server'&&mic.ctx&&mic.ctx.state!=='running')mic.ctx.resume();});
   function toggleAlways(){
-    if(always){always=false;clearTimeout(restartT);try{rec&&rec.abort();}catch(e){}recOn=false;bot.classList.remove('always','rest');setState('idle');say(T('أوقفت الاستماع.','Listening is off.'),2000);return;}
-    if(!SR){say(T('هذا المتصفح لا يدعم الصوت. جرّب كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}
+    if(always){always=false;clearTimeout(restartT);try{rec&&rec.abort();}catch(e){}recOn=false;stopMic();bot.classList.remove('always','rest');setState('idle');say(T('أوقفت الاستماع.','Listening is off.'),2000);return;}
     always=true;fast=0;bot.classList.add('always');
-    say(out(T('أنا سهل','I am Sahl'),[T('أسمعك طول الجلسة. اسألني عن أي جهاز أو مواصفة أو سعر، قل «افتح…» لأفتح لك، أو قل «بدي ايفون…» لأجهّز طلبك. اضغط عليّ لإيقافي.','I listen all session. Ask about any phone, spec or price, say “open…”, or “I want an iPhone…” to order. Tap me to stop.')]),9000);
-    runRec();}
+    say(out(T('أنا سهل','I am Sahl'),[T('أسمعك طول الجلسة. اسألني عن أي شي بالموقع، أو قل «بدي ايفون…» لأجهّز طلبك. اضغط عليّ لإيقافي.','I listen all session. Ask me anything about the store, or say “I want an iPhone…” to order. Tap me to stop.')]),8000);
+    function local(){engine='local';if(!SR){always=false;bot.classList.remove('always');say(T('هذا المتصفح لا يدعم الصوت. جرّب كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}runRec();}
+    if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)||!(window.AudioContext||window.webkitAudioContext)){local();return;}
+    fetch('/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:'{"text":""}'}).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(function(){
+      engine='server';srvFail=0;
+      return startMic().then(function(){bot.classList.add('rest');setTimeout(function(){bot.classList.remove('rest');},50);},function(e){
+        if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError')){always=false;bot.classList.remove('always');say(T('اسمح للميكروفون من إعدادات المتصفح ثم اضغط عليّ.','Allow the microphone in browser settings, then tap me.'),5000);}
+        else local();});
+    }).catch(function(){local();});}
   bot.addEventListener('click',function(ev){if(moved){ev.preventDefault();return;}toggleAlways();});
   // greeting wave once, shortly after the intro ends
   var greeted=false;function greet(){if(greeted||document.body.classList.contains('lock'))return;greeted=true;bot.classList.add('wave');say('<small>'+T('مرحباً','Hi')+'</small>'+T('أنا سهل','I am Sahl'),3500);setTimeout(function(){if(state==='idle')bot.classList.remove('wave');},1600);}
