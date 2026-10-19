@@ -2595,13 +2595,13 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function toggleAlways(){
     if(always){userOff=true;try{localStorage.setItem('pnmic','0');}catch(e){}always=false;clearTimeout(restartT);try{rec&&rec.abort();}catch(e){}recOn=false;stopMic();bot.classList.remove('always','rest');setState('idle');say(T('تم إيقاف الاستماع.','Listening is off.'),2000);return;}
     always=true;userOff=false;fast=0;bot.classList.add('always');
-    stat(out(T('أنا سهل','I am Sahl'),[T('أنا أستمع إليك طوال الجلسة. اسألني عن أي شيء في الموقع، أو قل «أريد آيفون…» لأجهّز طلبك. اضغط عليّ لإيقاف الاستماع.','I listen all session. Ask me anything about the store, or say “I want an iPhone…” to order. Tap me to stop.')]),8000);
-    function local(){engine='local';stat(out(T('سهل','Sahl'),[T('أنا أستمع إليك. اسألني عن أي جهاز، أو قل «أريد آيفون…» لأجهّز طلبك.','I am listening. Ask about any phone, or say “I want an iPhone…” to order.')]),6000);if(!SR){always=false;bot.classList.remove('always');say(T('هذا المتصفح لا يدعم الصوت. جرّب متصفح كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}runRec();}
+    stat(out(T('أنا سهل','I am Sahl'),[T('الميكروفون يعمل. تفضّل بالحديث. للإيقاف اضغط عليّ.','Mic is on. Go ahead and speak. Tap me to stop.')]),8000);
+    function local(){engine='local';stat(out(T('سهل','Sahl'),[T('الميكروفون يعمل. تفضّل بالحديث.','Mic is on. Go ahead and speak.')]),6000);if(!SR){always=false;bot.classList.remove('always');say(T('هذا المتصفح لا يدعم الصوت. جرّب متصفح كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}runRec();}
     if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)||!(window.AudioContext||window.webkitAudioContext)){local();return;}
     var pe='';try{pe=localStorage.getItem('pnengine')||'';}catch(e){}
     if(pe==='local'||(pe===''&&SR)){local();return;}
     fetch('/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:'{"text":""}'}).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(function(){
-      engine='server';srvFail=0;stat(out(T('سهل','Sahl'),[T('أنا أستمع إليك (متصل بالخادم الذكي). اسألني عن أي شيء، أو قل «أريد آيفون…» لأجهّز طلبك.','Listening all session (smart server connected). Ask me anything, or say “I want an iPhone…” to order.')]),7000);
+      engine='server';srvFail=0;stat(out(T('سهل','Sahl'),[T('الميكروفون يعمل. تفضّل بالحديث.','Mic is on. Go ahead and speak.')]),7000);
       return startMic().then(function(){try{localStorage.setItem('pnmic','1');}catch(e){}bot.classList.add('rest');setTimeout(function(){bot.classList.remove('rest');},50);},function(e){
         if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError')){always=false;try{localStorage.setItem('pnmic','0');}catch(_){}bot.classList.remove('always');say(T('اسمح باستخدام الميكروفون من إعدادات المتصفح ثم اضغط عليّ.','Allow the microphone in browser settings, then tap me.'),5000);}
         else local();});
@@ -2616,13 +2616,13 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(engine==='local'&&!recOn&&SR)runRec();
     if(engine==='server'&&mic.ctx&&mic.ctx.state==='suspended')try{mic.ctx.resume();}catch(e){}},4000);
   try{if(localStorage.getItem('pnhint')==='1')bot.classList.add('used');}catch(e){}
-  bot.addEventListener('click',function(ev){if(moved){ev.preventDefault();return;}bot.classList.add('used');try{localStorage.setItem('pnhint','1');}catch(e){}toggleAlways();});
+  bot.addEventListener('click',function(ev){if(moved){ev.preventDefault();return;}holdUntil=0;pendSay=null;clearTimeout(pendT);bub.classList.remove('on');bot.classList.add('used');try{localStorage.setItem('pnhint','1');}catch(e){}toggleAlways();});
   // greeting wave once, shortly after the intro ends
   // ===== ask first: "enable the microphone to talk to Sahl?" =====
   function askMic(){var asked=false;try{asked=sessionStorage.getItem('pnask')==='1';}catch(_){}
     if(always||userOff||usedBot||document.body.classList.contains('pnoff')||document.body.classList.contains('lock'))return;
     try{sessionStorage.setItem('pnask','1');}catch(_){}
-    sayQ(T('أهلاً بك، أنا سهل','Hi, I am Sahl'),[T('هل ترغب بتفعيل الميكروفون للدردشة؟','Would you like to enable the microphone to chat?')],[[T('نعم، فعّل الميكروفون','Yes, enable the mic'),'__micyes'],[T('لا، شكراً','No thanks'),'__micno']],30000);}
+    sayQ(T('أهلاً بك، أنا سهل','Hi, I am Sahl'),[T('اضغط عليّ لتشغيل الميكروفون. وإذا توقف، اضغط عليّ حتى يظهر اللون الأخضر.','Tap me to turn on the mic. If it stops, tap me again until the dot is green.')],null,30000);}
   (function(){var wi=setInterval(function(){if(!document.body.classList.contains('lock')){clearInterval(wi);setTimeout(function(){if(!always)askMic();},1500);}},400);})();
   // ===== close button: the customer can remove Sahl from the screen =====
   try{localStorage.removeItem('pnoff');if(/[?&]sahl=1/.test(location.search))sessionStorage.removeItem('pnoff');if(sessionStorage.getItem('pnoff')==='1'){document.body.classList.add('pnoff');userOff=true;}}catch(e){}
