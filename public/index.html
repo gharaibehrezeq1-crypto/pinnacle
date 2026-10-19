@@ -1916,6 +1916,9 @@ if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='ht
 #pfc{display:block;margin:10px auto 0;border:0;background:none;color:#9a93c0;font:500 12px inherit;font-family:inherit;cursor:pointer;text-decoration:underline}
 body.pnfo .pnbot,body.pnfo .pnbub{z-index:93!important}
 .pnform{align-items:flex-start;padding-top:max(14px,6vh)}
+.pnx{position:absolute;top:0;right:-2px;z-index:3;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.96);color:#5b4fc7;box-shadow:0 2px 8px rgba(60,40,140,.28);font:700 16px/26px system-ui,sans-serif;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
+.pnx:active{transform:scale(.9)}
+body.pnoff .pnbot,body.pnoff .pnbub{display:none!important}
 .pnfe{min-height:18px;margin:0 0 6px;font-size:12.5px;color:#c0334d}
 .pnfb{display:flex;gap:8px}.pnfb button{flex:1;border:0;border-radius:14px;padding:12px 10px;font:600 15px inherit;font-family:inherit;cursor:pointer}
 #pfok{background:linear-gradient(135deg,#8b6dff,#5d8bff);color:#fff}#pfx{flex:0 0 auto;background:rgba(139,109,255,.12);color:#4a3aa8}
@@ -1959,12 +1962,13 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   var lastHeard='';
   var holdUntil=0,pendSay=null,pendT=null,lastSayAt=0;
   function say(html,ms){
+    if(document.body.classList.contains('pnoff'))return;
     if(html&&Date.now()<holdUntil&&!window.__pnNoHold){pendSay=[html,ms];clearTimeout(pendT);pendT=setTimeout(function(){var p=pendSay;pendSay=null;holdUntil=0;if(p)say(p[0],p[1]);},holdUntil-Date.now()+50);return;}
     pendSay=null;clearTimeout(pendT);
     if(html){var d=document.createElement('div');d.innerHTML=html;var L=(d.textContent||'').length;
       if(L>45||d.querySelector('button')){holdUntil=Date.now()+Math.min(9000,Math.max(3500,L*50));lastSayAt=Date.now();}}
     sayNow(html,ms);}
-  function stat(html,ms){if(Date.now()<holdUntil)return;sayNow(html,ms);}
+  function stat(html,ms){if(document.body.classList.contains('pnoff')||Date.now()<holdUntil)return;sayNow(html,ms);}
   function sayNow(html,ms){clearTimeout(hideT);if(lastHeard&&html){html='<div class="pnheard" dir="auto">'+T('سمعتُ: «','Heard: “')+esc(lastHeard)+T('»','”')+'</div>'+html;lastHeard='';}bub.innerHTML=html;bub.classList.add('on');if(ms)hideT=setTimeout(function(){bub.classList.remove('on');},ms);}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function done(){setState('idle');}
@@ -2602,6 +2606,14 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   try{if(localStorage.getItem('pnhint')==='1')bot.classList.add('used');}catch(e){}
   bot.addEventListener('click',function(ev){if(moved){ev.preventDefault();return;}bot.classList.add('used');try{localStorage.setItem('pnhint','1');}catch(e){}toggleAlways();});
   // greeting wave once, shortly after the intro ends
+  // ===== close button: the customer can remove Sahl from the screen =====
+  try{if(/[?&]sahl=1/.test(location.search))localStorage.removeItem('pnoff');if(localStorage.getItem('pnoff')==='1'){document.body.classList.add('pnoff');userOff=true;}}catch(e){}
+  (function(){var x=document.createElement('span');x.className='pnx';x.setAttribute('role','button');x.setAttribute('aria-label',T('إغلاق سهل','Close Sahl'));x.title=T('إغلاق سهل','Close Sahl');x.textContent='×';bot.appendChild(x);
+    ['pointerdown','pointerup','touchstart','mousedown'].forEach(function(ev){x.addEventListener(ev,function(e){e.stopPropagation();},{passive:true});});
+    x.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();
+      userOff=true;always=false;clearTimeout(restartT);try{rec&&rec.abort();}catch(_){}recOn=false;try{stopMic();}catch(_){}
+      bub.classList.remove('on');bot.classList.remove('always','rest','listen');
+      document.body.classList.add('pnoff');try{localStorage.setItem('pnoff','1');localStorage.setItem('pnmic','0');}catch(_){}});})();
   // ===== idle manager: trust nudges, "why didn't you buy?", page dwell =====
   var SITE0=Date.now(),lastAct=Date.now(),lastNudge=Date.now(),nudged=0,usedBot=false,everOrd=false,dwell=0,lastDwell=0,pgT=Date.now(),pgKey='',askSeen=null,askAt=0;
   function sget(k){try{return Number(sessionStorage.getItem(k)||0);}catch(e){return 0;}}
@@ -2621,7 +2633,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function followUp(){var k=curKey()||ctx.fresh();
     if(k){ctx.key=k;ask='order';sayQ(dn(k),[T('هل يناسبك هذا الجهاز؟ أستطيع تجهيز طلبك الآن، أو اقتراح بديل.','Does this phone suit you? I can prepare your order now, or suggest an alternative.')],[[T('ابدأ الطلب','Start order'),'اطلب'],[T('مواصفات أكثر','More specs'),'شو مواصفاته'],[T('خيار آخر','Another option'),'شوف لي اشي غيره'],[T('السعر مرتفع','Too expensive'),'السعر غالي']],16000);}
     else discover(false);}
-  function quiet(){return !document.body.classList.contains('lock')&&!document.hidden&&!ord&&!drag&&(state==='idle'||state==='listen')&&!vad.sp&&!busy&&!bub.classList.contains('on');}
+  function quiet(){return !document.body.classList.contains('lock')&&!document.hidden&&!document.body.classList.contains('pnoff')&&!ord&&!drag&&(state==='idle'||state==='listen')&&!vad.sp&&!busy&&!bub.classList.contains('on');}
   setInterval(function(){
     if(ask!==askSeen){askSeen=ask;askAt=Date.now();} if(ask&&Date.now()-askAt>45000){ask=null;askSeen=null;}
     if(ord)everOrd=true;
