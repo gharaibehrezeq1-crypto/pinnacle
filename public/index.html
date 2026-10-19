@@ -1945,7 +1945,15 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,state='idle',hideT=null,lastTxt='',gotFinal=false;
   function setState(s){state=s;bot.classList.remove('listen','happy','wave','walk');if(s!=='idle')bot.classList.add(s);}
   var lastHeard='';
-  function say(html,ms){clearTimeout(hideT);if(lastHeard&&html){html='<div class="pnheard" dir="auto">'+T('سمعتُ: «','Heard: “')+esc(lastHeard)+T('»','”')+'</div>'+html;lastHeard='';}bub.innerHTML=html;bub.classList.add('on');if(ms)hideT=setTimeout(function(){bub.classList.remove('on');},ms);}
+  var holdUntil=0,pendSay=null,pendT=null,lastSayAt=0;
+  function say(html,ms){
+    if(html&&Date.now()<holdUntil&&!window.__pnNoHold){pendSay=[html,ms];clearTimeout(pendT);pendT=setTimeout(function(){var p=pendSay;pendSay=null;holdUntil=0;if(p)say(p[0],p[1]);},holdUntil-Date.now()+50);return;}
+    pendSay=null;clearTimeout(pendT);
+    if(html){var d=document.createElement('div');d.innerHTML=html;var L=(d.textContent||'').length;
+      if(L>45||d.querySelector('button')){holdUntil=Date.now()+Math.min(9000,Math.max(3500,L*50));lastSayAt=Date.now();}}
+    sayNow(html,ms);}
+  function stat(html,ms){if(Date.now()<holdUntil)return;sayNow(html,ms);}
+  function sayNow(html,ms){clearTimeout(hideT);if(lastHeard&&html){html='<div class="pnheard" dir="auto">'+T('سمعتُ: «','Heard: “')+esc(lastHeard)+T('»','”')+'</div>'+html;lastHeard='';}bub.innerHTML=html;bub.classList.add('on');if(ms)hideT=setTimeout(function(){bub.classList.remove('on');},ms);}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function done(){setState('idle');}
   function happy(txt){setState('happy');say('<small>'+T('سمعتك','I heard you')+'</small>'+esc(txt),5000);setTimeout(done,1500);}
@@ -2351,7 +2359,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     say(out(head,lines)+fuHtml(tp,k1),tp?16000:10000);ok_();}
   function notUnderstood(){sayQ(T('لم أفهم قصدك','I did not get that'),[T('جرّب أن تقول مثلاً:','Try saying, for example:')],[[T('افتح آيفون 17 برو ماكس','Open iPhone 17 Pro Max'),'افتح ايفون 17 برو ماكس'],[T('كم سعر إس 26 ألترا','Price of S26 Ultra'),'كم سعر اس 26 الترا'],[T('اختر لي جهازاً','Help me choose'),'محتار ساعدني اختار']],12000);}
   function ok_(){setState('happy');setTimeout(done,1400);}
-  function showHearing(t){say(out(T('أسمعك…','Listening…'),[t]));}
+  function showHearing(t){stat(out(T('أسمعك…','Listening…'),[t]));}
   function respond(txt){process(txt);}
   // ================= Ear: keeps listening all session, restarts itself =================
   var always=false,recOn=false,pend=false,restartT=null,startedAt=0,fast=0,intT=null,lastInterim='',handledN='',handledAt=0,calmT=null;
@@ -2453,21 +2461,21 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var thr=Math.max(0.014,vad.floor*3.4);
     if(busy||!always||engine!=='server'){vad.pre=[];vad.sp=false;vad.hot=0;return;}
     if(!vad.sp){vad.pre.push(f);if(vad.pre.length>8)vad.pre.shift();
-      if(rms>thr){vad.hot++;if(vad.hot>=2){vad.sp=true;vad.buf=vad.pre.slice();vad.voiced=0;vad.silent=0;vad.t0=Date.now();setState('listen');say(out(T('أسمعك…','Listening…'),['…']));}}else vad.hot=0;}
+      if(rms>thr){vad.hot++;if(vad.hot>=2){vad.sp=true;vad.buf=vad.pre.slice();vad.voiced=0;vad.silent=0;vad.t0=Date.now();setState('listen');stat(out(T('أسمعك…','Listening…'),['…']));}}else vad.hot=0;}
     else{vad.buf.push(f);if(rms>thr*.7){vad.voiced+=ms;vad.silent=0;}else vad.silent+=ms;
-      if(vad.silent>750||Date.now()-vad.t0>13000){var b=vad.buf,v=vad.voiced;vad.sp=false;vad.buf=[];vad.pre=[];vad.hot=0;
+      if(vad.silent>1000||Date.now()-vad.t0>13000){var b=vad.buf,v=vad.voiced;vad.sp=false;vad.buf=[];vad.pre=[];vad.hot=0;
         if(v<380){if(state==='listen')setState('idle');bub.classList.remove('on');return;}
         sendAudio(wav16(b,sr));}}}
   function tmo(ms){if(!window.AbortController)return undefined;var c=new AbortController();setTimeout(function(){try{c.abort();}catch(e){}},ms);return c.signal;}
   function sendAudio(blob){
-    busy=true;busyAt=Date.now();say(out(T('أفكر…','Thinking…'),['…']));
+    busy=true;busyAt=Date.now();stat(out(T('أفكر…','Thinking…'),['…']));
     fetch('/api/voice?lang='+(EN()?'en':'ar'),{method:'POST',headers:{'content-type':'audio/wav'},body:blob,signal:tmo(14000)})
     .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
-    .then(function(j){srvFail=0;var t=String(j.text||'').trim();
-      if(t.length<2||junk(t)){busy=false;setState('idle');say(out('',[T('لم أسمع بوضوح، حاول مرة أخرى.','I did not catch that, try again.')]),2500);return;}
+    .then(function(j){srvFail=0;var t=String(j.text||'').trim();if(t.length>=2&&!junk(t))missN=0;
+      if(t.length<2||junk(t)){busy=false;setState('idle');missN++;if(missN>=2){missN=0;sayQ(T('سهل','Sahl'),[T('لم أسمع بوضوح. تحدّث بالقرب من الهاتف، أو جرّب محرك صوت آخر.','I did not catch that. Speak closer to the phone, or try another voice engine.')],[[T('جرّب محرك صوت آخر','Try another voice engine'),'__engine']],9000);}else say(out('',[T('لم أسمع بوضوح، حاول مرة أخرى.','I did not catch that, try again.')]),2500);return;}
       showHeard(t);setState('idle');route(t,function(){busy=false;});})
     .catch(function(){busy=false;srvFail++;setState('idle');if(srvFail>=2)fallbackLocal();else say(out('',[T('تعذّر الاتصال، حاول مرة أخرى.','Connection problem, try again.')]),2500);});}
-  function showHeard(t){say(out(T('سمعت','Heard'),['«'+t+'»']),2500);lastHeard=t;}
+  function showHeard(t){stat(out(T('سمعت','Heard'),['«'+t+'»']),2500);lastHeard=t;}
   function startMic(){
     return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1}}).then(function(st){
       var AC=window.AudioContext||window.webkitAudioContext;mic.stream=st;mic.ctx=new AC();mic.src=mic.ctx.createMediaStreamSource(st);
@@ -2480,6 +2488,9 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function stopMic(){try{mic.node&&mic.node.disconnect();}catch(e){}try{mic.src&&mic.src.disconnect();}catch(e){}
     try{mic.stream&&mic.stream.getTracks().forEach(function(t){t.stop();});}catch(e){}try{mic.ctx&&mic.ctx.close();}catch(e){}
     mic={stream:null,ctx:null,src:null,node:null};vad.sp=false;vad.buf=[];vad.pre=[];try{wake&&wake.release();}catch(e){}wake=null;}
+  function switchEngine(){var cur=engine==='local'?'local':'server',nx=cur==='local'?'server':'local';try{localStorage.setItem('pnengine',nx);}catch(e){}
+    if(always)toggleAlways();userOff=false;setTimeout(function(){toggleAlways();say(out(T('سهل','Sahl'),[nx==='local'?T('تم التحويل إلى محرك جوجل للصوت. جرّب أن تتحدث.','Switched to the Google voice engine. Try speaking.'):T('تم التحويل إلى المحرك الذكي للصوت. جرّب أن تتحدث.','Switched to the smart voice engine. Try speaking.')]),5000);},300);}
+  var missN=0;
   function fallbackLocal(){engine='local';stopMic();if(always){say(out(T('سهل','Sahl'),[T('انتقلت للوضع الاحتياطي للصوت.','Switched to backup voice mode.')]),3500);runRec();}}
   setInterval(function(){if(busy&&Date.now()-busyAt>25000)busy=false;if(!always||engine!=='server')return;var tr=mic.stream&&mic.stream.getAudioTracks()[0];
     if(!tr||tr.readyState!=='live'){stopMic();startMic().catch(function(){});return;}
@@ -2489,11 +2500,13 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function toggleAlways(){
     if(always){userOff=true;try{localStorage.setItem('pnmic','0');}catch(e){}always=false;clearTimeout(restartT);try{rec&&rec.abort();}catch(e){}recOn=false;stopMic();bot.classList.remove('always','rest');setState('idle');say(T('تم إيقاف الاستماع.','Listening is off.'),2000);return;}
     always=true;userOff=false;fast=0;bot.classList.add('always');
-    say(out(T('أنا سهل','I am Sahl'),[T('أنا أستمع إليك طوال الجلسة. اسألني عن أي شيء في الموقع، أو قل «أريد آيفون…» لأجهّز طلبك. اضغط عليّ لإيقاف الاستماع.','I listen all session. Ask me anything about the store, or say “I want an iPhone…” to order. Tap me to stop.')]),8000);
-    function local(){engine='local';say(out(T('سهل','Sahl'),[T('أنا أستمع إليك (وضع احتياطي). اسألني عن أي جهاز.','Listening all session (backup mode). Ask about any phone.')]),6000);if(!SR){always=false;bot.classList.remove('always');say(T('هذا المتصفح لا يدعم الصوت. جرّب متصفح كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}runRec();}
+    stat(out(T('أنا سهل','I am Sahl'),[T('أنا أستمع إليك طوال الجلسة. اسألني عن أي شيء في الموقع، أو قل «أريد آيفون…» لأجهّز طلبك. اضغط عليّ لإيقاف الاستماع.','I listen all session. Ask me anything about the store, or say “I want an iPhone…” to order. Tap me to stop.')]),8000);
+    function local(){engine='local';stat(out(T('سهل','Sahl'),[T('أنا أستمع إليك (وضع احتياطي). اسألني عن أي جهاز.','Listening all session (backup mode). Ask about any phone.')]),6000);if(!SR){always=false;bot.classList.remove('always');say(T('هذا المتصفح لا يدعم الصوت. جرّب متصفح كروم على الجوال.','This browser does not support voice. Try Chrome on your phone.'),4500);return;}runRec();}
     if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)||!(window.AudioContext||window.webkitAudioContext)){local();return;}
+    var pe='';try{pe=localStorage.getItem('pnengine')||'';}catch(e){}
+    if(pe==='local'){local();return;}
     fetch('/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:'{"text":""}'}).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(function(){
-      engine='server';srvFail=0;say(out(T('سهل','Sahl'),[T('أنا أستمع إليك (متصل بالخادم الذكي). اسألني عن أي شيء، أو قل «أريد آيفون…» لأجهّز طلبك.','Listening all session (smart server connected). Ask me anything, or say “I want an iPhone…” to order.')]),7000);
+      engine='server';srvFail=0;stat(out(T('سهل','Sahl'),[T('أنا أستمع إليك (متصل بالخادم الذكي). اسألني عن أي شيء، أو قل «أريد آيفون…» لأجهّز طلبك.','Listening all session (smart server connected). Ask me anything, or say “I want an iPhone…” to order.')]),7000);
       return startMic().then(function(){try{localStorage.setItem('pnmic','1');}catch(e){}bot.classList.add('rest');setTimeout(function(){bot.classList.remove('rest');},50);},function(e){
         if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError')){always=false;try{localStorage.setItem('pnmic','0');}catch(_){}bot.classList.remove('always');say(T('اسمح باستخدام الميكروفون من إعدادات المتصفح ثم اضغط عليّ.','Allow the microphone in browser settings, then tap me.'),5000);}
         else local();});
@@ -2525,19 +2538,25 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
    [T('استبدال خلال 3 أيام إذا العبوة مغلقة، ودعم 7 أيام.','Exchange within 3 days if the box is sealed, plus 7-day support.')],
    [T('هل أنت محتار؟ تحدّث معي وسأساعدك في الاختيار.','Not sure? Tap me, talk to me and I will help you choose.')]
   ];
-  function quiet(){return !document.body.classList.contains('lock')&&!document.hidden&&!ord&&!drag&&state==='idle'&&!bub.classList.contains('on');}
+  var fuDone=0,fuN=0;
+  function followUp(){var k=curKey()||ctx.fresh();
+    if(k){ctx.key=k;ask='order';sayQ(dn(k),[T('هل يناسبك هذا الجهاز؟ أستطيع تجهيز طلبك الآن، أو اقتراح بديل.','Does this phone suit you? I can prepare your order now, or suggest an alternative.')],[[T('ابدأ الطلب','Start order'),'اطلب'],[T('مواصفات أكثر','More specs'),'شو مواصفاته'],[T('خيار آخر','Another option'),'شوف لي اشي غيره'],[T('السعر مرتفع','Too expensive'),'السعر غالي']],16000);}
+    else discover(false);}
+  function quiet(){return !document.body.classList.contains('lock')&&!document.hidden&&!ord&&!drag&&(state==='idle'||state==='listen')&&!vad.sp&&!busy&&!bub.classList.contains('on');}
   setInterval(function(){
     if(ask!==askSeen){askSeen=ask;askAt=Date.now();} if(ask&&Date.now()-askAt>45000){ask=null;askSeen=null;}
     if(ord)everOrd=true;
     if(!quiet())return;
     var now=Date.now(),idle=now-lastAct,site=now-SITE0;
     // 0) proactive opener: guide the visitor like a salesman
-    if(!usedBot&&!sget('pnbo')&&site>25000&&!everOrd){sset('pnbo',1);lastNudge=now;discover(true);return;}
+    if(!usedBot&&!sget('pnbo')&&site>15000&&!everOrd){sset('pnbo',1);lastNudge=now;discover(true);return;}
     // 1) why didn't you buy
     if(!everOrd&&site>70000&&idle>12000&&dwell<2&&now-lastDwell>200000&&now-lastNudge>12000){dwell++;sset('pnbd',dwell);lastDwell=now;lastNudge=now;reasons(dwell===1);return;}
     // 2) page dwell on a phone page
     var ck=curKey();
     if(ck&&!everOrd&&now-pgT>50000&&idle>10000&&pgKey!==ck){pgKey=ck;ctx.key=ck;ask='order';lastNudge=now;sayQ(dn(ck),[T('عجبك الجهاز؟ بدك أبدأ لك الطلب؟ الدفع عند الاستلام بعد الفحص.','Like it? Shall I start your order? Pay on delivery after checking.')],[[T('ابدأ الطلب','Start order'),'اطلب'],[T('السعر مرتفع','Too expensive'),'السعر غالي'],[T('خيار آخر','See others'),'محتار ساعدني اختار']],16000);return;}
+    // 2b) salesman follow-up after each answer
+    if(usedBot&&!everOrd&&lastSayAt&&fuDone!==lastSayAt&&fuN<8&&now-lastSayAt>11000&&idle>8000&&now-lastNudge>8000){lastNudge=now;fuN++;followUp();fuDone=lastSayAt;return;}
     // 3) trust nudges
     var gap=usedBot?60000:30000,first=usedBot?60000:18000;
     if(nudged<NUDGES.length&&idle>first&&now-lastNudge>gap){var m=NUDGES[nudged%NUDGES.length];nudged++;sset('pnbn',nudged);lastNudge=now;say(out('',m),6500);}
@@ -2559,7 +2578,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     bub.style.transform='translate3d('+x+'px,'+y+'px,0)';}
   function apply(){clampPos();bot.style.transform=TR();placeBub();}
   bub.style.transition='opacity .25s';
-  bub.addEventListener('click',function(e){var q=e.target.closest&&e.target.closest('button[data-q]');if(q){var qt=q.getAttribute('data-q');if(/^اطلب /.test(qt)){var kk=null;Object.keys(D()).forEach(function(x){if(qt.slice(5)===dn(x))kk=x;});if(kk)ctx.key=kk;process('اطلب');}else process(qt);return;}var b=e.target.closest&&e.target.closest('button[data-k]');if(!b)return;var k=b.getAttribute('data-k'),t0=pendText;pendText='';
+  bub.addEventListener('click',function(e){var q=e.target.closest&&e.target.closest('button[data-q]');if(q){var qt=q.getAttribute('data-q');holdUntil=0;pendSay=null;clearTimeout(pendT);if(qt==='__engine'){switchEngine();return;}if(/^اطلب /.test(qt)){var kk=null;Object.keys(D()).forEach(function(x){if(qt.slice(5)===dn(x))kk=x;});if(kk)ctx.key=kk;process('اطلب');}else process(qt);return;}var b=e.target.closest&&e.target.closest('button[data-k]');if(!b)return;holdUntil=0;var k=b.getAttribute('data-k'),t0=pendText;pendText='';
     if(D()[k]){ctx.key=k;if(t0&&topicOf(nz(t0))){pendKey=k;process(t0);}else{say(out('',[T('تم فتح ','Opening ')+dn(k)]),2500);openDevice(k,null);}}});
   new MutationObserver(function(){bot.classList.toggle('bon',bub.classList.contains('on'));placeBub();}).observe(bub,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
   bot.addEventListener('pointerdown',function(e){clampPos();drag={id:e.pointerId,sx:e.clientX,sy:e.clientY,px:pos.x,py:pos.y};moved=false;try{bot.setPointerCapture(e.pointerId);}catch(_){}});
