@@ -2,7 +2,7 @@
 
 ## المشروع
 - متجر Pinnacle لهواتف فاخرة في الأردن (طلب عبر واتساب). الموقع: pinnaclejo.com
-- ملف واحد: `public/index.html` (~4MB) + `public/sahl/*` (صور سهل). Worker: `src/worker.js`، الإعداد: `wrangler.jsonc`.
+- ملف واحد: `public/index.html` (~4MB) + `public/sahl/phone.webp` و`meta2.json` (حركة سهل الجديدة: واقف أمام الكاميرا، خطوتين، يلوّح، ثم يلعب بالتليفون في حلقة). الحركة القديمة (مشي) محفوظة في `backups/sahl-v127` و`backups/index-v128-before-phone-sahl.html`. Worker: `src/worker.js`، الإعداد: `wrangler.jsonc`.
 - النشر: أي push إلى `main` على GitHub (gharaibehrezeq1-crypto/pinnacle) ينشر تلقائياً على Cloudflare (Worker `pinnacle-git`).
 - نسخة العمل الخاصة (Artifact): https://claude.ai/artifact/PWz2w6jUbCcFtazbrBGECV (آخر نسخة v127). تُنشر مع ملفات sahl/walk.webp,t1.webp,t2.webp,meta.json.
 - نسخ احتياطية قبل كل تعديل كبير: `backups/` (الأحدث `index-v127-tap-text.html`).

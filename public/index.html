@@ -1929,7 +1929,7 @@ body.pnoff .pnrev{display:block}
 .pnbot{position:fixed;left:0;top:0;z-index:95;width:76px;height:124px;padding:0;border:0;background:none;cursor:grab;-webkit-tap-highlight-color:transparent;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;will-change:transform}
 body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbot .pnw{position:relative;width:100%;height:100%}
-.pnbot canvas{position:absolute;left:50%;top:0;width:70px;height:119px;margin-left:-35px;filter:drop-shadow(0 6px 7px rgba(30,20,90,.25));pointer-events:none}
+.pnbot canvas{position:absolute;left:50%;top:0;width:71px;height:119px;margin-left:-35.5px;filter:drop-shadow(0 6px 7px rgba(30,20,90,.25));pointer-events:none}
 .pnbot.rev canvas{transform:scaleX(-1)}
 .pnbot .pnhint{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:30px;white-space:nowrap;font:500 9.5px/1.2 var(--font-body,Arial);color:#4a4170;opacity:.85;text-shadow:0 0 4px #fff,0 0 4px #fff,0 0 6px #fff;pointer-events:none;transition:opacity .25s}
 .pnbot.used .pnhint,.pnbot.listen .pnhint,.pnbot.always .pnhint,.pnbot.bon .pnhint,.pnbot.happy .pnhint{opacity:0}
@@ -1954,7 +1954,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbub small{display:block;font:500 11px var(--font-body,Arial);color:#6e6e73;margin-bottom:2px}
 @media (prefers-reduced-motion:reduce){.pnbot *{animation:none!important}}
 </style>
-<button type="button" class="pnbot" id="pnbot" aria-label="سهل"><div class="pnw"><span class="pnnm" id="pnnm">أنا سهل</span><span class="pnhint" id="pnhint">اضغط عليّ وتحدّث معي</span><canvas id="pncv" width="168" height="300"></canvas><svg class="fx wv" viewBox="0 0 114 174" fill="none" stroke-linecap="round" stroke-width="4"><path d="M10 50Q2 80 10 110" stroke="#7a6cff"/><path d="M104 50Q112 80 104 110" stroke="#7a6cff"/><path d="M2 40Q-10 80 2 120" stroke="#34d3c0"/><path d="M112 40Q124 80 112 120" stroke="#34d3c0"/></svg><svg class="fx st" viewBox="0 0 114 174"><path d="M12 22l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#7a6cff"/><path d="M100 14l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" fill="#34d3c0"/></svg></div></button>
+<button type="button" class="pnbot" id="pnbot" aria-label="سهل"><div class="pnw"><span class="pnnm" id="pnnm">أنا سهل</span><span class="pnhint" id="pnhint">اضغط عليّ وتحدّث معي</span><canvas id="pncv" width="192" height="320"></canvas><svg class="fx wv" viewBox="0 0 114 174" fill="none" stroke-linecap="round" stroke-width="4"><path d="M10 50Q2 80 10 110" stroke="#7a6cff"/><path d="M104 50Q112 80 104 110" stroke="#7a6cff"/><path d="M2 40Q-10 80 2 120" stroke="#34d3c0"/><path d="M112 40Q124 80 112 120" stroke="#34d3c0"/></svg><svg class="fx st" viewBox="0 0 114 174"><path d="M12 22l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#7a6cff"/><path d="M100 14l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" fill="#34d3c0"/></svg></div></button>
 <div class="pnbub" id="pnbub" role="status" aria-live="polite"></div>
 <script id="pnbot-js">
 (function(){
@@ -2709,40 +2709,26 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   bot.addEventListener('contextmenu',function(e){e.preventDefault();});bot.addEventListener('pointerup',up);bot.addEventListener('pointercancel',up);
   window.addEventListener('resize',apply);
   apply();setTimeout(apply,300);
-  // real-footage character: sprite sheets cut from generated video (walk loop + turn-to-camera/wave clips)
-  var cv=document.getElementById('pncv'),cx=cv.getContext('2d'),SH={},M=null,ready=false;
-  var FPS=12,SPD=52,RANGE=105;
+  // real-footage character: one sprite sheet cut from a generated clip (stands, two steps, waves, then plays with a phone on loop)
+  var cv=document.getElementById('pncv'),cx=cv.getContext('2d'),SH=null,M=null,ready=false;
   function loadSheets(){
-    fetch('sahl/meta.json?v=2').then(function(r){return r.json();}).then(function(m){M=m;var left=3;
-      ['walk','t1','t2'].forEach(function(n){var im=new Image();im.onload=function(){SH[n]=im;if(--left===0){ready=true;draw('t1',M.front1);}};im.onerror=function(){};im.src='sahl/'+n+'.webp?v=2';});
+    fetch('sahl/meta2.json?v=3').then(function(r){return r.json();}).then(function(m){M=m;cv.width=m.ow;cv.height=m.oh;
+      var im=new Image();im.onload=function(){SH=im;ready=true;draw(M.front);};im.onerror=function(){};im.src='sahl/phone.webp?v=3';
     }).catch(function(){});}
-  function draw(n,i){var im=SH[n];if(!im||!M)return;var cols=M['cols_'+n],ow=M.ow,oh=M.oh;cx.clearRect(0,0,ow,oh);cx.drawImage(im,(i%cols)*ow,Math.floor(i/cols)*oh,ow,oh,0,0,ow,oh);}
-  // turn: facing-direction clip forward (turn, raise hand, wave), then the other clip backwards (lower hand, turn away)
-  function mkSeq(dirNow){var a=dirNow>0?'t1':'t2',b=dirNow>0?'t2':'t1',na=M['n'+a],ra=dirNow>0?M.rev2:M.rev1,q=[],k;
-    for(k=0;k<na;k++)q.push([a,k]);
-    for(k=ra;k>=0;k--)q.push([b,k]);return q;}
-  var mode='stand',dir=-1,tStart=performance.now(),seq=null,lastF=performance.now(),holdT=performance.now()+1200,wantStop=false;
-  function isPass(f){return f===M.passA||f===M.passB;}
-  function loop(t){var dt=Math.min(.1,(t-lastF)/1000);lastF=t;
+  function draw(i){if(!SH||!M)return;var cols=M.cols,ow=M.ow,oh=M.oh;cx.clearRect(0,0,ow,oh);cx.drawImage(SH,(i%cols)*ow,Math.floor(i/cols)*oh,ow,oh,0,0,ow,oh);}
+  var mode='stand',tStart=performance.now(),lastF=performance.now(),holdT=performance.now()+600;
+  function loop(t){lastF=t;
     if(ready){
       var free=state==='idle'&&!drag&&!document.hidden&&!document.body.classList.contains('lock');
+      bot.classList.remove('rev');
       if(!free){ // listening / answering / dragging: face the camera
-        if(mode==='walk'||mode==='turn')mode='stand';holdT=t+1200;wantStop=false;bot.classList.remove('rev');
-        draw('t1',state==='happy'?M.wave1:M.front1);
-      }else if(mode==='stand'){bot.classList.remove('rev');draw('t1',M.front1);if(t>holdT){mode='walk';tStart=t;wantStop=false;}}
-      else if(mode==='walk'){
-        bot.classList.toggle('rev',dir<0);
-        var f=(M.passA+Math.floor((t-tStart)/1000*FPS))%M.nw,W=vw();
-        var nx=wx+dir*SPD*dt,absx=pos.x+nx;
-        if(!wantStop&&((dir<0&&(nx<-RANGE||absx<40))||(dir>0&&(nx>RANGE||absx>W-bot.offsetWidth-34))))wantStop=true;
-        if(wantStop&&isPass(f)){mode='turn';seq=mkSeq(dir);tStart=t;dir=-dir;wantStop=false;bot.classList.remove('rev');draw(seq[0][0],seq[0][1]);}
-        else{wx=Math.max(4-pos.x,Math.min(W-bot.offsetWidth-4-pos.x,nx));bot.style.transform=TR();if(bub.classList.contains('on'))placeBub();draw('walk',f);}
-      }
-      else if(mode==='turn'){
-        bot.classList.remove('rev');
-        var k=Math.floor((t-tStart)/1000*FPS);
-        if(k>=seq.length){mode='walk';tStart=t;wantStop=false;bot.classList.toggle('rev',dir<0);}
-        else draw(seq[k][0],seq[k][1]);
+        mode='stand';holdT=t+1200;
+        draw(state==='happy'?M.wave:M.front);
+      }else if(mode==='stand'){draw(M.front);if(t>holdT){mode='play';tStart=t;}}
+      else{ // intro once (stand, steps, wave, take out phone), then loop: phone play / hold up / phone play
+        var f=Math.floor((t-tStart)/1000*M.fps);
+        if(f>=M.loopA)f=M.loopA+(f-M.loopA)%(M.loopB-M.loopA);
+        draw(f);
       }
     }
     requestAnimationFrame(loop);}
