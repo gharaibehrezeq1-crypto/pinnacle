@@ -2332,7 +2332,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   apply();setTimeout(apply,300);
   // real-footage character: sprite sheets cut from generated video (walk loop + turn-to-camera/wave clips)
   var cv=document.getElementById('pncv'),cx=cv.getContext('2d'),SH={},M=null,ready=false;
-  var FPS=12,SPD=52,RANGE=85;
+  var FPS=12,SPD=52,RANGE=105;
   function loadSheets(){
     fetch('sahl/meta.json?v=2').then(function(r){return r.json();}).then(function(m){M=m;var left=3;
       ['walk','t1','t2'].forEach(function(n){var im=new Image();im.onload=function(){SH[n]=im;if(--left===0){ready=true;draw('t1',M.front1);}};im.onerror=function(){};im.src='sahl/'+n+'.webp?v=2';});
@@ -2355,7 +2355,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
         bot.classList.toggle('rev',dir<0);
         var f=(M.passA+Math.floor((t-tStart)/1000*FPS))%M.nw,W=vw();
         var nx=wx+dir*SPD*dt,absx=pos.x+nx;
-        if(!wantStop&&((dir<0&&(nx<-RANGE||absx<58))||(dir>0&&(nx>RANGE||absx>W-bot.offsetWidth-58))))wantStop=true;
+        if(!wantStop&&((dir<0&&(nx<-RANGE||absx<40))||(dir>0&&(nx>RANGE||absx>W-bot.offsetWidth-34))))wantStop=true;
         if(wantStop&&isPass(f)){mode='turn';seq=mkSeq(dir);tStart=t;dir=-dir;wantStop=false;bot.classList.remove('rev');draw(seq[0][0],seq[0][1]);}
         else{wx=Math.max(4-pos.x,Math.min(W-bot.offsetWidth-4-pos.x,nx));bot.style.transform=TR();if(bub.classList.contains('on'))placeBub();draw('walk',f);}
       }
