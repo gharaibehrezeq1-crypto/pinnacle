@@ -2601,8 +2601,8 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   // ===== auto-listen: starts by itself (remembered), else on the first touch anywhere =====
   var userOff=false,autoTries=0;
   function autoListen(){if(always||userOff||autoTries>=3||document.body.classList.contains('lock')||document.body.classList.contains('pnoff'))return;autoTries++;toggleAlways();}
-  try{if(localStorage.getItem('pnmic')==='1'){var ai=setInterval(function(){if(!document.body.classList.contains('lock')){clearInterval(ai);setTimeout(autoListen,1500);}},400);}}catch(e){}
-  document.addEventListener('pointerdown',function(e){if(always||userOff||autoTries>=3)return;if(bot.contains(e.target))return;try{if(localStorage.getItem('pnmic')!=='1')return;}catch(_){return;}autoListen();},true);
+  
+  document.addEventListener('pointerdown',function(e){if(always||userOff||autoTries>=3)return;if(bot.contains(e.target))return;return;},true);
   // watchdog: keep the ear alive
   setInterval(function(){if(!always||document.hidden)return;
     if(engine==='local'&&!recOn&&SR)runRec();
@@ -2612,10 +2612,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   // greeting wave once, shortly after the intro ends
   // ===== ask first: "enable the microphone to talk to Sahl?" =====
   function askMic(){var asked=false;try{asked=sessionStorage.getItem('pnask')==='1';}catch(_){}
-    if(asked||always||userOff||document.body.classList.contains('pnoff')||document.body.classList.contains('lock'))return;
+    if(always||userOff||document.body.classList.contains('pnoff')||document.body.classList.contains('lock'))return;
     try{sessionStorage.setItem('pnask','1');}catch(_){}
     sayQ(T('أهلاً بك، أنا سهل','Hi, I am Sahl'),[T('هل تودّ تفعيل الميكروفون لتتحدث معي وأجيبك بالصوت؟','Would you like to enable the microphone so we can talk?')],[[T('نعم، فعّل الميكروفون','Yes, enable the mic'),'__micyes'],[T('لا، شكراً','No thanks'),'__micno']],30000);}
-  (function(){var wi=setInterval(function(){if(!document.body.classList.contains('lock')){clearInterval(wi);setTimeout(function(){if(!always)askMic();},2800);}},400);})();
+  (function(){var wi=setInterval(function(){if(!document.body.classList.contains('lock')){clearInterval(wi);setTimeout(function(){if(!always)askMic();},1500);}},400);})();
   // ===== close button: the customer can remove Sahl from the screen =====
   try{localStorage.removeItem('pnoff');if(/[?&]sahl=1/.test(location.search))sessionStorage.removeItem('pnoff');if(sessionStorage.getItem('pnoff')==='1'){document.body.classList.add('pnoff');userOff=true;}}catch(e){}
   (function(){var x=document.createElement('span');x.className='pnx';x.setAttribute('role','button');x.setAttribute('aria-label',T('إغلاق سهل','Close Sahl'));x.title=T('إغلاق سهل','Close Sahl');x.textContent='×';bot.appendChild(x);
@@ -2634,7 +2634,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     function rup(e){if(!rd||e.pointerId!==rd.id)return;rd=null;if(rm){try{localStorage.setItem('pnrevpos',JSON.stringify(rp));}catch(_){}}}
     r.addEventListener('pointerup',rup);r.addEventListener('pointercancel',rup);r.style.touchAction='none';
     r.addEventListener('click',function(){if(rm){rm=false;return;}
-      document.body.classList.remove('pnoff');try{sessionStorage.removeItem('pnoff');}catch(_){}userOff=false;autoTries=0;try{localStorage.setItem('pnmic','1');}catch(_){}apply();setTimeout(autoListen,400);
+      document.body.classList.remove('pnoff');try{sessionStorage.removeItem('pnoff');}catch(_){}userOff=false;autoTries=0;apply();
       bot.classList.add('wave');setTimeout(function(){bot.classList.remove('wave');},1600);setTimeout(function(){discover(true);},350);});})();
   // ===== idle manager: trust nudges, "why didn't you buy?", page dwell =====
   var SITE0=Date.now(),lastAct=Date.now(),lastNudge=Date.now(),nudged=0,usedBot=false,everOrd=false,dwell=0,lastDwell=0,pgT=Date.now(),pgKey='',askSeen=null,askAt=0;
