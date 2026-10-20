@@ -2333,6 +2333,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     ask='budget2';sayQ(T('حسناً','Okay'),[T('وكم ميزانيتك تقريباً؟ لأختار لك الأنسب.','And roughly what is your budget? So I can pick the best fit.')],[[T('حتى 500','Up to 500'),'ميزانيتي لحد 500'],[T('حتى 800','Up to 800'),'ميزانيتي لحد 800'],[T('حتى 1100','Up to 1100'),'ميزانيتي لحد 1100'],[T('مفتوحة','Open'),'ميزانيتي مفتوحه']],14000);return true;}
   function process(t){
     var raw=light(t),n=nz(t);if(!n)return;
+    holdUntil=0;pendSay=null;clearTimeout(pendT); // a new question always replaces the bubble being held
     n=n.replace(/(^| )(يا )?(سهل|سحل|صحل|sahl|sahel|sehl)( |$)/g,' ').replace(/(^| )(مرحبا|اهلا|هلا|هاي|hello|hey|hi)( |$)/g,' ').replace(/\s+/g,' ').trim();
     var CANCEL=/(الغي|الغاء|كنسل|لا بدي|ما بدي|cancel|stop order|never mind)/;
     n=n.replace(/^(يلا|يالله|طيب|طب|اوكي|ok|خلص|ممكن|لو سمحت|من فضلك)( (يلا|لو سمحت|ممكن))? (?=\S)/,'');
@@ -2364,7 +2365,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       sayQ(T('الوكلاء','Agents'),[AG[1][0]+': '+AG[1][1],AG[0][0]+': '+AG[0][1],AG[2][0]+': '+AG[2][1]],null,22000);return;}
     var bcap=n0.match(/(?:ما|مش|لا) (?:بدي|ابغي|اريد|ابي|بزيد|ازيد|اتعدي|اتخطي|بتعدي|بتخطي)[^0-9]{0,18}?(?:اغلي|اكتر|اكثر|فوق|عن|من|علي)[^0-9]{0,8}(\d{3,4})/)||n0.match(/(?:معي|عندي|ميزانيتي|ميزانيه|رصيدي|حدودي|مصاري|مبلغ)[^0-9]{0,14}(\d{3,4})/);
     if(bcap&&!keys.length){sess.budget=Number(bcap[1]);ask='order';if(adviceFor(sess.need||'best'))return;}
-    var sid=socOf(n0,fd,tp);if(sid){if(sid!=='yes'&&sid!=='no'&&sid!=='thanks')ask=(sid==='think'||sid==='hesit')?'why':ask;soc(sid,n0);return;}
+    var CMPV=/(^| )(ت?قارن|اقارن|قارنلي|قارن لي|مقارنه|المقارنه|compare)( |$)/.test(n0);
+    if(CMPV&&keys.length<2&&!tp){var sn0=sess.seen||[];ask=null;if(sn0.length>=2){process('قارن بين '+dn(sn0[sn0.length-2])+' و '+dn(sn0[sn0.length-1]));return;}
+      sayQ(T('المقارنة','Compare'),[T('اذكر جهازين وسأقارن بينهما، مثلاً: «قارن بين آيفون 17 برو ماكس وجالكسي إس 26 ألترا».','Name two phones, e.g. "compare iPhone 17 Pro Max and S26 Ultra".')],null,12000);return;}
+    var sid=(CMPV&&keys.length>=2)?null:socOf(n0,fd,tp);if(sid){if(sid!=='yes'&&sid!=='no'&&sid!=='thanks')ask=(sid==='think'||sid==='hesit')?'why':ask;soc(sid,n0);return;}
     if(ask==='budget'&&/^\d{3,4}$/.test(n0)){ask=null;process(n0+' دينار');return;}
     if(/(ميزانيتي|ميزانيه|budget)/.test(n0)&&!/\d{3}/.test(n0)&&!keys.length){ask='budget';sayQ(T('يسعدني مساعدتك','Let me help'),[T('كم ميزانيتك بالدينار تقريباً؟','Roughly what is your budget in JOD?')],[['400','400 دينار'],['600','600 دينار'],['800','800 دينار'],['1000','1000 دينار']],12000);return;}
     if(/(بدي|ابغي|اريد|محتاج|ادور علي|دور لي علي).*(جهاز|موبايل|تلفون|هاتف|اشي).*(تصوير|صور|كاميرا|بطاريه|العاب|رخيص|شاشه كبيره|اداء)/.test(n0)&&!keys.length){var nd=/تصوير|صور|كاميرا/.test(n0)?'cam':/بطاريه/.test(n0)?'bat':/رخيص/.test(n0)?'cheap':/شاشه/.test(n0)?'screen':'game';if(adviceFor(nd))return;}
@@ -2463,7 +2467,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   var always=false,recOn=false,pend=false,restartT=null,startedAt=0,fast=0,intT=null,lastInterim='',handledN='',handledAt=0,calmT=null;
   function commit(t){var n=nz(t);if(!n)return;var now=Date.now();
     if(handledN&&now-handledAt<2500&&(n===handledN||handledN.indexOf(n)===0))return;
-    handledN=n;handledAt=now;lastInterim='';clearTimeout(calmT);if(state==='listen')setState('idle');lastHeard=t;process(t);}
+    handledN=n;handledAt=now;lastInterim='';clearTimeout(calmT);if(state==='listen')setState('idle');lastHeard=t;holdUntil=0;pendSay=null;clearTimeout(pendT);process(t);}
   function runRec(){
     if(!always||recOn)return;pend=false;clearTimeout(restartT);
     var r=new SR();rec=r;r.lang=EN()?'en-US':'ar-JO';r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
@@ -2471,7 +2475,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     r.onresult=function(e){var fin='',intr='';
       for(var i=e.resultIndex;i<e.results.length;i++){var tr=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=' '+tr;else intr+=' '+tr;}
       if(state!=='happy'){setState('listen');clearTimeout(calmT);calmT=setTimeout(function(){if(state==='listen')setState('idle');},2500);}
-      if(intr.trim()){lastInterim=intr.trim();showHearing(lastInterim);clearTimeout(intT);intT=setTimeout(function(){if(!lastInterim)return;var q=nz(lastInterim);if(q.split(' ').length<2||/(^| )(صفحه|على|علي|الى|الي|ل|من|عن|و|بين|ولا|او|مع|في|كم|شو|بدي|انتقل|روح|افتح|وديني|انقلني|خذني|ودني|ورجيني|وريني|قارن)$/.test(q)){intT=setTimeout(function(){if(lastInterim)commit(lastInterim);},3000);return;}commit(lastInterim);},1700);}
+      if(intr.trim()){lastInterim=intr.trim();showHearing(lastInterim);clearTimeout(intT);intT=setTimeout(function(){if(!lastInterim)return;var q=nz(lastInterim);if(q.split(' ').length<2){return;}if(/(^| )(صفحه|على|علي|الى|الي|ل|من|عن|و|بين|ولا|او|مع|في|كم|شو|بدي|انتقل|روح|افتح|وديني|انقلني|خذني|ودني|ورجيني|وريني|قارن)$/.test(q)){intT=setTimeout(function(){if(lastInterim)commit(lastInterim);},3500);return;}commit(lastInterim);},2200);}
       if(fin.trim()){clearTimeout(intT);commit(fin.trim());}};
     r.onerror=function(e){
       if(e.error==='not-allowed'||e.error==='service-not-allowed'){always=false;bot.classList.remove('always','rest');say(T('اسمح باستخدام الميكروفون من إعدادات المتصفح ثم اضغط عليّ.','Allow the microphone in browser settings, then tap me.'),5000);}
