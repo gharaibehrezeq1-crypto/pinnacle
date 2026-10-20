@@ -2372,6 +2372,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(!ord&&unresolved(fd)){pickDevice(t,famOf(fd.n),'');return;}
     // ----- unavailable device (e.g. iPhone 16) -----
     var key=keys[0]||null;
+    if(!keys.length&&!tp&&!fd.miss.length&&/^(طيب|طب|بدي|اوكي|ok|okay|تمام|يلا|ايوه|اه|ممكن|لو سمحت|شو|ايش|وش|كم|قديش|هل|و|ثم|بس|اي|ايه|يعني|اشي|شي)$/.test(n)){return;}
     var NAV=/(دخلني|ادخلني|دخلوني|دخلنا|فوت|فوتني|فوتلي|خشني|خشلي|اطلع علي|طلعني|تدخل|تفتح|تفتحلي|تفتحي|تعرض|تعرضلي|تورجيني|توريني|تنقلني|تاخذني|تخذني|توديني|تدخلني|تحولني|تطلعني|تروح|افتح|افتحلي|افتحي|وريني|ورجيني|ورني|اعرض|اعرضلي|روح|روحني|خذني|خدني|وديني|ودني|ودي|اذهب|انتقل|انتقلي|انقلني|نقلني|انقل|حولني|حول|ادخلني|ادخل|طلعني|اطلع|وصلني|شوفلي|شوف لي|عاين|اشوف|افتح لي|open|show me|show|go to|take me|navigate|بدي (اشوف|افتح|ادخل|اروح|انتقل|اطلع))/,NAVONLY=/(^| )(صفحه|صفحة)( |$)/;
     var BUYV=/(اشتري|اشتريه|اطلب|اطلبه|شراء|اكمل الطلب|اكمل عمليه|buy|order|purchase|checkout)/;
     var WANT=/(بدي|اريد|ابغي|ابغا|ابي|i want|i would like|i need)/,NOTBUY=/(اعرف|اسال|اشوف|افهم|معلومات|مواصفات|اقارن|الفرق|ايش|شو الفرق)/;
@@ -2444,6 +2445,9 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       say(out(T('مقارنة','Compare'),lines),14000);ok_();return;}
     var k1=use[0];head=dn(k1);
     var rs2=tp?rowsFor(k1,tp,n):[];
+    if(!tp&&/(مواصفات|مواصفه|specs|specification|تفاصيل|كل شي عن|كل اشي عن|كل شيء عن)/.test(n)){ // full spec sheet, not a keyword search
+      rs2=[[T('السعر','Price'),fmtP(k1)+' '+T('دينار','JOD')]];
+      ['screen','cpu','ram','storage','cam','front','battery','charge','os'].forEach(function(t2){var r=rowsFor(k1,t2,n)[0];if(!r||!r[1])return;if(t2==='cam')r=[T('الكاميرا الرئيسية','Main camera'),r[1]];if(t2==='front')r=[T('كاميرا السيلفي','Selfie camera'),r[1]];if(t2==='battery')r=[T('البطارية','Battery'),r[1]];if(t2==='storage')r=[T('التخزين','Storage'),r[1]];if(t2==='charge')r=[T('الشحن','Charging'),r[1]];rs2.push(r);});}
     if(!rs2.length)rs2=searchRows(k1,n);
     if(!rs2.length&&!tp){ // general summary of the phone
       rs2=[[T('السعر','Price'),fmtP(k1)+' '+T('دينار','JOD')]];
