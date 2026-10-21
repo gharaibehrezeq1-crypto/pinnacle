@@ -2624,6 +2624,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     keys.forEach(function(k){L.push('FULL SPECS '+k+':');D()[k].data.forEach(function(S){var rows=S.rows.filter(function(r){return r[1];}).map(function(r){return tx(r[0])+'='+tx(r[1])+(r[2]&&r[2].length<70?' ('+tx(r[2])+')':'');});if(rows.length)L.push(' '+tx(S.k)+': '+rows.join('; '));});});
     return L.join('\n');}
   function applyAI(t,res,cb){
+    var nt0=nz(t);if(/(قارن|اقارن|مقارنه|الفرق بين|compare)/.test(nt0)||(res&&res.action==='order'&&!/(اطلب|اشتري|اشتر|شراء|اشتر|احجز|اطلبلي|order|buy|purchase)/.test(nt0))){process(t);cb&&cb();return;}
     if(!res||(!res.say&&(!res.action||res.action==='none'))){process(t);cb&&cb();return;}
     var key=D()[res.device]?res.device:null;var fkk=findDevices(t).keys;if(fkk.length&&fkk.indexOf(key)<0)key=fkk[0];if(key)ctx.key=key;
     hist.push({r:'u',t:t});hist.push({r:'a',t:res.say||''});if(hist.length>8)hist=hist.slice(-8);
