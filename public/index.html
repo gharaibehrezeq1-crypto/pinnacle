@@ -1961,22 +1961,30 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cmx{width:34px;height:34px;border-radius:50%;font-size:20px;line-height:1;padding:0;cursor:pointer}
 .pncmp .cmbc{display:none;border-radius:999px;font:600 13px var(--font-body,Arial);padding:7px 14px;cursor:pointer;color:#1b1440}
 .pncmp .cmsh.det .cmbc{display:inline-block}.pncmp .cmsh.det .cmtt{display:none}
-.pncmp .cmhd{position:sticky;top:56px;z-index:5;display:grid;gap:6px;margin:0 -12px 10px;padding:4px 12px 8px;background:linear-gradient(180deg,rgba(241,236,255,.9),rgba(241,236,255,.55));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.pncmp .cmhd b{display:block;box-sizing:border-box;min-width:0;text-align:center;font-size:13px;font-weight:700;line-height:1.3;padding:8px 6px;border-radius:16px;overflow-wrap:anywhere}
+.pncmp .cmhd{position:sticky;top:56px;z-index:5;display:grid;gap:0;margin:0 -12px 8px;padding:4px 12px 6px;background:linear-gradient(180deg,rgba(241,236,255,.9),rgba(241,236,255,0));}
+.pncmp .cmhd b{display:block;box-sizing:border-box;min-width:0;text-align:center;font-size:13px;font-weight:700;line-height:1.3;padding:9px 4px 8px;overflow-wrap:anywhere;color:#1b1440;background:linear-gradient(180deg,rgba(236,230,255,.97),rgba(214,246,243,.93));border:1px solid rgba(255,255,255,.9);border-radius:16px 16px 0 0;box-shadow:inset 0 1px 0 #fff}
+.pncmp .cmhd b.win{color:#fff;text-shadow:0 1px 2px rgba(70,40,170,.55);background:linear-gradient(180deg,#b7a1ff,#7456f5);box-shadow:inset 0 2px 3px rgba(255,255,255,.75),inset 0 -3px 5px rgba(80,50,205,.35)}
 .pncmp .cmhd small{display:block;margin-top:2px;font-size:11.5px;font-weight:600;color:#5b4fd0}
-.pncmp .cmpn{border-radius:22px;border:1px solid rgba(255,255,255,.9);background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(255,255,255,.6));box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 14px 30px -18px rgba(90,80,175,.45);overflow:hidden;margin-bottom:14px}
-.pncmp .cmo{text-align:center;padding:16px 10px 14px}
+.pncmp .cmhd b.win small{color:#efe9ff}
+.pncmp .cmhd i{display:block}
+.pncmp .cmo{text-align:center;padding:16px 10px 14px;margin-bottom:10px;border-radius:22px;background:#fff;border:1px solid rgba(150,130,255,.25);box-shadow:0 14px 30px -18px rgba(90,80,175,.45)}
 .pncmp .cmo span{display:block;font-size:12px;color:#6d66a0;margin-bottom:4px}
 .pncmp .cmo b{display:block;font-size:20px;font-weight:800;overflow-wrap:anywhere;background:linear-gradient(135deg,#6d4dff,#1fb8a6);-webkit-background-clip:text;background-clip:text;color:transparent}
-.pncmp table{width:100%;border-collapse:collapse;table-layout:fixed}
-.pncmp td,.pncmp th{box-sizing:border-box;padding:9px 6px;border-top:1px solid rgba(120,100,225,.2);border-left:1px solid rgba(120,100,225,.2);text-align:center;vertical-align:middle;font-size:12.5px;line-height:1.45;overflow-wrap:anywhere;word-break:break-word}
-.pncmp tr>*:last-child{border-left:0}
-.pncmp th.lb,.pncmp td.lb{width:27%;font-size:11.5px;font-weight:600;color:#5b5590;background:rgba(150,130,255,.09);text-align:center}
-.pncmp td{font-weight:700;color:#1b1440}
-.pncmp td.win{background:linear-gradient(135deg,rgba(150,120,255,.2),rgba(80,225,205,.22));color:#3b2bb8}
-.pncmp td.na{color:#b5b0d2;font-weight:400}
+.pncmp .cmstg{position:relative;border-radius:20px;overflow:hidden;margin-bottom:14px;background:#fff;border:1px solid rgba(150,130,255,.25);box-shadow:0 14px 30px -18px rgba(90,80,175,.45)}
+.pncmp .cmc{position:absolute;top:0;bottom:0;z-index:0;transform-origin:top;animation:cmdrop 1s cubic-bezier(.22,.9,.25,1) both;background:repeating-linear-gradient(90deg,rgba(255,255,255,.0) 0 9px,rgba(120,100,225,.08) 9px 11px),linear-gradient(180deg,rgba(236,230,255,.98),rgba(214,246,243,.95))}
+.pncmp .cmc.win{background:repeating-linear-gradient(90deg,rgba(255,255,255,0) 0 9px,rgba(255,255,255,.16) 9px 11px),linear-gradient(180deg,#b7a1ff,#7456f5 70%,#6a4af0)}
+.pncmp .cmc.l{animation-delay:.12s}
+@keyframes cmdrop{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.pncmp table{position:relative;z-index:1;width:100%;border-collapse:collapse;table-layout:fixed;direction:rtl}
+.pncmp td{box-sizing:border-box;padding:9px 4px;border-top:1px solid rgba(120,100,225,.2);text-align:center;vertical-align:middle;font-size:12.5px;line-height:1.45;overflow-wrap:anywhere;word-break:break-word;font-weight:700;color:#1b1440;animation:cmfade .5s .7s both}
+.pncmp td.lb{font-size:11.5px;font-weight:600;color:#5b5590;background:#fff;animation:none}
+.pncmp tr:first-child>td{border-top:0}
+.pncmp td.dwc{color:#fff;text-shadow:0 1px 2px rgba(70,40,170,.5)}
+.pncmp td.win{color:#3b2bb8!important;text-shadow:none!important;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(224,250,247,.92));box-shadow:inset 0 0 0 2px rgba(120,90,245,.75)}
+.pncmp td.na{opacity:.5;font-weight:400}
+@keyframes cmfade{from{opacity:0}to{opacity:1}}
 .pncmp td small{display:block;font-weight:500;font-size:10.5px;color:#7a74a8;margin-top:2px}
-.pncmp .cmst{padding:9px 12px;font-size:13px;font-weight:800;color:#fff;text-align:center;background:linear-gradient(180deg,rgba(176,156,255,.97),rgba(126,98,248,.93));text-shadow:0 1px 2px rgba(70,40,170,.5);box-shadow:inset 0 2px 3px rgba(255,255,255,.7),inset 0 -3px 5px rgba(80,50,205,.3)}
+.pncmp .cmst{position:relative;z-index:2;padding:9px 12px;font-size:13px;font-weight:800;color:#fff;text-align:center;background:linear-gradient(180deg,rgba(176,156,255,.97),rgba(126,98,248,.93));text-shadow:0 1px 2px rgba(70,40,170,.5);box-shadow:inset 0 2px 3px rgba(255,255,255,.7),inset 0 -3px 5px rgba(80,50,205,.3)}
 .pncmp .cmd{font-size:10.5px;color:#7a74a8;line-height:1.6;text-align:center;padding:4px 8px 12px}
 .pncmp .cmdb{display:block;box-sizing:border-box;width:100%;margin:2px 0 16px;border-radius:999px;padding:13px;font:700 15px var(--font-body,Arial);cursor:pointer;color:#fff;text-shadow:0 1px 2px rgba(70,40,170,.55);background:linear-gradient(180deg,rgba(200,182,255,.96),rgba(146,118,250,.92));border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 2px 3px rgba(255,255,255,.8),inset 0 -4px 6px rgba(80,50,205,.38),0 8px 14px -8px rgba(110,80,240,.8)}
 .pncmp .cmdv{display:none}.pncmp .cmsh.det .cmdv{display:block}.pncmp .cmsh.det .cmv,.pncmp .cmsh.det .cmdb{display:none}
@@ -2534,21 +2542,25 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     K.forEach(function(k){cmpRows(k).forEach(function(r){if(secs.indexOf(r.s)<0){secs.push(r.s);rowsBy[r.s]=[];}if(rowsBy[r.s].indexOf(r.l)<0)rowsBy[r.s].push(r.l);});});
     function sv(x){x=String(x==null?'':x).replace(/ for Galaxy/,'').replace(/\s*[—–]\s.*$/,'').replace(/\s*\(.*?\)\s*/g,' ').trim();return x.length>40?x.slice(0,38).replace(/\s+\S*$/,'')+'…':x;}
     h+='<div class="cmh"><b><span class="cmtt">'+T('مقارنة','Comparison')+'</span><span class="cmbc" role="button">'+T('‹ الملخص','‹ Summary')+'</span></b><button type="button" class="cmx" aria-label="'+T('إغلاق','Close')+'">×</button></div>';
-    h+='<div class="cmhd" style="grid-template-columns:repeat('+n+',1fr)">'+K.map(function(k,i){return '<b class="cmgl">'+bd(nm[i])+'<small>'+fmtP(k)+' '+T('د.أ','JOD')+'</small></b>';}).join('')+'</div>';
-    var lbW=n>2?'22%':'27%';
-    h+='<div class="cmv"><div class="cmpn"><div class="cmo">'+(ver.ov>=0?'<span>'+T('الأقوى بشكل عام','Strongest overall')+'</span><b>'+bd(nm[ver.ov])+'</b>':'<b>'+T('الأجهزة متقاربة','Very close')+'</b>')+'</div>';
-    h+='<table><colgroup><col style="width:'+lbW+'">'+K.map(function(){return '<col>';}).join('')+'</colgroup>';
+    var w=70/n,gt=w+'% 30%'+(' '+w+'%').repeat(n-1),WI=ver.ov;
+    function cur(){return K.map(function(k,i){return '<div class="cmc'+(i===WI?' win':'')+(i?' l':'')+'" style="width:'+w+'%;'+(i?'left:'+((n-1-i)*w)+'%':'right:0')+'"></div>';}).join('');}
+    function cols(){return '<colgroup><col style="width:'+w+'%"><col style="width:30%">'+K.slice(1).map(function(){return '<col style="width:'+w+'%">';}).join('')+'</colgroup>';}
+    function rowH(lb,cell,wn){var o=[];K.forEach(function(k,i){o.push('<td class="dw'+(i===WI?' dwc':'')+(wn===i?' win':'')+(cell(i)===null?' na':'')+'">'+(cell(i)===null?'—':cell(i))+'</td>');});o.splice(1,0,'<td class="lb">'+lb+'</td>');return '<tr>'+o.join('')+'</tr>';}
+    h+='<div class="cmhd" style="grid-template-columns:'+gt+'">'+(function(){var o=K.map(function(k,i){return '<b class="'+(i===WI?'win':'')+'">'+bd(nm[i])+'<small>'+fmtP(k)+' '+T('د.أ','JOD')+'</small></b>';});o.splice(1,0,'<i></i>');return o.join('');})()+'</div>';
+    h+='<div class="cmv"><div class="cmo">'+(ver.ov>=0?'<span>'+T('الأقوى بشكل عام','Strongest overall')+'</span><b>'+bd(nm[ver.ov])+'</b>':'<b>'+T('الأجهزة متقاربة','Very close')+'</b>')+'</div>';
     var SH={perf:T('معالج + رام','Chip + RAM'),cam:T('دقة + تقريب','MP + zoom'),scr:T('سطوع + تحديث','Nits + Hz'),bat:T('السعة','Capacity'),pr:''};
-    ver.V.forEach(function(v,ix){var sk=['perf','cam','scr','bat','pr'][ix];h+='<tr><td class="lb">'+v.l+(SH[sk]?'<small>'+SH[sk]+'</small>':'')+'</td>'+K.map(function(k,i){return '<td'+(v.i===i?' class="win"':'')+'>'+String(tx(v.e[i])).split('\n').map(function(z){return bd(sv(z));}).join('<br>')+'</td>';}).join('')+'</tr>';});
+    h+='<div class="cmstg">'+cur()+'<table>'+cols();
+    ver.V.forEach(function(v,ix){var sk=['perf','cam','scr','bat','pr'][ix];h+=rowH(v.l+(SH[sk]?'<small>'+SH[sk]+'</small>':''),function(i){return String(tx(v.e[i])).split('\n').map(function(z){return bd(sv(z));}).join('<br>');},v.i);});
     h+='</table></div><div class="cmd">'+T('التقييم مبني على المواصفات المعلنة فقط، وجودة الصورة والأداء الفعلي قد تختلف عن الأرقام.','Based on published specs only; real-world quality may differ from the numbers.')+'</div></div>';
     h+='<button type="button" class="cmdb">'+T('التفاصيل بالأرقام ›','Full details ›')+'</button>';
     var HI=/^(السطوع|معدل التحديث|الرئيسية|واسعة جداً|الدقة|السعة|التقريب|تشغيل الفيديو|الرام RAM)$/;
     function num(r){if(!r)return 0;var m=String(r.v).replace(/,/g,'').match(/\d+(\.\d+)?/);return m?Number(m[0]):0;}
-    h+='<div class="cmdv">';
-    secs.forEach(function(s){h+='<div class="cmpn"><div class="cmst">'+esc(tx(s))+'</div><table><colgroup><col style="width:'+lbW+'">'+K.map(function(){return '<col>';}).join('')+'</colgroup>';
+    h+='<div class="cmdv"><div class="cmstg">'+cur();
+    secs.forEach(function(s){h+='<div class="cmst">'+esc(tx(s))+'</div><table>'+cols();
       rowsBy[s].forEach(function(l){var rs=K.map(function(k){return cmpGet(k,s,l);}),ns=rs.map(num),mx=Math.max.apply(null,ns),win=HI.test(l)&&mx>0&&ns.filter(function(x){return x===mx;}).length===1&&ns.filter(Boolean).length>1?ns.indexOf(mx):-1;
-        h+='<tr><td class="lb">'+esc(tx(l))+'</td>'+rs.map(function(r,ix){return r?'<td'+(ix===win?' class="win"':'')+'>'+bd(sv(tx(r.v)))+'</td>':'<td class="na">—</td>';}).join('')+'</tr>';});
-      h+='</table></div>';});
+        h+=rowH(esc(tx(l)),function(i){return rs[i]?bd(sv(tx(rs[i].v))):null;},win);});
+      h+='</table>';});
+    h+='</div>';
     h+='</div><div class="cmf">'+K.map(function(k,i){return '<button type="button" class="g" data-o="'+esc(k)+'">'+T('اطلب ','Order ')+bd(nm[i])+'</button>';}).join('')+'</div>';
     var el=document.createElement('div');el.id='pncmp';el.className='pncmp';el.setAttribute('role','dialog');el.innerHTML='<div class="cmbk"></div><div class="cmsh">'+h+'</div>';
     document.body.appendChild(el);document.body.style.overflow='hidden';
