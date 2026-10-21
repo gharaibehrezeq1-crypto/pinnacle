@@ -2409,6 +2409,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var bcap=n0.match(/(?:ما|مش|لا) (?:بدي|ابغي|اريد|ابي|بزيد|ازيد|اتعدي|اتخطي|بتعدي|بتخطي)[^0-9]{0,18}?(?:اغلي|اكتر|اكثر|فوق|عن|من|علي)[^0-9]{0,8}(\d{3,4})/)||n0.match(/(?:معي|عندي|ميزانيتي|ميزانيه|رصيدي|حدودي|مصاري|مبلغ)[^0-9]{0,14}(\d{3,4})/);
     if(bcap&&!keys.length){sess.budget=Number(bcap[1]);ask='order';if(adviceFor(sess.need||'best'))return;}
     var CMPV=/(^| )(ت?قارن|اقارن|قارنلي|قارن لي|مقارنه|المقارنه|compare)( |$)/.test(n0);
+    if(sess.cmpPend&&Date.now()-sess.cmpT<45000&&keys.length===1&&keys[0]!==sess.cmpPend&&!tp){var pa=sess.cmpPend;sess.cmpPend=null;process('قارن بين '+dn(pa)+' و '+dn(keys[0]));return;}
+    if(CMPV&&keys.length===1&&!tp){var pr0=[ctx.key,curKey()].concat((sess.seen||[]).slice().reverse()).filter(function(x){return x&&x!==keys[0]&&D()[x];})[0];ask=null;
+      if(pr0){process('قارن بين '+dn(pr0)+' و '+dn(keys[0]));return;}
+      sess.cmpPend=keys[0];sess.cmpT=Date.now();sayQ(T('المقارنة','Compare'),[T('مع أي جهاز تريد مقارنة ','Compare with which phone? ')+dn(keys[0])+'؟'],null,12000);return;}
     if(CMPV&&keys.length<2&&!tp){var sn0=sess.seen||[];ask=null;if(sn0.length>=2){process('قارن بين '+dn(sn0[sn0.length-2])+' و '+dn(sn0[sn0.length-1]));return;}
       sayQ(T('المقارنة','Compare'),[T('اذكر جهازين وسأقارن بينهما، مثلاً: «قارن بين آيفون 17 برو ماكس وجالكسي إس 26 ألترا».','Name two phones, e.g. "compare iPhone 17 Pro Max and S26 Ultra".')],null,12000);return;}
     var sid=(CMPV&&keys.length>=2)?null:socOf(n0,fd,tp);if(sid){if(sid!=='yes'&&sid!=='no'&&sid!=='thanks')ask=(sid==='think'||sid==='hesit')?'why':ask;soc(sid,n0);return;}
