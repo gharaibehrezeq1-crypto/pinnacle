@@ -2704,23 +2704,25 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var alive=true;
     function mkReel(st,onAct){var dr=st.querySelector('.cxdr'),fs=[].slice.call(st.querySelectorAll('.cxf')),N=fs.length,STP=360/N,R=28/Math.tan(Math.PI/Math.max(N,3));
       fs.forEach(function(f,i){f.style.transform='rotateX('+(i*STP)+'deg) translateZ('+R+'px)';});
-      var ang=0,vel=0,mode='idle',t0=0,lastX=0,lt=0,snapFn=null,act=-1,R_={};
+      var ang=0,vel=0,mode='idle',t0=0,lastX=0,lt=0,snapFn=null,act=-1,R_={},lastT=0,resT=0,SPIN=9;
+      function idleThen(){clearTimeout(resT);resT=setTimeout(function(){if(mode==='idle')mode='spin';},2500);}
       function paint(){dr.style.transform='rotateY(16deg) rotateX('+ang+'deg)';var best=999,ai=0;
         fs.forEach(function(f,i){var d=(((ang+i*STP)%360)+540)%360-180,ad=Math.abs(d);f.style.setProperty('--sh','rgba(80,60,170,'+Math.min(.5,ad/150).toFixed(2)+')');if(ad<best){best=ad;ai=i;}});
         if(ai!==act){act=ai;onAct(ai);}}
       function ease(x){return 1-Math.pow(1-x,3);}
-      function snapTo(tg,dur){mode='snap';var a0=ang,tt=performance.now();snapFn=function(now){var x=Math.min(1,(now-tt)/dur);ang=a0+(tg-a0)*ease(x);if(x>=1)mode='idle';};}
+      function snapTo(tg,dur){mode='snap';var a0=ang,tt=performance.now();snapFn=function(now){var x=Math.min(1,(now-tt)/dur);ang=a0+(tg-a0)*ease(x);if(x>=1){mode='idle';idleThen();}};}
       function loop(now){if(!alive||!document.body.contains(el))return;
-        if(mode==='auto'){var x=Math.min(1,(now-t0)/3400);ang=-360+360*ease(x);if(x>=1){ang=0;mode='idle';}}
+        if(mode==='auto'){var x=Math.min(1,(now-t0)/3400);ang=-360+360*ease(x);if(x>=1){ang=0;mode='idle';idleThen();}}
+        else if(mode==='spin'){ang+=SPIN*Math.min(64,now-lastT)/1000;}
         else if(mode==='snap'&&snapFn)snapFn(now);
         else if(mode==='inertia'){ang+=vel*16;vel*=0.94;if(Math.abs(vel)<0.012)snapTo(Math.round(ang/STP)*STP,360);}
-        paint();requestAnimationFrame(loop);}
+        lastT=now;paint();requestAnimationFrame(loop);}
       var K2=0.7;
-      st.addEventListener('pointerdown',function(e){if(mode==='auto')return;mode='drag';lastX=e.clientY;lt=performance.now();vel=0;try{st.setPointerCapture(e.pointerId);}catch(_){}st.style.cursor='grabbing';});
+      st.addEventListener('pointerdown',function(e){if(mode==='auto')return;clearTimeout(resT);mode='drag';lastX=e.clientY;lt=performance.now();vel=0;try{st.setPointerCapture(e.pointerId);}catch(_){}st.style.cursor='grabbing';});
       st.addEventListener('pointermove',function(e){if(mode!=='drag')return;var dx=e.clientY-lastX,now=performance.now(),dt=Math.max(1,now-lt);ang-=dx*K2;vel=0.8*vel-0.2*(dx*K2/dt);lastX=e.clientY;lt=now;});
       function up(){if(mode!=='drag')return;st.style.cursor='grab';if(Math.abs(vel)>0.02)mode='inertia';else snapTo(Math.round(ang/STP)*STP,300);}
       st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up);
-      R_.start=function(){ang=-360;t0=performance.now();mode='auto';};
+      R_.start=function(){clearTimeout(resT);ang=-360;t0=performance.now();mode='auto';};
       requestAnimationFrame(loop);paint();return R_;}
     var sum=el.querySelector('.cxpage.sum'),det=el.querySelector('.cxpage.det');
     var vs=[].slice.call(sum.querySelectorAll('.cxv')),tps=[].slice.call(el.querySelectorAll('.cxtp'));
