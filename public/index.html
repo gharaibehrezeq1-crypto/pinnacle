@@ -2548,8 +2548,8 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var NF=8,STEP=360/NF,FS=[];
     function numIn(t,re){var m=String(t||'').replace(/,/g,'').match(re||/\d+(\.\d+)?/);return m?Number(m[1]!==undefined&&re?m[1]:m[0]):0;}
     function frontMP(k){var r=cmpGet(k,'الكاميرا الأمامية','الدقة');return r?numIn(r.v,/(\d+)\s*MP/i):0;}
-    function stype(k){return /iPhone/i.test(k)?'Super Retina XDR OLED':(/Galaxy/i.test(k)?'Dynamic AMOLED 2X':(/Reno|OPPO/i.test(k)?'AMOLED':''));}
-    function wattOf(k){var best=0,wl=0;cmpRows(k).forEach(function(r){if(!/الشحن|الشاحن/.test(r.s+r.l))return;var m=String(r.v).match(/(\d+)\s*W/i);if(/لاسلكي|MagSafe|عكسي/.test(r.l)){if(m&&/لاسلكي/.test(r.l))wl=Math.max(wl,Number(m[1]));return;}if(m)best=Math.max(best,Number(m[1]));else if(/Super Fast Charging 3/i.test(r.v))best=Math.max(best,60);else if(/Super Fast Charging 2/i.test(r.v))best=Math.max(best,45);});return {w:best,wl:wl};}
+    function stype(k){var r=cmpGet(k,'الشاشة','الحجم'),n=r?r.n:'',m=String(n).match(/(Dynamic AMOLED 2X|Super Retina XDR|AMOLED|OLED)/i);if(/Reno|OPPO/i.test(k))return 'AMOLED';if(!m)return '';return /Super Retina/i.test(m[1])?'Super Retina XDR OLED':m[1];}
+    function wattOf(k){var best=0,wl=0;cmpRows(k).forEach(function(r){if(!/الشحن|الشاحن/.test(r.s+r.l))return;var isW=/لاسلكي|MagSafe/.test(r.l);if(/عكسي/.test(r.l))return;var ms=(r.v+' '+(isW?'':r.n)).match(/(\d+)\s*W\b/gi)||[];ms.forEach(function(x){var v=Number(x.match(/\d+/)[0]);if(isW)wl=Math.max(wl,v);else best=Math.max(best,v);});});return {w:best,wl:wl};}
     function nit(k){return nitsOf(k);}
     var f1=function(k){var c=(cmpGet(k,'المعالج والذاكرة','المعالج')||{v:''}).v,r=ramGB(k);return c+(r?' · '+r+'GB':'');};
     var allN=K.every(nit),allH=K.every(hzOf);
