@@ -1960,6 +1960,14 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cmr small{flex:1.3;color:#8a84a8;font-size:10.5px;line-height:1.4}
 .pncmp .cmd{font-size:10.5px;color:#8a84a8;margin-top:8px;line-height:1.5}
 .pncmp .cmg{display:grid;gap:0}
+.pncmp .cme{flex-basis:100%;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;margin-top:4px}
+.pncmp .cme i{unicode-bidi:plaintext;text-align:start;font-style:normal;font-size:11px;color:#3b3858;background:#fff;border-radius:8px;padding:4px 6px;line-height:1.45}
+.pncmp .cme em{display:block;font-style:normal;color:#8a84a8;font-size:10px}
+.pncmp .cmr{flex-wrap:wrap}
+.pncmp .cmdb{display:block;width:100%;margin:6px 0 14px;border:1.5px solid #4b3fd0;background:#fff;color:#4b3fd0;border-radius:14px;padding:12px;font:700 14px var(--font-body,Arial);cursor:pointer}
+.pncmp .cmdv{display:none}.pncmp .cmsh.det .cmdv{display:block}.pncmp .cmsh.det .cmv,.pncmp .cmsh.det .cmdb{display:none}
+.pncmp .cmdh{font-size:13px;color:#5b5675;padding:2px 2px 8px}
+.pncmp .cmh b{display:flex;gap:10px;align-items:center}.pncmp .cmbc{display:none;color:#4b3fd0;font-size:13px;cursor:pointer;padding:6px 2px}.pncmp .cmsh.det .cmbc{display:inline}.pncmp .cmsh.det .cmtt{display:none}
 .pncmp .cmhd{position:sticky;top:58px;z-index:2;background:#fff;padding:6px 0}
 .pncmp .cmhd span{display:none}
 .pncmp .cmhd{border-bottom:1px solid #d9d5ee}.pncmp .cmhd b{padding:6px 8px;text-align:center;font-size:13.5px}.pncmp .cmhd b+b{border-right:1px solid #e6e3f4}
@@ -2499,17 +2507,18 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
   function best(arr){ // index of the single highest value among known ones, -1 when unknown or tied at the top
     var m=0,ix=-1,tie=false;arr.forEach(function(v,i){if(v>m){m=v;ix=i;tie=false;}else if(v===m&&v>0)tie=true;});return tie?-1:ix;}
   function verdict(K){var V=[],w=K.map(function(){return 0;});
-    function add(label,idx,why){V.push({l:label,i:idx,w:why});}
+    function add(label,idx,why,e){V.push({l:label,i:idx,w:why,e:e});}
     var pf=best(K.map(function(k){return chipScore(k)*1000+ramGB(k);}));
-    add(T('الأقوى أداءً','Best performance'),pf,T('حسب فئة المعالج والرام','by chip tier and RAM'));
+    function ev(f){return K.map(function(k){return f(k)||'—';});}
+    add(T('الأقوى أداءً','Best performance'),pf,T('حسب فئة المعالج والرام','by chip tier and RAM'),ev(function(k){return (cmpGet(k,'المعالج والذاكرة','المعالج')||{v:''}).v+((cmpGet(k,'المعالج والذاكرة','الرام RAM')||{v:''}).v&&!/غير/.test((cmpGet(k,'المعالج والذاكرة','الرام RAM')||{}).v)?' · '+(cmpGet(k,'المعالج والذاكرة','الرام RAM')||{}).v:'');}));
     var cm=best(K.map(function(k){return mainMP(k)+zoomX(k);}));
-    add(T('الأفضل كاميرا','Best camera'),cm,T('حسب دقة الكاميرا الرئيسية والتقريب المعلنين','by main-camera resolution and zoom'));
+    add(T('الأفضل كاميرا','Best camera'),cm,T('حسب دقة الكاميرا الرئيسية والتقريب المعلنين','by main-camera resolution and zoom'),ev(function(k){return mainMP(k)?mainMP(k)+'MP'+(zoomX(k)?' · '+T('تقريب حتى ','zoom up to ')+zoomX(k)+'x':''):'';}));
     var allN=K.every(nitsOf),sn=allN?best(K.map(nitsOf)):(K.every(hzOf)&&best(K.map(hzOf))>=0?best(K.map(hzOf)):best(K.map(inchOf)));
-    add(T('الأفضل شاشة','Best screen'),sn,T('حسب السطوع ثم معدل التحديث ثم الحجم','by brightness, then refresh rate, then size'));
+    add(T('الأفضل شاشة','Best screen'),sn,T('حسب السطوع ثم معدل التحديث ثم الحجم','by brightness, then refresh rate, then size'),ev(function(k){var a=[];if(inchOf(k))a.push(inchOf(k)+'"');if(nitsOf(k))a.push(nitsOf(k)+' nits');if(hzOf(k))a.push(hzOf(k)+'Hz');return a.join(' · ');}));
     var bt=K.every(mAh)?best(K.map(mAh)):(K.every(hoursOf)?best(K.map(hoursOf)):-2);
-    add(T('الأفضل بطارية','Best battery'),bt,bt===-2?T('الشركتان تعلنان البطارية بطريقتين مختلفتين، فلا مقارنة مباشرة','the brands publish battery differently, so no direct comparison'):T('حسب السعة أو ساعات التشغيل المعلنة','by the published capacity or hours'));
+    add(T('الأفضل بطارية','Best battery'),bt,bt===-2?T('الشركتان تعلنان البطارية بطريقتين مختلفتين، فلا مقارنة مباشرة','the brands publish battery differently, so no direct comparison'):T('حسب السعة أو ساعات التشغيل المعلنة','by the published capacity or hours'),ev(function(k){return mAh(k)?mAh(k)+' mAh':(hoursOf(k)?T('حتى ','up to ')+hoursOf(k)+T(' ساعة فيديو',' h video'):'');}));
     var lo=0;K.forEach(function(k,i){if(priceOf(k)<priceOf(K[lo]))lo=i;});var pr=K.filter(function(k){return priceOf(k)===priceOf(K[lo]);}).length>1?-1:lo;
-    add(T('الأوفر سعراً','Best price'),pr,K.map(priceOf).join(' / ')+' '+T('دينار','JOD'));
+    add(T('الأوفر سعراً','Best price'),pr,'',ev(function(k){return fmtP(k)+' '+T('دينار','JOD');}));
     [pf,cm,sn,bt].forEach(function(x){if(x>=0)w[x]++;});
     var mx=Math.max.apply(null,w),top=[];w.forEach(function(x,i){if(x===mx&&mx>0)top.push(i);});
     var ov=top.length===1?top[0]:(top.indexOf(pf)>-1?pf:-1);
@@ -2518,21 +2527,22 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var old=document.getElementById('pncmp');if(old)old.remove();
     var ver=verdict(K),h='',n=K.length,nm=K.map(dn),secs=[],rowsBy={};
     K.forEach(function(k){cmpRows(k).forEach(function(r){if(secs.indexOf(r.s)<0){secs.push(r.s);rowsBy[r.s]=[];}if(rowsBy[r.s].indexOf(r.l)<0)rowsBy[r.s].push(r.l);});});
-    h+='<div class="cmh"><b>'+T('مقارنة كاملة','Full comparison')+'</b><button type="button" class="cmx" aria-label="'+T('إغلاق','Close')+'">×</button></div>';
+    h+='<div class="cmh"><b><span class="cmbc" role="button">'+T('‹ الملخص','‹ Summary')+'</span><span class="cmtt">'+T('مقارنة','Comparison')+'</span></b><button type="button" class="cmx" aria-label="'+T('إغلاق','Close')+'">×</button></div>';
     h+='<div class="cmv">'+(ver.ov>=0?'<div class="cmo">'+T('الأقوى بشكل عام: ','Strongest overall: ')+'<b>'+esc(nm[ver.ov])+'</b></div>':'<div class="cmo">'+T('الأجهزة متقاربة بشكل عام','The phones are close overall')+'</div>');
-    ver.V.forEach(function(v){h+='<div class="cmr"><span>'+v.l+'</span>'+(v.i>=0?'<b>'+esc(nm[v.i])+'</b>':'<b class="cmn">'+(v.i===-2?'—':T('متعادلان','Tie'))+'</b>')+'<small>'+v.w+'</small></div>';});
+    ver.V.forEach(function(v){h+='<div class="cmr"><span>'+v.l+'</span>'+(v.i>=0?'<b>'+esc(nm[v.i])+'</b>':'<b class="cmn">'+(v.i===-2?'—':T('متعادلان','Tie'))+'</b>')+'<small>'+(v.w||'')+'</small>'+'<div class="cme">'+K.map(function(k,i){return '<i><em>'+esc(nm[i])+'</em> '+esc(tx(v.e[i]))+'</i>';}).join('')+'</div></div>';});
     h+='<div class="cmd">'+T('التقييم مبني على المواصفات المعلنة فقط، وجودة الصورة والأداء الفعلي قد تختلف عن الأرقام.','Based on published specs only; real-world photo quality and performance may differ from the numbers.')+'</div></div>';
+    h+='<button type="button" class="cmdb">'+T('التفاصيل بالأرقام ›','Full details with numbers ›')+'</button>';
     var cols='style="grid-template-columns:repeat('+n+',1fr)"';
-    h+='<div class="cmt"><div class="cmg cmhd" '+cols+'>'+K.map(function(k,i){return '<b>'+esc(nm[i])+'<small>'+fmtP(k)+' '+T('د.أ','JOD')+'</small></b>';}).join('')+'</div>';
+    h+='<div class="cmdv"><div class="cmdh">'+T('كل المواصفات بالأرقام لكل جهاز','Every spec, device by device')+'</div><div class="cmt"><div class="cmg cmhd" '+cols+'>'+K.map(function(k,i){return '<b>'+esc(nm[i])+'<small>'+fmtP(k)+' '+T('د.أ','JOD')+'</small></b>';}).join('')+'</div>';
     secs.forEach(function(s){h+='<div class="cms">'+esc(tx(s))+'</div>';
       rowsBy[s].forEach(function(l){
         function cell(r){return r?'<span>'+esc(tx(r.v))+(r.n&&r.n.length<60?'<small>'+esc(tx(r.n))+'</small>':'')+'</span>':'<span class="cmna">—</span>';}
         h+='<div class="cml">'+esc(tx(l))+'</div><div class="cmg" '+cols+'>'+K.map(function(k){return cell(cmpGet(k,s,l));}).join('')+'</div>';});});
-    h+='</div><div class="cmf">'+K.map(function(k,i){return '<button type="button" data-o="'+esc(k)+'">'+T('اطلب ','Order ')+esc(nm[i])+'</button>';}).join('')+'</div>';
+    h+='</div></div><div class="cmf">'+K.map(function(k,i){return '<button type="button" data-o="'+esc(k)+'">'+T('اطلب ','Order ')+esc(nm[i])+'</button>';}).join('')+'</div>';
     var el=document.createElement('div');el.id='pncmp';el.className='pncmp';el.setAttribute('role','dialog');el.innerHTML='<div class="cmbk"></div><div class="cmsh">'+h+'</div>';
     document.body.appendChild(el);document.body.style.overflow='hidden';
     function close(){el.remove();document.body.style.overflow='';}
-    el.addEventListener('click',function(e){var t=e.target;if(t.classList.contains('cmbk')||t.classList.contains('cmx')){close();return;}var o=t.closest&&t.closest('button[data-o]');if(o){var kk=o.getAttribute('data-o');close();ctx.key=kk;process('اطلب');}});
+    el.addEventListener('click',function(e){var t=e.target;if(t.classList.contains('cmbk')||t.classList.contains('cmx')){close();return;}var sh=el.querySelector('.cmsh');if(t.classList.contains('cmdb')){sh.classList.add('det');sh.scrollTop=0;return;}if(t.classList.contains('cmbc')){sh.classList.remove('det');sh.scrollTop=0;return;}var o=t.closest&&t.closest('button[data-o]');if(o){var kk=o.getAttribute('data-o');close();ctx.key=kk;process('اطلب');}});
     return ver;}
   function notUnderstood(){sayQ(T('لم أفهم قصدك','I did not get that'),[T('جرّب أن تقول مثلاً:','Try saying, for example:')],[[T('افتح آيفون 17 برو ماكس','Open iPhone 17 Pro Max'),'افتح ايفون 17 برو ماكس'],[T('كم سعر إس 26 ألترا','Price of S26 Ultra'),'كم سعر اس 26 الترا'],[T('اختر لي جهازاً','Help me choose'),'محتار ساعدني اختار']],12000);}
   function ok_(){setState('happy');setTimeout(done,1400);}
