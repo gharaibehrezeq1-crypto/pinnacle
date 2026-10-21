@@ -1990,6 +1990,19 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cxfl{position:absolute;left:10px;right:-4px;top:calc(var(--ph,300px) + 38px);height:44px;background:radial-gradient(50% 22% at 50% 0,rgba(0,0,0,.55),transparent 100%),radial-gradient(58% 100% at 50% 0,rgba(0,0,0,.28),transparent 80%);filter:blur(4px);pointer-events:none}
 .pncmp .cxwhy{margin:2px 4px 0;text-align:center;font-size:12px;font-weight:300;color:#5b6070;line-height:1.55;min-height:38px}
 .pncmp .cxcard{margin-top:14px;background:#fff;border-radius:18px;padding:4px 10px 10px}
+.pncmp .cxpn{background:radial-gradient(120% 140% at 8% 0%,rgba(150,120,255,.55),transparent 62%),radial-gradient(120% 140% at 100% 100%,rgba(80,225,205,.5),transparent 62%),radial-gradient(90% 90% at 62% 8%,rgba(255,168,196,.5),transparent 62%),rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.95);box-shadow:inset 0 1px 0 #fff,0 22px 34px -22px rgba(90,70,190,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.pncmp .cxpn:before{background:linear-gradient(180deg,rgba(255,255,255,.7) 0,rgba(255,255,255,.22) 100%)}
+.pncmp .cxpn:after{background:linear-gradient(180deg,rgba(120,100,210,0),rgba(120,100,210,.22))}
+.pncmp .cxcol{border-top-color:rgba(255,255,255,.85)}
+.pncmp .cxcol .nm{color:#1b1440;font-weight:400}
+.pncmp .cxcol .nm em{color:#6d4dff}
+.pncmp .cxvl{color:#4a4f66}
+.pncmp .cxb{background:rgba(27,20,64,.12);box-shadow:inset 0 1px 2px rgba(27,20,64,.18)}
+.pncmp .cxf{background:radial-gradient(120% 140% at 8% 0%,rgba(150,120,255,.55),transparent 62%),radial-gradient(120% 140% at 100% 100%,rgba(80,225,205,.5),transparent 62%),radial-gradient(90% 90% at 62% 8%,rgba(255,168,196,.5),transparent 62%),rgba(255,255,255,.55);border-top:1px solid rgba(255,255,255,.95);border-bottom:1px solid rgba(255,255,255,.95)}
+.pncmp .cxf b{color:#1b1440;font-weight:400}
+.pncmp .cxf .ln{background:#1b1440;opacity:.55}
+.pncmp .cxcap{background:#fff}
+.pncmp .cxcap:before{background:radial-gradient(120% 140% at 8% 0%,rgba(150,120,255,.55),transparent 62%),radial-gradient(120% 140% at 100% 100%,rgba(80,225,205,.5),transparent 62%),radial-gradient(90% 90% at 62% 8%,rgba(255,168,196,.5),transparent 62%),rgba(255,255,255,.55)}
 .pncmp .cxpage.det{display:none}
 .pncmp .cmsh.det .cxpage.sum{display:none}
 .pncmp .cmsh.det .cxpage.det{display:block}
@@ -2680,7 +2693,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       fs.forEach(function(f,i){f.style.transform='rotateX('+(i*STP)+'deg) translateZ('+R+'px)';});
       var ang=0,vel=0,mode='idle',t0=0,lastX=0,lt=0,snapFn=null,act=-1,R_={};
       function paint(){dr.style.transform='rotateY(16deg) rotateX('+ang+'deg)';var best=999,ai=0;
-        fs.forEach(function(f,i){var d=(((ang+i*STP)%360)+540)%360-180,ad=Math.abs(d);f.style.setProperty('--sh','rgba(0,0,0,'+Math.min(.72,ad/120).toFixed(2)+')');if(ad<best){best=ad;ai=i;}});
+        fs.forEach(function(f,i){var d=(((ang+i*STP)%360)+540)%360-180,ad=Math.abs(d);f.style.setProperty('--sh','rgba(80,60,170,'+Math.min(.5,ad/150).toFixed(2)+')');if(ad<best){best=ad;ai=i;}});
         if(ai!==act){act=ai;onAct(ai);}}
       function ease(x){return 1-Math.pow(1-x,3);}
       function snapTo(tg,dur){mode='snap';var a0=ang,tt=performance.now();snapFn=function(now){var x=Math.min(1,(now-tt)/dur);ang=a0+(tg-a0)*ease(x);if(x>=1)mode='idle';};}
