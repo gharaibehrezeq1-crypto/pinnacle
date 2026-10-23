@@ -2658,7 +2658,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       if(F.win>=0)wins[F.win]++;
       F.sc=sc;return F;});
     var OV=(function(){var mx=Math.max.apply(null,wins),t=[];wins.forEach(function(x,i){if(x===mx&&mx>0)t.push(i);});return t.length===1?t[0]:-1;})();
-    var ofc={t:T('الأقوى بشكل عام','Strongest overall'),sc:wins.map(function(x){return 92*x/FS.length;}),win:OV,sp:null,wins:wins};
+    var ofc={t:T('الأقوى بشكل عام','Strongest overall'),sc:wins.map(function(x){return Math.max(8,92*x/FS.length);}),win:OV,sp:null,wins:wins};
     faces.push(ofc);
     function dblock(F,i){return '<div class="cxd"><div class="cxn"><span>'+bd(nm[i])+'</span>'+(F.win===i?'<em>★</em>':'')+'</div><div class="cxb"><i style="--p:'+F.sc[i].toFixed(1)+'%"></i></div><div class="cxs">'+(F.sp?bd(F.sp(K[i])):bd(String(F.wins[i])+T(' من ',' of ')+FS.length+T(' نقاط',' points')))+'</div></div>';}
     function whyOf(F){if(F.win<0)return F.mixed?T('الشركات تعلن البطارية بطرق مختلفة، فلا مقارنة مباشرة.','The brands publish battery differently, so no direct comparison.'):T('متقاربان في هذه النقطة.','Very close on this point.');
@@ -2684,16 +2684,19 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       +'<div class="cxst" style="--ph:'+PH+'px"><div class="cxpn">'+views+'</div><div class="cxfl"></div>'+prism(faces.map(function(F){return F.t;}))+'</div>'
       +'<div class="cxwin"><div><small>'+T('الأقوى بشكل عام','Strongest overall')+'</small>'+wn+'</div><button type="button" class="cxg cmdb">'+T('التفاصيل ›','Details ›')+'</button></div></div>';
     function fnum(s){var m=String(s||'').replace(/,/g,'').match(/\d+(\.\d+)?/);return m?Number(m[0]):0;}
-    var DM={'الشاشة':{l:T('حجم الشاشة','Screen size'),f:function(k){var v=inchOf(k);return {n:v,t:v?v+'"':'—'};}},
-      'المعالج والذاكرة':{l:T('الرام','RAM'),f:function(k){var v=ramGB(k);return {n:v,t:v?v+'GB':'—'};}},
-      'الكاميرات':{l:T('الكاميرا الخلفية','Rear camera'),f:function(k){var v=mainMP(k);return {n:v,t:v?v+'MP':'—'};}},
-      'الفيديو':{l:T('دقة الفيديو','Video'),f:function(k){var r=cmpGet(k,'الفيديو','التصوير الخلفي'),m=r?String(r.v).match(/(\d+)\s*K/i):null,v=m?Number(m[1]):0;return {n:v,t:v?v+'K':'—'};}},
-      'البطارية والشحن':{l:T('قوة الشحن','Charging'),f:function(k){var v=wattOf(k).w;return {n:v,t:v?v+'W':'—'};}},
-      'التخزين':{l:T('أعلى سعة','Max storage'),f:function(k){var r=cmpGet(k,'التخزين','السعات المتوفرة'),ms=(r?String(r.v):'').match(/(\d+)\s*(GB|TB)/gi)||[],b=0;ms.forEach(function(x){var q=Number(x.match(/\d+/)[0]);if(/TB/i.test(x))q*=1024;b=Math.max(b,q);});return {n:b,t:b?(b>=1024?(b/1024)+'TB':b+'GB'):'—'};}},
-      'الاتصال':{l:T('الواي فاي','Wi-Fi'),f:function(k){var r=cmpGet(k,'الاتصال','Wi-Fi'),v=r?fnum(r.v):0;return {n:v,t:v?String(v):'—'};}},
-      'التصميم والأبعاد':{l:T('الوزن','Weight'),low:1,f:function(k){var r=cmpGet(k,'التصميم والأبعاد','الوزن'),v=r?fnum(r.v):0;return {n:v,t:v?v+T(' غ',' g'):'—'};}}};
-    var dviews=GR.map(function(g){var M=DM[g.t]||{l:'',f:function(){return {n:0,t:''};}},vs2=K.map(M.f),ns=vs2.map(function(x){return x.n;}),mx=Math.max.apply(null,ns),pos=ns.filter(Boolean),mn=pos.length?Math.min.apply(null,pos):0;
-      var F={sc:ns.map(function(v){return v?(M.low?92*mn/v:92*v/mx):0;}),win:-1};
+    var DM={'الشاشة':[{l:T('حجم الشاشة','Screen size'),f:function(k){var v=inchOf(k);return {n:v,t:v?v+'"':'—'};}},{l:T('معدل التحديث','Refresh rate'),f:function(k){var v=hzOf(k);return {n:v,t:v?v+'Hz':'—'};}}],
+      'المعالج والذاكرة':[{l:T('الأداء','Performance'),f:function(k){var v=chipScore(k)*10+ramGB(k),c=String((cmpGet(k,'المعالج والذاكرة','المعالج')||{v:''}).v).replace(/ for Galaxy/,'');return {n:v,t:c||'—'};}}],
+      'الكاميرات':[{l:T('الكاميرا الخلفية','Rear camera'),f:function(k){var v=mainMP(k);return {n:v,t:v?v+'MP':'—'};}},{l:T('الكاميرا الأمامية','Front camera'),f:function(k){var v=frontMP(k);return {n:v,t:v?v+'MP':'—'};}}],
+      'الفيديو':[{l:T('دقة الفيديو','Video'),f:function(k){var r=cmpGet(k,'الفيديو','التصوير الخلفي'),m=r?String(r.v).match(/(\d+)\s*K/i):null,v=m?Number(m[1]):0;return {n:v,t:v?v+'K':'—'};}},{l:T('الكاميرا الخلفية','Rear camera'),f:function(k){var v=mainMP(k);return {n:v,t:v?v+'MP':'—'};}}],
+      'البطارية والشحن':[{l:T('قوة الشحن','Charging'),f:function(k){var v=wattOf(k).w;return {n:v,t:v?v+'W':'—'};}},{l:T('سعة البطارية','Battery'),f:function(k){var v=mAh(k);return {n:v,t:v?v+' mAh':'—'};}},{l:T('تشغيل الفيديو','Video playback'),f:function(k){var v=hoursOf(k);return {n:v,t:v?v+T(' ساعة',' h'):'—'};}}],
+      'التخزين':[{l:T('أعلى سعة','Max storage'),f:function(k){var r=cmpGet(k,'التخزين','السعات المتوفرة'),ms=(r?String(r.v):'').match(/(\d+)\s*(GB|TB)/gi)||[],b=0;ms.forEach(function(x){var q=Number(x.match(/\d+/)[0]);if(/TB/i.test(x))q*=1024;b=Math.max(b,q);});return {n:b,t:b?(b>=1024?(b/1024)+'TB':b+'GB'):'—'};}},{l:T('الرام','RAM'),f:function(k){var v=ramGB(k);return {n:v,t:v?v+'GB':'—'};}}],
+      'الاتصال':[{l:T('الواي فاي','Wi-Fi'),f:function(k){var r=cmpGet(k,'الاتصال','Wi-Fi'),v=r?fnum(r.v):0;return {n:v,t:v?String(v):'—'};}}],
+      'التصميم والأبعاد':[{l:T('الوزن','Weight'),low:1,f:function(k){var r=cmpGet(k,'التصميم والأبعاد','الوزن'),v=r?fnum(r.v):0;return {n:v,t:v?v+T(' غ',' g'):'—'};}},{l:T('مقاومة الماء','Water resistance'),f:function(k){var r=cmpGet(k,'التصميم والأبعاد','مقاومة الماء والغبار'),m=r?String(r.v).match(/IP(\d+)/i):null,v=m?Number(m[1]):0;return {n:v,t:v?'IP'+v:'—'};}}]};
+    // every device always gets a bar: use the first metric that is known for ALL selected devices; if none, show an equal neutral bar
+    var dviews=GR.map(function(g){var C=DM[g.t]||[{l:'',f:function(){return {n:0,t:''};}}],M=C[0],vs2=K.map(M.f),i2;
+      for(i2=0;i2<C.length;i2++){var tv=K.map(C[i2].f);if(tv.every(function(x){return x.n>0;})){M=C[i2];vs2=tv;break;}}
+      var ns=vs2.map(function(x){return x.n;}),mx=Math.max.apply(null,ns),pos=ns.filter(Boolean),mn=pos.length?Math.min.apply(null,pos):0,full=ns.every(Boolean);
+      var F={sc:ns.map(function(v){return !full?55:(M.low?92*mn/v:92*v/mx);}),win:-1};
       return '<div class="cxv">'+K.map(function(k,i){return colHTML(F,i,'',M.l?'<span class="lb">'+M.l+'</span> '+bd(vs2[i].t):'');}).join('')+'</div>';}).join('');
     h+='<div class="cxpage det"><div class="cxtop2"><button type="button" class="cxg cmbc">'+T('‹ الملخص','‹ Summary')+'</button></div>'+head(T('التفاصيل','Details'))
       +'<div class="cxst" style="--ph:'+PH+'px"><div class="cxpn">'+dviews+'</div><div class="cxfl"></div>'+prism(GR.map(function(g){return esc(tx(g.t));}))+'</div>'
