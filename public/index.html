@@ -1994,6 +1994,11 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cxpn{background:radial-gradient(120% 140% at 8% 0%,rgba(150,120,255,.55),transparent 62%),radial-gradient(120% 140% at 100% 100%,rgba(80,225,205,.5),transparent 62%),radial-gradient(90% 90% at 62% 8%,rgba(255,168,196,.5),transparent 62%),rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.95);box-shadow:inset 0 1px 0 #fff,0 22px 34px -22px rgba(90,70,190,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .pncmp .cxpn:before{background:linear-gradient(180deg,rgba(255,255,255,.7) 0,rgba(255,255,255,.22) 100%)}
 .pncmp .cxpn:after{background:linear-gradient(180deg,rgba(120,100,210,0),rgba(120,100,210,.22))}
+.pncmp .cxcol{overflow:visible;padding-top:4px;padding-bottom:4px}
+.pncmp .cxcol .cxtr{flex-wrap:nowrap;margin-bottom:6px}
+.pncmp .cxcol .nm{white-space:nowrap;font-size:12.5px;flex:0 0 auto}
+.pncmp .cxvl{white-space:nowrap;max-width:none;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:10px}
+.pncmp .cxb{flex:none}
 .pncmp .cxcol{border-top-color:rgba(255,255,255,.85)}
 .pncmp .cxcol .nm{color:#1b1440;font-weight:400}
 .pncmp .cxcol .nm em{color:#6d4dff}
@@ -2665,7 +2670,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       if(!F.sp)return bd(nm[F.win])+T(' تفوّق في ',' leads in ')+F.wins[F.win]+T(' من ',' of ')+FS.length+T(' نقاط.',' points.');
       var o=K.map(function(k,i){return i;}).filter(function(i){return i!==F.win;});
       return bd(nm[F.win])+(F.low?T(' الأوفر: ',' is cheaper: '):T(' الأفضل: ',' is best: '))+bd(F.sp(K[F.win]))+(o.length===1?T(' مقابل ',' vs ')+bd(F.sp(K[o[0]])):'')+'.';}
-    var PH=n*46+26;
+    var PH=n*54+22;
     function rankOf(F,i){var r=1;F.sc.forEach(function(x){if(x>F.sc[i]+1e-9)r++;});return r;}
     function colHTML(F,i,lab,sp){return '<div class="cxcol"><div class="cxtr"><span class="nm">'+(F.win===i&&F.sh?'<em>★</em> ':'')+bd(nm[i])+'</span><span class="cxvl">'+sp+'</span></div><div class="cxb"><i style="--p:'+F.sc[i].toFixed(1)+'%"></i></div></div>';}
     var views=faces.map(function(F){return '<div class="cxv">'+K.map(function(k,i){return colHTML(F,i,'',F.sh?'<span class="lb">'+F.t+'</span> '+bd(F.sh(k)):'');}).join('')+'</div>';}).join('');
