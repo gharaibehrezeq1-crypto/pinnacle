@@ -2749,7 +2749,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var dviews=GR.map(function(g){var C=DM[g.t]||[{l:'',f:function(){return {n:0,t:''};}}],M=C[0],vs2=K.map(M.f),i2;
       for(i2=0;i2<C.length;i2++){var tv=K.map(C[i2].f);if(tv.every(function(x){return x.n>0;})){M=C[i2];vs2=tv;break;}}
       var ns=vs2.map(function(x){return x.n;}),mx=Math.max.apply(null,ns),pos=ns.filter(Boolean),mn=pos.length?Math.min.apply(null,pos):0,full=ns.every(Boolean);
-      var F={sc:ns.map(function(v){return !full?55:(M.low?92*mn/v:92*v/mx);}),win:-1};
+      var bw=-1;if(full){var bv=M.low?mn:mx,bi=[];ns.forEach(function(v,ii){if(v===bv)bi.push(ii);});if(bi.length===1)bw=bi[0];}var F={sc:ns.map(function(v){return !full?55:(M.low?92*mn/v:92*v/mx);}),win:bw,sh:1};
       return '<div class="cxv">'+K.map(function(k,i){return colHTML(F,i,'',M.l?'<span class="lb">'+M.l+'</span> '+bd(vs2[i].t):'');}).join('')+'</div>';}).join('');
     h+='<div class="cxpage det"><div class="cxtop2"><button type="button" class="cxg cmbc">'+T('‹ الملخص','‹ Summary')+'</button></div>'+head(T('التفاصيل','Details'))
       +'<div class="cxst" style="--ph:'+PH+'px"><div class="cxpn">'+dviews+'</div><div class="cxfl"></div>'+prism(GR.map(function(g){return esc(tx(g.t));}))+'</div>'
@@ -2787,7 +2787,19 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       var cur=0,side=-1;
       function tilt(){box.style.transform='perspective(1900px) rotateY('+(side*28)+'deg) scale(1.04)';}
       function vcls(t){var n=String(t).length;return n<=7?'a':(n<=15?'b':'c');}
-      function paint(dir){var F=FE[cur],ns=F.rs.map(num),mx=Math.max.apply(null,ns),win=HI.test(F.l)&&mx>0&&ns.filter(function(x){return x===mx;}).length===1&&ns.filter(Boolean).length>1?ns.indexOf(mx):-1;
+      var HI2=/^(الحجم|السعة|بث الفيديو|الواي فاي|Wi-Fi|البلوتوث|الشحن اللاسلكي|السعات المتوفرة)$/,LOWB=/^(الوزن)$/,FEAT=/^(شاشة الخصوصية|مضاد للانعكاس|قلم S Pen|شحن MagSafe|الأقمار الصناعية)$/,NOC=/^(الأبعاد|المواد|نظام التشغيل|المعالج|التبريد|الشاحن|الشريحة|الشحن السريع|الدقة الأمامية)$/;
+      function numX(l,r){if(!r)return 0;var t=String(r.v).replace(/,/g,'');
+        if(l==='الدقة'){var m=t.match(/(\d+)\s*[×x]\s*(\d+)/);if(m)return Number(m[1])*Number(m[2]);}
+        if(l==='السعات المتوفرة'){var ms=t.match(/\d+\s*(GB|TB)/gi)||[],b=0;ms.forEach(function(x){var q=Number(x.match(/\d+/)[0]);if(/TB/i.test(x))q*=1024;b=Math.max(b,q);});return b;}
+        if(l==='الشحن اللاسلكي'){var w=t.match(/(\d+)\s*W/i);if(w)return Number(w[1]);}
+        var all=t.match(/\d+(\.\d+)?/g)||[];return all.length?Math.max.apply(null,all.map(Number)):0;}
+      function has(r){if(!r)return false;var v=String(r.v).trim();return v&&v!=='—'&&v!=='-'&&!/^(لا\b|غير|ليس|بدون|No\b|Not)/i.test(v);}
+      function starWin(F){var l=F.l,ns,i;
+        if(HI.test(l)||HI2.test(l)){ns=F.rs.map(function(r){return numX(l,r);});var mx=Math.max.apply(null,ns);if(ns.filter(Boolean).length>1&&ns.filter(function(x){return x===mx;}).length===1)return ns.indexOf(mx);return -1;}
+        else if(LOWB.test(l)){ns=F.rs.map(function(r){return numX(l,r);});var pos=ns.filter(Boolean);if(pos.length>1){var mn=Math.min.apply(null,pos);if(ns.filter(function(x){return x===mn;}).length===1)return ns.indexOf(mn);}return -1;}
+        if(!FEAT.test(l)||F.rs.every(function(r){return has(r);}))return -1;
+        var hv=[];F.rs.forEach(function(r,j){if(has(r))hv.push(j);});return hv.length===1?hv[0]:-1;}
+      function paint(dir){var F=FE[cur],win=starWin(F);
         var same=FE.map(function(f,i){return f.g===F.g?i:-1;}).filter(function(i){return i>=0;});
         var h='<div class="cxgh"><button type="button" class="cxar" data-d="-1" aria-label="'+T('السابق','Previous')+'">\u203A</button><div class="cxgt2"><small>'+esc(tx(F.g))+' \u00B7 '+(cur+1)+'/'+FE.length+'</small><b>'+esc(tx(F.l))+'</b></div><button type="button" class="cxar" data-d="1" aria-label="'+T('التالي','Next')+'">\u2039</button></div>';
         h+='<div class="cxgb n'+Math.min(n,4)+'" style="grid-template-columns:repeat('+n+',minmax(0,1fr))">'+F.rs.map(function(r,i){var v=r?sv2(tx(r.v)):'\u2014',nt=r&&r.n?String(tx(r.n)):'';if(nt.length>70)nt=nt.slice(0,68).replace(/\s+\S*$/,'')+'\u2026';
