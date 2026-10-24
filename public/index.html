@@ -1773,7 +1773,7 @@ if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='ht
 </style>
 <script id="pncart-js">
 (function(){
-  var WA_NUMBER='';  /* رقم واتساب المتجر بصيغة دولية بدون + (مثال: 9627XXXXXXXX) */
+  var WA_NUMBER='';window.pnWANumber=function(){return WA_NUMBER;};  /* رقم واتساب المتجر بصيغة دولية بدون + (مثال: 9627XXXXXXXX) */
   var mem={};
   function sget(k){try{var v=localStorage.getItem(k);return v==null?mem[k]:v;}catch(e){return mem[k];}}
   function sset(k,v){mem[k]=v;try{localStorage.setItem(k,v);}catch(e){}}
@@ -1880,7 +1880,7 @@ if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='ht
       },60);
   }
   function curDevice(){return location.hash.indexOf('#/d/')===0?decodeURIComponent(location.hash.slice(4)):'';}
-  function addLabel(){return T('أضف إلى السلة','Add to cart');}
+  function addLabel(){return T('اطلب الآن','Order now');}
   function inject(){
     var sb=document.getElementById('spbuy'),old=document.getElementById('pnadd');
     if(!sb||!sb.querySelector('.btn.wa')){if(old)old.remove();var q=panel();if(q)q.remove();return;}
@@ -1893,6 +1893,7 @@ if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='ht
       if(!nm)return;
       var key=nm+'|'+ck,f=cart.filter(function(i){return i.k===key;})[0];
       if(!f)cart.push({k:key,n:nm,c:ck,cn:cn,p:p,q:1});
+      if(window.pnOrderOpen){window.pnOrderOpen({n:nm,cn:cn,p:p,img:imgOf({c:ck})||((window.PNIMG||{})[nm]||'')});return;}
       save();
       var pn=panel();if(pn&&!pn.hidden){renderItems();}
       showPanel();
@@ -2278,38 +2279,15 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(m)f.a=m[1].trim();
     var ph=raw.match(/(?:\+?962|00962|0)?\s?7[789][\d\s-]{7,10}/);if(ph&&normPhone(ph[0]))f.p=normPhone(ph[0]);
     return f;}
-  function closeForm(){document.body.classList.remove('pnfo');var m=document.getElementById('pnform');if(m&&m.parentNode)m.parentNode.removeChild(m);}
-  function syncForm(){var m=document.getElementById('pnform');if(!m||!ord)return;var f=[['pfn',ord.n],['pfp',ord.p],['pfa',ord.a]];f.forEach(function(x){var el=document.getElementById(x[0]);if(el&&x[1]&&!el.value)el.value=x[1];});}
+  function closeForm(){if(window.pnOrderClose)window.pnOrderClose(true);var m=document.getElementById('pnform');if(m&&m.parentNode)m.parentNode.removeChild(m);}
+  function syncForm(){if(ord&&window.pnOrderFill)window.pnOrderFill(ord);}
   function askNext(prefix){
     if(!ord)return;ord.ask='modal';ord.modal=true;
-    var m=document.getElementById('pnform'),fresh=!m;
-    var F=[['pfn',T('ما اسمك الكامل؟','What is your full name?'),T('الاسم الكامل','Full name')],['pfp',T('ما رقم هاتفك؟','What is your phone number?'),T('رقم الهاتف','Phone number')],['pfa',T('ما عنوانك بالتفصيل؟','What is your full address?'),T('المدينة، الحي، الشارع','City, area, street')]];
-    function show(i){ord.step=i;F.forEach(function(f,k){var el=document.getElementById(f[0]);el.parentNode.style.display=k===i?'block':'none';});
-      document.getElementById('pft').textContent=F[i][1];document.getElementById('pfs').textContent=dn(ord.key)+' · '+(i+1)+'/3';
-      document.getElementById('pfe').textContent='';
-      document.getElementById('pfok').textContent=i===2?T('تأكيد الطلب','Confirm order'):T('التالي','Next');
-      document.getElementById('pfx').textContent=i===0?T('إلغاء','Cancel'):T('رجوع','Back');
-      var el=document.getElementById(F[i][0]);setTimeout(function(){try{el.focus();}catch(e){}},120);}
-    function err(t,id){document.getElementById('pfe').textContent=t;document.getElementById(id).focus();}
-    function next(){var i=ord.step||0,e;
-      if(i===0){var n=document.getElementById('pfn').value.trim();if(n.length<3||/\d/.test(n))return err(T('اكتب الاسم الكامل (بدون أرقام).','Enter your full name (no digits).'),'pfn');ord.n=n;show(1);return;}
-      if(i===1){var p=normPhone(document.getElementById('pfp').value);if(!p)return err(T('رقم الهاتف غير صحيح، مثال: 0791234567','Invalid phone, e.g. 0791234567'),'pfp');ord.p=p;show(2);return;}
-      var a=document.getElementById('pfa').value.trim();if(a.length<8)return err(T('العنوان قصير، اذكر المدينة والحي والشارع.','Address too short: city, area, street.'),'pfa');
-      ord.a=a;ord.modal=false;closeForm();finishOrder();}
-    if(!m){m=document.createElement('div');m.id='pnform';m.className='pnform';
-      m.innerHTML='<div class="pnfc" role="dialog" aria-modal="true" dir="auto"><p class="pnfs" id="pfs"></p><h3 id="pft"></h3>'
-       +'<label><input id="pfn" type="text" autocomplete="name"></label>'
-       +'<label><input id="pfp" type="tel" inputmode="numeric" autocomplete="tel" placeholder="07XXXXXXXX" dir="ltr"></label>'
-       +'<label><textarea id="pfa" rows="3" placeholder="'+esc(F[2][2])+'"></textarea></label>'
-       +'<div class="pnfe" id="pfe"></div><div class="pnfb"><button type="button" id="pfok"></button><button type="button" id="pfx"></button></div><button type="button" id="pfc" class="pnfk">'+esc(T('إلغاء الطلب','Cancel order'))+'</button></div>';
-      document.body.appendChild(m);document.body.classList.add('pnfo');
-      function cancel(){ord=null;closeForm();say(out('',[T('حسناً، تم إلغاء الطلب.','Okay, order cancelled.')]),3000);}
-      document.getElementById('pfc').addEventListener('click',cancel);
-      document.getElementById('pfx').addEventListener('click',function(){if(!ord)return;if((ord.step||0)===0)cancel();else show(ord.step-1);});
-      document.getElementById('pfok').addEventListener('click',function(){if(ord)next();});
-      m.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'){e.preventDefault();if(ord)next();}});}
-    syncForm();
-    if(fresh){var st=0;if(ord.n)st=1;if(ord.n&&ord.p)st=2;show(st);} 
+    if(document.getElementById('pnog')){syncForm();return;}
+    var k=ord.key,im=(window.PNIMG&&(window.PNIMG[k]||window.PNIMG[dn(k)]))||'';
+    window.pnOrderOpen({n:dn(k),cn:ord.color||'',p:priceOf(k),img:im,fn:ord.n,fp:ord.p,fa:ord.a,
+      onCancel:function(){if(!ord)return;ord=null;say(out('',[T('حسناً، تم إلغاء الطلب.','Okay, order cancelled.')]),3000);},
+      onConfirm:function(v){ord=null;setState('happy');say(out(T('شكراً يا ','Thank you, ')+v.n,[T('اضغط إرسال في واتساب ليصلنا طلبك.','Press send in WhatsApp so we get your order.')]),8000);}});
     say(out(dn(ord.key),[(prefix||'')+T('اكتب بياناتك في النافذة.','Please type your details in the window.')]),6000);}
   function setVal(el,v){if(!el)return;var proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;var st=Object.getOwnPropertyDescriptor(proto,'value').set;st.call(el,v);el.dispatchEvent(new Event('input',{bubbles:true}));}
   function finishOrder(){var o=ord;ord=null;closeForm();
@@ -3109,4 +3087,100 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 </script>
 
 </body></html>
+<script>
+(function(){
+  var css='.pog{position:fixed;inset:0;z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;padding:18px 14px;box-sizing:border-box;background:#f1f2f7;opacity:0;transition:opacity .22s}'
+  +'.pog.in{opacity:1}'
+  +'.pog .pgbg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(60% 42% at 12% 10%,rgba(150,120,255,.42),transparent 70%),radial-gradient(55% 40% at 92% 38%,rgba(80,225,205,.38),transparent 70%),radial-gradient(60% 42% at 25% 96%,rgba(255,168,196,.40),transparent 70%),#f1f2f7}'
+  +'.pog .pgph{position:fixed;left:50%;top:7vh;width:min(86vw,340px);margin-left:calc(min(86vw,340px)/-2);transform:rotate(-9deg);pointer-events:none;filter:drop-shadow(0 22px 28px rgba(80,60,160,.28));opacity:.97}'
+  +'.pog .pgc{position:relative;margin:auto;width:min(100%,400px);box-sizing:border-box;padding:18px 16px 16px;border-radius:28px;background:linear-gradient(150deg,rgba(255,255,255,.58),rgba(255,255,255,.22));border:1.5px solid rgba(255,255,255,.92);box-shadow:0 18px 50px rgba(70,50,150,.20),inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.4);-webkit-backdrop-filter:blur(5px) saturate(1.2);backdrop-filter:blur(5px) saturate(1.2);color:#2c2750;font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;transform:translateY(14px) scale(.98);transition:transform .28s}'
+  +'.pog.in .pgc{transform:none}'
+  +'.pgh{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}.pgh div{flex:1;min-width:0}'
+  +'.pgh small{display:block;font-size:12px;font-weight:600;color:#6b62b5}.pgh b{display:block;font-size:19px;font-weight:700;line-height:1.35;margin-top:1px}'
+  +'.pgx{flex:0 0 auto;width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.95);background:rgba(255,255,255,.55);color:#5b4fc7;font:700 18px/1 system-ui;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent}'
+  +'.pgf{display:block;margin:0 0 10px;font-size:12.5px;font-weight:600;color:#4d4585}'
+  +'.pgf input,.pgf textarea{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px 12px;border-radius:14px;border:1.5px solid rgba(255,255,255,.95);background:rgba(255,255,255,.55);color:#2c2750;font:500 15px inherit;font-family:inherit;outline:none;resize:none;box-shadow:inset 0 1px 3px rgba(80,60,160,.08)}'
+  +'.pgf *{outline:none}.pgf input:focus,.pgf textarea:focus{border-color:#b9a6ff;background:rgba(255,255,255,.8);box-shadow:0 0 0 3px rgba(165,139,255,.25)}'
+  +'.pgf.bad input,.pgf.bad textarea{border-color:#ff9db6;box-shadow:0 0 0 3px rgba(255,157,182,.28)}'
+  +'.pgf em{display:none;font-style:normal;font-size:11.5px;color:#c0334d;margin-top:3px}.pgf.bad em{display:block}'
+  +'.pgr{margin:4px 0 12px;padding:12px 13px;border-radius:16px;background:rgba(255,255,255,.62);border:1.5px dashed rgba(139,109,255,.35);font-size:12.5px;line-height:1.7}'
+  +'.pgr h4{margin:0;text-align:center;font-size:15px;font-weight:700;letter-spacing:.5px}.pgr h4 i{font-style:normal;color:#8b6dff}'
+  +'.pgr .ct{text-align:center;font-size:11px;color:#7b73b8;margin-bottom:4px}.pgr hr{border:0;border-top:1px dashed rgba(139,109,255,.3);margin:6px 0}'
+  +'.pgr .rw{display:flex;justify-content:space-between;gap:10px}.pgr .rw span:last-child{font-weight:600;text-align:left}.pgr .tt{font-weight:700;font-size:14px}'
+  +'.pgr .kv{display:block;color:#4d4585}.pgr .kv.e{opacity:.45}'
+  +'.pgok{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:14px 12px;border-radius:16px;border:1.5px solid rgba(255,255,255,.95);background:linear-gradient(135deg,rgba(201,184,255,.95),rgba(159,232,214,.95));color:#35297f;font:700 15.5px inherit;font-family:inherit;text-decoration:none;cursor:pointer;box-shadow:0 8px 20px rgba(120,100,220,.28),inset 0 1px 0 rgba(255,255,255,.8);-webkit-tap-highlight-color:transparent}'
+  +'.pgok:active{transform:scale(.98)}.pgok svg{width:20px;height:20px}'
+  +'.pgcn{display:block;margin:10px auto 0;background:none;border:0;color:#6b62b5;font:600 13px inherit;font-family:inherit;cursor:pointer;padding:6px 12px}'
+  +'.pgnt{margin:8px 0 0;text-align:center;font-size:12px;color:#4d4585;min-height:16px}'
+  +'html.pgl,html.pgl body{overflow:hidden!important}';
+  var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+  var WAI='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
+  function EN(){return window.pnIsEN?!!window.pnIsEN():document.documentElement.lang==='en';}
+  function T(a,e){return EN()?e:a;}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function dg(s){return String(s||'').replace(/[٠-٩]/g,function(d){return d.charCodeAt(0)-1632;}).replace(/[۰-۹]/g,function(d){return d.charCodeAt(0)-1776;});}
+  function normPhone(v){var d=dg(v).replace(/\D/g,'');if(d.indexOf('00962')===0)d=d.slice(5);else if(d.indexOf('962')===0)d=d.slice(3);if(d.charAt(0)==='0')d=d.slice(1);return /^7[789]\d{7}$/.test(d)?'0'+d:'';}
+  function fmt(n){return Number(n).toLocaleString('en-US');}
+  var cur=null;
+  function get(id){return document.getElementById(id);}
+  function close(silent){
+    var o=get('pnog');if(!o)return;var c=cur;cur=null;
+    o.classList.remove('in');document.documentElement.classList.remove('pgl');document.body.classList.remove('pnfo');
+    setTimeout(function(){if(o.parentNode)o.parentNode.removeChild(o);},230);
+    if(!silent&&c&&c.onCancel)c.onCancel();
+  }
+  function vals(){return {n:get('pgn').value.trim(),p:get('pgp').value,a:get('pga').value.trim()};}
+  function now(){var d=new Date(),p=function(n){return n<10?'0'+n:n;};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'  '+p(d.getHours())+':'+p(d.getMinutes());}
+  function totalTxt(){return cur.p?fmt(cur.p)+' '+T('د.أ','JOD'):T('عند التأكيد','TBC');}
+  function itemTxt(){return cur.n+(cur.cn?' · '+cur.cn:'');}
+  function waUrl(v){
+    var D='┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈';
+    var L=['*PINNACLE  jo*',T('فاتورة الطلب','Order receipt'),D,T('رقم الطلب: ','Order no.: ')+cur.id,T('التاريخ: ','Date: ')+cur.ds.replace(/\s+/g,' '),D,'1) '+itemTxt()+' ×1 — '+(cur.p?fmt(cur.p):T('السعر عند التأكيد','price to be confirmed')),D,'*'+T('المجموع: ','TOTAL: ')+totalTxt()+'*',D,T('الاسم: ','Name: ')+v.n,T('الهاتف: ','Phone: ')+normPhone(v.p),T('العنوان: ','Address: ')+v.a,D,T('بانتظار تأكيد المتجر · شكراً لثقتك','Awaiting store confirmation · Thank you')];
+    var num=window.pnWANumber?window.pnWANumber():'';
+    return 'https://wa.me/'+(num||'')+'?text='+encodeURIComponent(L.join('\n'));}
+  function paint(){
+    if(!cur)return;var v=vals(),ph=normPhone(v.p);
+    get('pgrv').innerHTML='<h4>PINNACLE <i>jo</i></h4><div class="ct">'+T('معاينة الفاتورة','Invoice preview')+'</div><hr>'
+     +'<div class="rw"><span>'+T('رقم الطلب','Order no.')+'</span><span>'+esc(cur.id)+'</span></div><div class="rw"><span>'+T('التاريخ','Date')+'</span><span>'+cur.ds+'</span></div><hr>'
+     +'<div class="rw"><span>'+esc(itemTxt())+' ×1</span><span>'+(cur.p?fmt(cur.p):T('عند التأكيد','TBC'))+'</span></div><hr>'
+     +'<div class="rw tt"><span>'+T('المجموع','TOTAL')+'</span><span>'+totalTxt()+'</span></div><hr>'
+     +'<span class="kv'+(v.n?'':' e')+'">'+T('الاسم: ','Name: ')+(v.n?esc(v.n):'—')+'</span><span class="kv'+(ph?'':' e')+'">'+T('الهاتف: ','Phone: ')+(ph||'—')+'</span><span class="kv'+(v.a?'':' e')+'">'+T('العنوان: ','Address: ')+(v.a?esc(v.a):'—')+'</span>';
+    if(ph&&v.n.length>=3&&v.a.length>=8)get('pgok').setAttribute('href',waUrl(v));
+  }
+  function check(){
+    var v=vals(),ok={n:v.n.length>=3&&!/\d/.test(v.n),p:!!normPhone(v.p),a:v.a.length>=8},first=null;
+    [['n','pgn'],['p','pgp'],['a','pga']].forEach(function(k){var f=get(k[1]).closest('.pgf');f.classList.toggle('bad',!ok[k[0]]);if(!ok[k[0]]&&!first)first=get(k[1]);});
+    if(first){first.focus();return false;}return true;}
+  function open(o){
+    close(true);
+    var c={n:o.n||'',cn:o.cn||'',p:Number(o.p)||0,img:o.img||'',onCancel:o.onCancel,onConfirm:o.onConfirm,id:'PN-'+Date.now().toString(36).toUpperCase().slice(-5),ds:now()};
+    cur=c;
+    var sv={};try{sv=JSON.parse(localStorage.getItem('pn_cust')||'{}');}catch(e){}
+    var el=document.createElement('div');el.id='pnog';el.className='pog';el.dir=EN()?'ltr':'rtl';
+    el.innerHTML='<div class="pgbg"></div>'+(c.img?'<img class="pgph" alt="" src="'+esc(c.img)+'">':'')
+     +'<div class="pgc" role="dialog" aria-modal="true"><div class="pgh"><div><small>'+T('إتمام الطلب','Complete your order')+'</small><b><bdi>'+esc(itemTxt())+'</bdi>'+(c.p?' <bdi style="font-weight:600;color:#6b62b5;font-size:15px">· '+fmt(c.p)+' '+T('د.أ','JOD')+'</bdi>':'')+'</b></div><button type="button" class="pgx" id="pgx" aria-label="'+T('إغلاق','Close')+'">×</button></div>'
+     +'<label class="pgf">'+T('الاسم الكامل','Full name')+'<input id="pgn" autocomplete="name" value="'+esc(o.fn||sv.n||'')+'"><em>'+T('اكتب الاسم الكامل (بدون أرقام)','Enter your full name (no digits)')+'</em></label>'
+     +'<label class="pgf">'+T('رقم الهاتف','Phone number')+'<input id="pgp" type="tel" inputmode="tel" dir="ltr" placeholder="07XXXXXXXX" autocomplete="tel" value="'+esc(o.fp||sv.p||'')+'"><em>'+T('رقم أردني صحيح، مثال: 0791234567','Valid Jordanian number, e.g. 0791234567')+'</em></label>'
+     +'<label class="pgf">'+T('العنوان بالتفصيل','Full address')+'<textarea id="pga" rows="2" autocomplete="street-address" placeholder="'+T('المدينة، الحي، الشارع، أقرب معلم','City, area, street, landmark')+'">'+esc(o.fa||sv.a||'')+'</textarea><em>'+T('اكتب العنوان بالتفصيل ليصلك الطلب بدقة','Enter a detailed address')+'</em></label>'
+     +'<div class="pgr" id="pgrv" dir="'+(EN()?'ltr':'rtl')+'"></div>'
+     +'<a class="pgok" id="pgok" href="#" target="_blank" rel="noopener">'+WAI+'<span>'+T('تأكيد وإرسال عبر واتساب','Confirm & send on WhatsApp')+'</span></a>'
+     +'<p class="pgnt" id="pgnt"></p><button type="button" class="pgcn" id="pgcn">'+T('إلغاء الطلب','Cancel order')+'</button></div>';
+    document.body.appendChild(el);document.documentElement.classList.add('pgl');document.body.classList.add('pnfo');
+    void el.offsetWidth;el.classList.add('in');
+    paint();
+    el.addEventListener('input',function(e){var f=e.target.closest('.pgf');if(f)f.classList.remove('bad');try{localStorage.setItem('pn_cust',JSON.stringify(vals()));}catch(x){}paint();});
+    get('pgx').addEventListener('click',function(){close();});get('pgcn').addEventListener('click',function(){close();});
+    get('pgok').addEventListener('click',function(e){
+      if(!check()){e.preventDefault();return;}
+      var v=vals();v.p=normPhone(v.p);paint();get('pgok').setAttribute('href',waUrl(v));
+      try{localStorage.setItem('pn_cust',JSON.stringify(v));}catch(x){}
+      get('pgnt').textContent=T('تم فتح واتساب — اضغط إرسال هناك ليصلنا طلبك.','WhatsApp is open — press send there so we receive your order.');
+      if(c.onConfirm)c.onConfirm(v);});
+    el.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+    setTimeout(function(){var f=get('pgn');if(f&&!f.value)try{f.focus();}catch(x){}},300);
+  }
+  function fill(d){if(!cur||!d)return;[['pgn',d.n],['pgp',d.p],['pga',d.a]].forEach(function(x){var e=get(x[0]);if(e&&x[1]&&!e.value)e.value=x[1];});paint();}
+  window.pnOrderOpen=open;window.pnOrderClose=close;window.pnOrderFill=fill;
+})();
+</script>
 </body></html>
