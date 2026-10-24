@@ -87,6 +87,7 @@ html[lang=en] .sr small{text-align:start}
 #pndrop{position:fixed!important;top:calc(58px + env(safe-area-inset-top,0px))!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:min(380px,calc(100vw - 24px))!important;max-height:calc(100dvh - 84px)!important;margin:0!important;overflow-y:auto;padding:8px;z-index:56;direction:rtl;animation:ddIn .35s cubic-bezier(.2,.8,.2,1) both}
 #pndrop[hidden]{display:none!important}
 html[lang=en] #pndrop,#pnspecs{direction:ltr}
+#lskip.lskip{top:calc(env(safe-area-inset-top,0px) + 54px)}
 body.on-land #pnbar{position:absolute;top:0;left:0;right:0;background:transparent}
 /* ===== v54: top bar (back / language), one-line title ===== */
 .dnav,.bnav{display:none!important}
@@ -1465,7 +1466,7 @@ var trustT=0,BALLS=null,ballRaf=0,ballT=0;
   var bar=document.getElementById('pnbar'),bk=document.getElementById('pnback'),lg=document.getElementById('pnlang');
   var dv=document.getElementById('pndev'),pd=document.getElementById('pndrop'),ls=document.getElementById('lskip');
   function show(){var h=location.hash,inner=h.indexOf('#/d/')===0||h.indexOf('#/b/')===0;
-    bar.hidden=!inner&&ls&&!ls.hidden;bk.hidden=!inner;dv.hidden=false;pd.hidden=true;}
+    bar.hidden=false;bk.hidden=!inner;dv.hidden=false;pd.hidden=true;}
   if(ls)new MutationObserver(show).observe(ls,{attributes:true,attributeFilter:['hidden']});
   addEventListener('hashchange',show);show();
   function brandOf(h){var name=decodeURIComponent(h.slice(4)),all=document.querySelectorAll('#fabpanel details.bd');
