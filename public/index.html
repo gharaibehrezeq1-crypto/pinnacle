@@ -3139,14 +3139,22 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var L=['*PINNACLE  jo*',T('فاتورة الطلب','Order receipt'),D,T('رقم الطلب: ','Order no.: ')+cur.id,T('التاريخ: ','Date: ')+cur.ds.replace(/\s+/g,' '),D,'1) '+itemTxt()+' ×1 — '+(cur.p?fmt(cur.p):T('السعر عند التأكيد','price to be confirmed')),D,'*'+T('المجموع: ','TOTAL: ')+totalTxt()+'*',D,T('الاسم: ','Name: ')+v.n,T('الهاتف: ','Phone: ')+normPhone(v.p),T('العنوان: ','Address: ')+v.a,D,T('بانتظار تأكيد المتجر · شكراً لثقتك','Awaiting store confirmation · Thank you')];
     var num=window.pnWANumber?window.pnWANumber():'';
     return 'https://wa.me/'+(num||'')+'?text='+encodeURIComponent(L.join('\n'));}
-  function paint(){
-    if(!cur)return;var v=vals(),ph=normPhone(v.p);
-    get('pgrv').innerHTML='<h4>PINNACLE <i>jo</i></h4><div class="ct">'+T('معاينة الفاتورة','Invoice preview')+'</div><hr>'
+  function clearRc(){var r=get('pgrc');if(r)r.innerHTML='';}
+  function showRc(v){
+    var h='<div class="pcrc"><div class="pcslot"></div><div class="pcwin"><div class="pcpaper" dir="'+(EN()?'ltr':'rtl')+'"><h4>PINNACLE <i>jo</i></h4><div class="ct">'+T('فاتورة الطلب','Order receipt')+'</div><hr>'
      +'<div class="rw"><span>'+T('رقم الطلب','Order no.')+'</span><span>'+esc(cur.id)+'</span></div><div class="rw"><span>'+T('التاريخ','Date')+'</span><span>'+cur.ds+'</span></div><hr>'
      +'<div class="rw"><span>'+esc(itemTxt())+' ×1</span><span>'+(cur.p?fmt(cur.p):T('عند التأكيد','TBC'))+'</span></div><hr>'
      +'<div class="rw tt"><span>'+T('المجموع','TOTAL')+'</span><span>'+totalTxt()+'</span></div><hr>'
-     +'<span class="kv'+(v.n?'':' e')+'">'+T('الاسم: ','Name: ')+(v.n?esc(v.n):'—')+'</span><span class="kv'+(ph?'':' e')+'">'+T('الهاتف: ','Phone: ')+(ph||'—')+'</span><span class="kv'+(v.a?'':' e')+'">'+T('العنوان: ','Address: ')+(v.a?esc(v.a):'—')+'</span>';
-    if(ph&&v.n.length>=3&&v.a.length>=8)get('pgok').setAttribute('href',waUrl(v));
+     +'<span class="kv">'+T('الاسم: ','Name: ')+esc(v.n)+'</span><span class="kv">'+T('الهاتف: ','Phone: ')+normPhone(v.p)+'</span><span class="kv">'+T('العنوان: ','Address: ')+esc(v.a)+'</span>'
+     +'<div class="bar"></div><div class="ft">'+T('بانتظار تأكيدك على واتساب · شكراً لثقتك','Awaiting your WhatsApp confirmation · Thank you')+'</div></div></div>'
+     +'<div class="pcconf" id="pgconf"><p>'+T('راجع فاتورتك، ثم اضغط تأكيد ليصلنا طلبك على واتساب.','Review your invoice, then confirm to send it to us on WhatsApp.')+'</p><a id="pgok" class="pcb2" href="'+esc(waUrl(v))+'" target="_blank" rel="noopener">'+WAI+'<span>'+T('تأكيد وإرسال عبر واتساب','Confirm & send on WhatsApp')+'</span></a><button type="button" class="pcedit" id="pgedit">'+T('تعديل الطلب','Edit order')+'</button></div></div>';
+    var r=get('pgrc');r.innerHTML=h;
+    var sl=r.querySelector('.pcslot'),sc=get('pnog');
+    if(sl&&sc)sc.scrollTo({top:sc.scrollTop+sl.getBoundingClientRect().top-90,behavior:'smooth'});
+    setTimeout(function(){var cf=get('pgconf');if(!cf)return;cf.classList.add('in');var bt=cf.getBoundingClientRect().bottom-window.innerHeight+16;if(bt>0&&sc)sc.scrollBy({top:bt,behavior:'smooth'});},2900);
+    var cc=cur;
+    get('pgok').addEventListener('click',function(){var n=get('pgconf').querySelector('p');if(n)n.textContent=T('تم فتح واتساب — اضغط إرسال هناك ليصلنا طلبك.','WhatsApp is open — press send there so we receive your order.');if(cc.onConfirm)cc.onConfirm(v);});
+    get('pgedit').addEventListener('click',function(){clearRc();get('pgn').focus();});
   }
   function check(){
     var v=vals(),ok={n:v.n.length>=3&&!/\d/.test(v.n),p:!!normPhone(v.p),a:v.a.length>=8},first=null;
@@ -3163,24 +3171,18 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
      +'<label class="pgf">'+T('الاسم الكامل','Full name')+'<input id="pgn" autocomplete="name" value="'+esc(o.fn||sv.n||'')+'"><em>'+T('اكتب الاسم الكامل (بدون أرقام)','Enter your full name (no digits)')+'</em></label>'
      +'<label class="pgf">'+T('رقم الهاتف','Phone number')+'<input id="pgp" type="tel" inputmode="tel" dir="ltr" placeholder="07XXXXXXXX" autocomplete="tel" value="'+esc(o.fp||sv.p||'')+'"><em>'+T('رقم أردني صحيح، مثال: 0791234567','Valid Jordanian number, e.g. 0791234567')+'</em></label>'
      +'<label class="pgf">'+T('العنوان بالتفصيل','Full address')+'<textarea id="pga" rows="2" autocomplete="street-address" placeholder="'+T('المدينة، الحي، الشارع، أقرب معلم','City, area, street, landmark')+'">'+esc(o.fa||sv.a||'')+'</textarea><em>'+T('اكتب العنوان بالتفصيل ليصلك الطلب بدقة','Enter a detailed address')+'</em></label>'
-     +'<div class="pgr" id="pgrv" dir="'+(EN()?'ltr':'rtl')+'"></div>'
-     +'<a class="pgok" id="pgok" href="#" target="_blank" rel="noopener">'+WAI+'<span>'+T('تأكيد وإرسال عبر واتساب','Confirm & send on WhatsApp')+'</span></a>'
-     +'<p class="pgnt" id="pgnt"></p><button type="button" class="pgcn" id="pgcn">'+T('إلغاء الطلب','Cancel order')+'</button></div>';
+     +'<a class="pgok" id="pgpv" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg><span>'+T('معاينة الفاتورة','Preview invoice')+'</span></a>'
+     +'<p class="pgnt">'+T('ستظهر فاتورتك للمعاينة، ثم تضغط تأكيد ليصلنا الطلب على واتساب.','Your invoice appears for preview, then press confirm to send the order on WhatsApp.')+'</p><div id="pgrc"></div>'
+     +'<button type="button" class="pgcn" id="pgcn">'+T('إلغاء الطلب','Cancel order')+'</button></div>';
     document.body.appendChild(el);document.documentElement.classList.add('pgl');document.body.classList.add('pnfo');
     void el.offsetWidth;el.classList.add('in');
-    paint();
-    el.addEventListener('input',function(e){var f=e.target.closest('.pgf');if(f)f.classList.remove('bad');try{localStorage.setItem('pn_cust',JSON.stringify(vals()));}catch(x){}paint();});
+    el.addEventListener('input',function(e){var f=e.target.closest('.pgf');if(f)f.classList.remove('bad');try{localStorage.setItem('pn_cust',JSON.stringify(vals()));}catch(x){}clearRc();});
     get('pgx').addEventListener('click',function(){close();});get('pgcn').addEventListener('click',function(){close();});
-    get('pgok').addEventListener('click',function(e){
-      if(!check()){e.preventDefault();return;}
-      var v=vals();v.p=normPhone(v.p);paint();get('pgok').setAttribute('href',waUrl(v));
-      try{localStorage.setItem('pn_cust',JSON.stringify(v));}catch(x){}
-      get('pgnt').textContent=T('تم فتح واتساب — اضغط إرسال هناك ليصلنا طلبك.','WhatsApp is open — press send there so we receive your order.');
-      if(c.onConfirm)c.onConfirm(v);});
+    get('pgpv').addEventListener('click',function(e){e.preventDefault();if(!check())return;var v=vals();v.p=normPhone(v.p);try{localStorage.setItem('pn_cust',JSON.stringify(v));}catch(x){}showRc(v);});
     el.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
     setTimeout(function(){var f=get('pgn');if(f&&!f.value)try{f.focus();}catch(x){}},300);
   }
-  function fill(d){if(!cur||!d)return;[['pgn',d.n],['pgp',d.p],['pga',d.a]].forEach(function(x){var e=get(x[0]);if(e&&x[1]&&!e.value)e.value=x[1];});paint();}
+  function fill(d){if(!cur||!d)return;[['pgn',d.n],['pgp',d.p],['pga',d.a]].forEach(function(x){var e=get(x[0]);if(e&&x[1]&&!e.value)e.value=x[1];});}
   window.pnOrderOpen=open;window.pnOrderClose=close;window.pnOrderFill=fill;
 })();
 </script>
