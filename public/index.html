@@ -2027,6 +2027,9 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cxgp::-webkit-scrollbar{display:none}
 .pncmp .cxpl{flex:none;border:0;border-radius:999px;padding:8px 14px;font:300 12px var(--font-body,Arial);color:#2b2f3a;background:rgba(255,255,255,.28);cursor:pointer;white-space:nowrap}
 .pncmp .cxpl.on{background:#fff;color:#1b1440;font-weight:400;box-shadow:0 6px 14px -8px rgba(90,70,190,.55)}
+.pncmp .cxgl{transform:perspective(1100px) rotateY(var(--ty,12deg));transform-origin:100% 50%;animation:cxsw 7s ease-in-out infinite;will-change:transform;margin-left:4px;margin-right:2px}
+@keyframes cxsw{0%,100%{--ty:12deg;transform:perspective(1100px) rotateY(12deg)}50%{transform:perspective(1100px) rotateY(8deg)}}
+@media (prefers-reduced-motion:reduce){.pncmp .cxgl{animation:none}}
 .pncmp .cxcol{border-top-color:rgba(255,255,255,.85)}
 .pncmp .cxcol .nm{color:#1b1440;font-weight:400}
 .pncmp .cxcol .nm em{color:#6d4dff}
