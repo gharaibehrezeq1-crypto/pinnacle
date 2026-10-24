@@ -826,6 +826,10 @@ body.lock .fab { display:none; }
 #view-device{padding-bottom:28px!important}
 
 .spgrid .spcol{order:1;min-width:0}
+/* glass strip behind the left column of the device page */
+.spgrid{isolation:isolate;position:relative}
+.spgrid::before{content:"";position:absolute;z-index:-1;left:-14px;top:-40px;bottom:-40px;width:calc(50% + 14px);pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent,#000 16%,#000 84%,transparent);mask-image:linear-gradient(180deg,transparent,#000 16%,#000 84%,transparent);background:radial-gradient(90% 32% at 20% 8%,rgba(150,120,255,.46),transparent 72%),radial-gradient(90% 34% at 85% 46%,rgba(80,225,205,.42),transparent 72%),radial-gradient(90% 32% at 25% 92%,rgba(255,168,196,.44),transparent 72%)}
+.spgrid .spcol{align-self:stretch;box-sizing:border-box;padding:12px 10px 16px;border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,.58),rgba(255,255,255,.2));border:1.5px solid rgba(255,255,255,.95);box-shadow:0 14px 36px rgba(80,60,160,.16),inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.45);-webkit-backdrop-filter:blur(8px) saturate(1.2);backdrop-filter:blur(8px) saturate(1.2);min-height:min(70vh,520px)}
 .spbuy{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .spprice{text-align:center;direction:rtl}
 html[lang=en] .spprice{direction:ltr}
