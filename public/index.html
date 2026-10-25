@@ -2653,7 +2653,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     say(out(head,lines)+fuHtml(tp,k1),tp?16000:10000);ok_();}
   // ================= Full side-by-side comparison sheet (two phones, every spec, with a verdict) =================
   var CMPAL={'الشحن السلكي السريع':'الشحن السريع','قوة الشاحن':'الشاحن'};
-  function cmpRows(k){var o=[];(D()[k].cmp||D()[k].data||[]).forEach(function(S){S.rows.forEach(function(r){if(!r[1])return;o.push({s:S.k,l:CMPAL[r[0]]||r[0],v:r[1],n:r[2]||''});});});return o;}
+  function cmpRows(k){var o=[];(D()[k].cmp||D()[k].data||[]).forEach(function(S){S.rows.forEach(function(r){if(!r[1])return;if(S.k==='المعالج والذاكرة'&&r[0]==='التخزين')o.push({s:'التخزين',l:'السعات المتوفرة',v:r[1],n:r[2]||''});else o.push({s:S.k,l:CMPAL[r[0]]||r[0],v:r[1],n:r[2]||''});});});return o;}
   function cmpGet(k,s,l){var a=cmpRows(k);for(var i=0;i<a.length;i++)if(a[i].s===s&&a[i].l===l)return a[i];return null;}
   function cmpText(k,re){var a=cmpRows(k),t=[];a.forEach(function(r){if(re.test(r.s+'|'+r.l))t.push(r.v);});return t;}
   var CHIPS=[[/A20 Pro/i,100],[/Elite Gen 5/i,98],[/A19 Pro/i,95],[/8 Elite/i,92],[/A19/i,88],[/8550/,70],[/7 Gen 4/i,60],[/7300/,52],[/6 Gen 1/i,45]];
