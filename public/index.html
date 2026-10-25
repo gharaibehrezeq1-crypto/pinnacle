@@ -1701,15 +1701,21 @@ document.querySelectorAll('#view-home section.brand .row').forEach(function(row)
      'Reno16':{price:'499',size:'6.32 إنش',hz:'120Hz',cpu:'Snapdragon 7 Gen 4',ram:'12+12GB',rom:'256GB',cam:'50MP',front:'50MP',bat:'6700mAh',chg:'80W',fp:'تحت الشاشة'},
      'Reno16 F':{price:'379',size:'6.57 إنش',hz:'120Hz',cpu:'Dimensity 7300',ram:'8+8GB',rom:'256GB',cam:'50MP',front:'50MP',bat:'7000mAh',chg:'80W',fp:'تحت الشاشة'},
      'Reno15 F':{price:'369',size:'6.57 إنش',hz:'120Hz',cpu:'Snapdragon 6 Gen 1',ram:'12+12GB',rom:'512GB',cam:'50MP',front:'50MP',bat:'7000mAh',chg:'80W',fp:'تحت الشاشة'}};
-    DEV['Reno15 F']={b:2,t:['Reno15','F'],price:'369',sel:'op15f:none',data:[],cols:[['op15f:none','—','#cfd2d8']]};
+    DEV['Reno15 F']={b:2,t:['Reno15','F'],price:'369',sel:'op15f:none',data:[{k:'الشاشة',rows:[]}],cols:[['op15f:none','—','#cfd2d8']]};
     var KEEP={'الشاشة':['الحجم','معدل التحديث'],'المعالج والذاكرة':['المعالج','الرام RAM','التخزين'],'الكاميرا الخلفية':['الرئيسية'],'الكاميرا الأمامية':['الدقة'],'البطارية':['السعة','تشغيل الفيديو'],'الشحن':['الشحن السريع','الشحن السلكي السريع','الشاحن'],'التخزين':['السعات المتوفرة'],'البصمة':['نوع البصمة']};
     var ORD=Object.keys(KEEP);
+    function put(data,sn,lb,v,note){var sec=data.filter(function(c){return c.k===sn;})[0];if(!sec){sec={k:sn,rows:[]};data.push(sec);}
+      var r=sec.rows.filter(function(x){return x[0]===lb;})[0];if(r){r[1]=v;r[2]=note||'';}else sec.rows.push([lb,v,note||'']);}
     Object.keys(DEV).forEach(function(k){var d=DEV[k];if(!SH[k]&&!d.price)return;
-      if(SH[k]){d.data=mk(SH[k]);d.price=SH[k].price;return;}
-      var out=[];ORD.forEach(function(sn){var src=(d.data||[]).filter(function(c){return c.k===sn;})[0];if(!src)return;
+      var orig=d.data||[];
+      if(SH[k]){var a=SH[k],full=JSON.parse(JSON.stringify(orig));
+        put(full,'الشاشة','الحجم',a.size);put(full,'الشاشة','معدل التحديث',a.hz);put(full,'المعالج والذاكرة','المعالج',a.cpu);put(full,'المعالج والذاكرة','الرام RAM',a.ram,'رام فعلية + رام موسّعة');put(full,'المعالج والذاكرة','التخزين',a.rom);
+        put(full,'الكاميرا الخلفية','الرئيسية',a.cam);put(full,'الكاميرا الأمامية','الدقة',a.front);put(full,'البطارية','السعة',a.bat);put(full,'الشحن','الشحن السريع',a.chg);put(full,'البصمة','نوع البصمة',a.fp);
+        d.price=a.price;d.cmp=mk(a);d.data=full;return;}
+      var out=[];ORD.forEach(function(sn){var src=orig.filter(function(c){return c.k===sn;})[0];if(!src)return;
         var rows=src.rows.filter(function(r){if(KEEP[sn].indexOf(r[0])<0)return false;if(r[0]==='الشاحن'&&!/\d+\s*W/i.test(r[1]))return false;return !!r[1];});
         if(rows.length)out.push({k:sn,rows:rows});});
-      d.data=out;});
+      d.cmp=out;});
   })();
   window.pnDEV=(function(o){var r={};Object.keys(o).forEach(function(k){if(o[k].price)r[k]=o[k];});return r;})(DEV);
   function dots(){var h='<div class="spdots">';COLS.forEach(function(c){var ok=!!window.PNCOL[c[0]];h+='<button type="button" data-c="'+c[0]+'" style="--c:'+c[2]+'" class="'+(c[0]===sel?'sel':'')+'"'+(ok?'':' disabled')+' aria-label="'+c[1]+'"></button>';});
@@ -2642,7 +2648,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     say(out(head,lines)+fuHtml(tp,k1),tp?16000:10000);ok_();}
   // ================= Full side-by-side comparison sheet (two phones, every spec, with a verdict) =================
   var CMPAL={'الشحن السلكي السريع':'الشحن السريع','قوة الشاحن':'الشاحن'};
-  function cmpRows(k){var o=[];(D()[k].data||[]).forEach(function(S){S.rows.forEach(function(r){if(!r[1])return;o.push({s:S.k,l:CMPAL[r[0]]||r[0],v:r[1],n:r[2]||''});});});return o;}
+  function cmpRows(k){var o=[];(D()[k].cmp||D()[k].data||[]).forEach(function(S){S.rows.forEach(function(r){if(!r[1])return;o.push({s:S.k,l:CMPAL[r[0]]||r[0],v:r[1],n:r[2]||''});});});return o;}
   function cmpGet(k,s,l){var a=cmpRows(k);for(var i=0;i<a.length;i++)if(a[i].s===s&&a[i].l===l)return a[i];return null;}
   function cmpText(k,re){var a=cmpRows(k),t=[];a.forEach(function(r){if(re.test(r.s+'|'+r.l))t.push(r.v);});return t;}
   var CHIPS=[[/A20 Pro/i,100],[/Elite Gen 5/i,98],[/A19 Pro/i,95],[/8 Elite/i,92],[/A19/i,88],[/8550/,70],[/7 Gen 4/i,60],[/7300/,52],[/6 Gen 1/i,45]];
