@@ -2095,6 +2095,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cxgl:before{background:linear-gradient(115deg,rgba(255,255,255,.5) 0,rgba(255,255,255,.1) 26%,rgba(255,255,255,0) 44%,rgba(255,255,255,0) 72%,rgba(255,255,255,.18) 100%)!important}
 .pncmp .cxgl .cxgt2 b,.pncmp .cxgl .cxgc strong{color:#14102f}
 .pncmp .cxfix{position:absolute;top:50px;z-index:6}.pncmp .cxarR{right:8px}.pncmp .cxarL{left:8px}.pncmp .cxgh .cxsp{flex:none;width:34px;height:34px}
+.pncmp .cxcol .cxtr{align-items:flex-start}
+.pncmp .cxvl{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.3;text-align:end}
+.pncmp .cxvl .lb{display:block}
+.pncmp .cxfix{top:62px}.pncmp .cxarR{right:22px}.pncmp .cxarL{left:22px}
 .pncmp .cxar{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.8);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 14px -8px rgba(40,50,80,.5)}
 .pncmp .cxpl{background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
 .pncmp .cxpl.on{background:rgba(255,255,255,.7);box-shadow:0 6px 14px -8px rgba(40,50,80,.5)}
@@ -2786,8 +2790,8 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var el=document.createElement('div');el.id='pncmp';el.className='pncmp';el.setAttribute('role','dialog');el.innerHTML='<div class="cmbk"></div><div class="cmsh">'+h+'</div>';
     document.body.appendChild(el);document.body.style.overflow='hidden';
     var alive=true;
-    function mkReel(st,onAct){var dr=st.querySelector('.cxdr'),fs=[].slice.call(st.querySelectorAll('.cxf')),N=fs.length,STP=360/N,R=28/Math.tan(Math.PI/Math.max(N,3));
-      fs.forEach(function(f,i){f.style.transform='rotateX('+(i*STP)+'deg) translateZ('+R+'px)';});
+    function mkReel(st,onAct){var dr=st.querySelector('.cxdr'),fs=[].slice.call(st.querySelectorAll('.cxf')),N=fs.length,STP=360/N,R=46,FHh=2*R*Math.tan(Math.PI/Math.max(N,3));
+      fs.forEach(function(f,i){f.style.height=FHh+'px';f.style.top=(-FHh/2)+'px';f.style.transform='rotateX('+(i*STP)+'deg) translateZ('+R+'px)';});
       var ang=0,vel=0,mode='idle',t0=0,lastX=0,lt=0,snapFn=null,act=-1,R_={},lastT=0,resT=0,SPIN=9;
       function idleThen(){clearTimeout(resT);resT=setTimeout(function(){if(mode==='idle')mode='spin';},2500);}
       function paint(){dr.style.transform='rotateY(16deg) rotateX('+ang+'deg)';var best=999,ai=0;
