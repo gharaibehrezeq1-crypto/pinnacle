@@ -2094,6 +2094,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cxgl{background:linear-gradient(135deg,rgba(255,255,255,.16) 0,rgba(255,255,255,.03) 45%,rgba(255,255,255,.02) 70%,rgba(255,255,255,.12) 100%)!important;border:1.5px solid rgba(255,255,255,.95)!important;box-shadow:inset 0 1.5px 0 #fff,inset 0 -1px 0 rgba(255,255,255,.6),inset 0 0 22px rgba(255,255,255,.16),0 0 0 1px rgba(120,130,160,.10),0 26px 40px -24px rgba(40,50,80,.4)!important;animation:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;overflow:visible!important;backface-visibility:hidden;-webkit-backface-visibility:hidden;will-change:transform;transform:perspective(1900px) rotateY(-28deg) scale(1.1);transform-origin:50% 50%;transition:transform .6s cubic-bezier(.25,.9,.25,1);margin-left:0;margin-right:0;margin-bottom:34px}
 .pncmp .cxgl:before{background:linear-gradient(115deg,rgba(255,255,255,.5) 0,rgba(255,255,255,.1) 26%,rgba(255,255,255,0) 44%,rgba(255,255,255,0) 72%,rgba(255,255,255,.18) 100%)!important}
 .pncmp .cxgl .cxgt2 b,.pncmp .cxgl .cxgc strong{color:#14102f}
+.pncmp .cxfix{position:absolute;top:50px;z-index:6}.pncmp .cxarR{right:8px}.pncmp .cxarL{left:8px}.pncmp .cxgh .cxsp{flex:none;width:34px;height:34px}
 .pncmp .cxar{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.8);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 14px -8px rgba(40,50,80,.5)}
 .pncmp .cxpl{background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
 .pncmp .cxpl.on{background:rgba(255,255,255,.7);box-shadow:0 6px 14px -8px rgba(40,50,80,.5)}
@@ -2107,7 +2108,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cxf{background:radial-gradient(120% 140% at 8% 0%,rgba(150,120,255,.55),transparent 62%),radial-gradient(120% 140% at 100% 100%,rgba(80,225,205,.5),transparent 62%),radial-gradient(90% 90% at 62% 8%,rgba(255,168,196,.5),transparent 62%),rgba(255,255,255,.55);border-top:1px solid rgba(255,255,255,.95);border-bottom:1px solid rgba(255,255,255,.95)}
 .pncmp .cxf b{color:#1b1440;font-weight:400}
 .pncmp .cxf .ln{background:#1b1440;opacity:.55}
-.pncmp .cxcap{background:#fff}
+.pncmp .cxcap{display:none!important}
 .pncmp .cxcap:before{background:radial-gradient(120% 140% at 8% 0%,rgba(150,120,255,.55),transparent 62%),radial-gradient(120% 140% at 100% 100%,rgba(80,225,205,.5),transparent 62%),radial-gradient(90% 90% at 62% 8%,rgba(255,168,196,.5),transparent 62%),rgba(255,255,255,.55)}
 .pncmp .cxpage.det{display:none}
 .pncmp .cmsh.det .cxpage.sum{display:none}
@@ -2711,24 +2712,22 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var f1=function(k){var c=(cmpGet(k,'المعالج والذاكرة','المعالج')||{v:''}).v,r=ramGB(k);return c+(r?' · '+r+'GB':'');};
     var allN=K.every(nit),allH=K.every(hzOf);
     var allBt=K.every(mAh)?'m':(K.every(hoursOf)?'h':'');
+    function stoGB(k){var r=cmpGet(k,'المعالج والذاكرة','التخزين')||cmpGet(k,'التخزين','السعات المتوفرة'),ms=(r?String(r.v):'').match(/(\d+)\s*(GB|TB)/gi)||[],bb=0;ms.forEach(function(x){var q=Number(x.match(/\d+/)[0]);if(/TB/i.test(x))q*=1024;bb=Math.max(bb,q);});return bb;}
+    function stoTxt(k){var g=stoGB(k);return g?(g>=1024?(g/1024)+'TB':g+'GB'):'—';}
+    function ramTxt(k){var r=cmpGet(k,'المعالج والذاكرة','الرام RAM');return r&&ramGB(k)?String(r.v).replace(/\s*\/\s*/g,' / '):'—';}
     function faceSpec(){
       FS=[
-       {t:T('المعالج','Processor'),v:function(k){return chipScore(k)*10+ramGB(k);},sp:f1},
-       {t:T('الكاميرا الخلفية','Rear camera'),v:function(k){return mainMP(k)+zoomX(k);},sp:function(k){return (mainMP(k)?mainMP(k)+'MP':'—')+(zoomX(k)?' · '+T('تقريب ','zoom ')+zoomX(k)+'x':'');}},
-       {t:T('الكاميرا الأمامية','Front camera'),v:frontMP,sp:function(k){return frontMP(k)?frontMP(k)+'MP':'—';}},
-       {t:T('حجم الشاشة','Screen size'),v:function(k){return inchOf(k);},sp:function(k){var a=[];if(stype(k))a.push(stype(k));if(nit(k))a.push(nit(k)+' nits');if(hzOf(k))a.push(hzOf(k)+'Hz');if(inchOf(k))a.push(inchOf(k)+'"');return a.join(' · ');}},
-       {t:T('سعة البطارية','Battery'),v:function(k){return allBt==='m'?mAh(k):(allBt==='h'?hoursOf(k):0);},mixed:!allBt,sp:function(k){return mAh(k)?mAh(k)+' mAh'+(hoursOf(k)?' · '+hoursOf(k)+T(' س فيديو',' h video'):''):(hoursOf(k)?hoursOf(k)+T(' ساعة فيديو',' h video'):'—');}},
-       {t:T('قوة الشحن','Charging'),v:function(k){return wattOf(k).w;},sp:function(k){var w=wattOf(k);return (w.w?w.w+'W':'—')+(w.wl?' · '+T('لاسلكي ','wireless ')+w.wl+'W':'');}},
+       {t:T('المعالج','Processor'),v:function(k){return chipScore(k);},sp:function(k){return String((cmpGet(k,'المعالج والذاكرة','المعالج')||{v:'—'}).v).replace(/ for Galaxy/,'');}},
+       {t:T('الرام','RAM'),v:ramGB,sp:ramTxt},
+       {t:T('التخزين','Storage'),v:stoGB,sp:stoTxt},
+       {t:T('الشاشة','Display'),v:function(k){return inchOf(k);},sp:function(k){var a=[];if(inchOf(k))a.push(inchOf(k)+'"');if(hzOf(k))a.push(hzOf(k)+'Hz');return a.join(' · ')||'—';}},
+       {t:T('الكاميرا','Camera'),v:function(k){return mainMP(k);},sp:function(k){return (mainMP(k)?mainMP(k)+'MP':'—')+(frontMP(k)?' | '+frontMP(k)+'MP':'');}},
+       {t:T('البطارية','Battery'),v:function(k){return allBt==='m'?mAh(k):(allBt==='h'?hoursOf(k):0);},mixed:!allBt,sp:function(k){return mAh(k)?mAh(k)+' mAh':(hoursOf(k)?hoursOf(k)+T(' ساعة فيديو',' h video'):'—');}},
+       {t:T('قوة الشحن','Charging'),v:function(k){return wattOf(k).w;},sp:function(k){var w=wattOf(k);return w.w?w.w+'W':'—';}},
        {t:T('السعر','Price'),v:function(k){return priceOf(k);},low:true,sp:function(k){return fmtP(k)+' '+T('د.أ','JOD');}}
       ];}
     faceSpec();
-    var SH=[function(k){return String((cmpGet(k,'المعالج والذاكرة','المعالج')||{v:''}).v).replace(/ for Galaxy/,'');},
-      function(k){return mainMP(k)?mainMP(k)+'MP':'—';},
-      function(k){return frontMP(k)?frontMP(k)+'MP':'—';},
-      function(k){return inchOf(k)?inchOf(k)+'"':'—';},
-      function(k){return mAh(k)?mAh(k)+' mAh':(hoursOf(k)?hoursOf(k)+T(' ساعة',' h'):'—');},
-      function(k){var w=wattOf(k).w;return w?w+'W':'—';},
-      function(k){return fmtP(k)+' '+T('د.أ','JOD');}];
+    var SH=FS.map(function(F){return F.sp;});
     FS.forEach(function(F,i){F.sh=SH[i];});
     var wins=K.map(function(){return 0;});
     var faces=FS.map(function(F){var vs=K.map(F.v),ok=vs.filter(Boolean);var sc;
@@ -2830,13 +2829,14 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
         var hv=[];F.rs.forEach(function(r,j){if(has(r))hv.push(j);});return hv.length===1?hv[0]:-1;}
       function paint(dir){var F=FE[cur],win=starWin(F);
         var same=FE.map(function(f,i){return f.g===F.g?i:-1;}).filter(function(i){return i>=0;});
-        var h='<div class="cxgh"><button type="button" class="cxar" data-d="-1" aria-label="'+T('السابق','Previous')+'">\u203A</button><div class="cxgt2"><small>'+esc(tx(F.g))+' \u00B7 '+(cur+1)+'/'+FE.length+'</small><b>'+esc(tx(F.l))+'</b></div><button type="button" class="cxar" data-d="1" aria-label="'+T('التالي','Next')+'">\u2039</button></div>';
+        var h='<div class="cxgh"><span class="cxsp"></span><div class="cxgt2"><small>'+esc(tx(F.g))+' \u00B7 '+(cur+1)+'/'+FE.length+'</small><b>'+esc(tx(F.l))+'</b></div><span class="cxsp"></span></div>';
         h+='<div class="cxgb n'+Math.min(n,4)+'" style="grid-template-columns:repeat('+n+',minmax(0,1fr))">'+F.rs.map(function(r,i){var v=r?sv2(tx(r.v)):'\u2014',nt=r&&r.n?String(tx(r.n)):'';if(nt.length>70)nt=nt.slice(0,68).replace(/\s+\S*$/,'')+'\u2026';
           return '<div class="cxgc'+(win===i?' w':'')+'"><span class="cxgn">'+bd(nm[i])+'</span><strong class="'+vcls(v)+'">'+bd(v)+'</strong>'+(win===i?'<em>\u2605</em>':'')+(nt?'<small>'+bd(nt)+'</small>':'')+'</div>';}).join('')+'</div>';
         h+='<div class="cxgp">'+same.map(function(i){return '<button type="button" class="cxpl'+(i===cur?' on':'')+'" data-i="'+i+'">'+esc(tx(FE[i].l))+'</button>';}).join('')+'</div>';
         box.innerHTML=h;box.classList.remove('sl','sr');void box.offsetWidth;if(dir)box.classList.add(dir>0?'sl':'sr');
         var on=box.querySelector('.cxpl.on');if(on&&on.scrollIntoView){try{on.parentNode.scrollLeft=on.offsetLeft-on.parentNode.clientWidth/2+on.clientWidth/2;}catch(_){}}}
       function go(d){side=-side;tilt();cur=(cur+d+FE.length)%FE.length;paint(d);}
+      (function(){var gs=box.parentNode;[['1','cxarR','\u203A',T('التالي','Next')],['-1','cxarL','\u2039',T('السابق','Previous')]].forEach(function(x){var bt=document.createElement('button');bt.type='button';bt.className='cxar cxfix '+x[1];bt.setAttribute('data-d',x[0]);bt.setAttribute('aria-label',x[3]);bt.textContent=x[2];bt.addEventListener('click',function(e){e.stopPropagation();go(+x[0]);});gs.appendChild(bt);});})();
       box.addEventListener('click',function(e){var a=e.target.closest('.cxar'),p=e.target.closest('.cxpl');if(a){e.stopPropagation();go(+a.getAttribute('data-d'));}else if(p){e.stopPropagation();var i=+p.getAttribute('data-i');var d=i>cur?1:-1;cur=i;paint(d);}});
       var sx=null,sy=0;box.addEventListener('pointerdown',function(e){if(e.target.closest('.cxgp'))return;sx=e.clientX;sy=e.clientY;});
       box.addEventListener('pointerup',function(e){if(sx===null)return;var dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dx)>46&&Math.abs(dx)>Math.abs(dy)*1.4)go(dx<0?1:-1);});
