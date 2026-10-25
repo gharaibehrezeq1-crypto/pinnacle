@@ -2098,6 +2098,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cxcol .cxtr{align-items:flex-start}
 .pncmp .cxvl{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.3;text-align:end}
 .pncmp .cxvl .lb{display:block}
+.pncmp .cxzn{position:absolute;top:30px;height:104px;width:27%;z-index:7;cursor:pointer;-webkit-tap-highlight-color:transparent}.pncmp .cxznR{right:0}.pncmp .cxznL{left:0}.pncmp .cxgl .cxar{pointer-events:none}
 .pncmp .cxfix{top:62px}.pncmp .cxarR{right:22px}.pncmp .cxarL{left:22px}
 .pncmp .cxar{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.8);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 14px -8px rgba(40,50,80,.5)}
 .pncmp .cxpl{background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
@@ -2836,7 +2837,8 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
         h+='<div class="cxgp">'+same.map(function(i){return '<button type="button" class="cxpl'+(i===cur?' on':'')+'" data-i="'+i+'">'+esc(tx(FE[i].l))+'</button>';}).join('')+'</div>';
         box.innerHTML=h;box.classList.remove('sl','sr');void box.offsetWidth;if(dir)box.classList.add(dir>0?'sl':'sr');
         var on=box.querySelector('.cxpl.on');if(on&&on.scrollIntoView){try{on.parentNode.scrollLeft=on.offsetLeft-on.parentNode.clientWidth/2+on.clientWidth/2;}catch(_){}}}
-      function go(d){cur=(cur+d+FE.length)%FE.length;paint(d);}
+      function go(d){side=-side;tilt();cur=(cur+d+FE.length)%FE.length;paint(d);}
+      (function(){var gs=box.parentNode;[['1','cxznR'],['-1','cxznL']].forEach(function(x){var z=document.createElement('div');z.className='cxzn '+x[1];z.setAttribute('data-d',x[0]);z.addEventListener('click',function(e){e.stopPropagation();go(+x[0]);});gs.appendChild(z);});})();
       box.addEventListener('click',function(e){var a=e.target.closest('.cxar'),p=e.target.closest('.cxpl');if(a){e.stopPropagation();go(+a.getAttribute('data-d'));}else if(p){e.stopPropagation();var i=+p.getAttribute('data-i');var d=i>cur?1:-1;cur=i;paint(d);}});
       var sx=null,sy=0;box.addEventListener('pointerdown',function(e){if(e.target.closest('.cxgp'))return;sx=e.clientX;sy=e.clientY;});
       box.addEventListener('pointerup',function(e){if(sx===null)return;var dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dx)>46&&Math.abs(dx)>Math.abs(dy)*1.4)go(dx<0?1:-1);});
