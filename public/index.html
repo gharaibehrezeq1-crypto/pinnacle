@@ -2140,6 +2140,13 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pncmp .cxo2{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 26px}
 .pncmp .cxo2 button{flex:1 1 140px}
 .pncmp .cmh{position:relative;z-index:6;display:flex;justify-content:space-between;align-items:center;margin:0 -14px;padding:12px 14px 8px;background:#fff}
+
+.pncmp .cmh{position:sticky!important;top:0;z-index:20!important;background:linear-gradient(180deg,rgba(232,233,236,.96),rgba(232,233,236,.78))!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.pncmp .cmbar{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}
+.pncmp .cmbar .cxg{padding:7px 13px;font-size:12.5px;white-space:nowrap}
+.pncmp .cmsh.c1 .cxlg{margin-top:0}.pncmp .cmsh.c1 .cxlg b{font-size:16px;padding:4px 16px}.pncmp .cmsh.c1 .cxsub{margin:4px 0 0}.pncmp .cmsh.c1 .cxst{height:calc(var(--ph,300px) + 34px)}.pncmp .cmsh.c1 .cxgs{margin-top:0;padding:22px 2px 26px}.pncmp .cmsh.c1 .cxzn{top:18px}.pncmp .cmsh.c1 .cxo2{margin:6px 0 10px}.pncmp .cmsh.c1 .cxo2 button{padding-top:9px;padding-bottom:9px}
+.pncmp .cmsh.c2 .cxlg{display:none}.pncmp .cmsh.c2 .cxgs{padding:20px 2px 18px}.pncmp .cmsh.c2 .cxgp{display:none}.pncmp .cmsh.c2 .cxo2{margin:4px 0 8px}
+.pncmp .cmsh.c3 .cxsub{display:none}.pncmp .cmsh.c3 .cxgs .cxgl{transform-origin:50% 0}
 .pncmp .cmx{width:34px;height:34px;border-radius:50%;font-size:20px;line-height:1;padding:0;cursor:pointer;background:#fff;color:#2b2f3a;border:1px solid #e6e8ef;box-shadow:0 4px 12px -6px rgba(40,50,90,.3)}
 #pnpick{position:fixed;inset:0;z-index:310;display:flex;align-items:flex-end;justify-content:center;direction:rtl;font-family:var(--font-body)}
 #pnpick .pk-bk{position:absolute;inset:0;background:rgba(30,32,44,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
@@ -2693,7 +2700,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var WI=ver.ov,HI=/^(السطوع|معدل التحديث|الرئيسية|واسعة جداً|الدقة|السعة|التقريب|تشغيل الفيديو|الرام RAM)$/;
     function num(r){if(!r)return 0;var m=String(r.v).replace(/,/g,'').match(/\d+(\.\d+)?/);return m?Number(m[0]):0;}
     function sv2(x){x=String(x==null?'':x).replace(/ for Galaxy/,'').replace(/\s*[—–]\s.*$/,'').replace(/\s*\(.*?\)\s*/g,' ').trim();return x.length>46?x.slice(0,44).replace(/\s+\S*$/,'')+'…':x;}
-    h+='<div class="cmh"><button type="button" class="cxg cmsw">'+T('مقارنة','Compare')+'</button><button type="button" class="cmx" aria-label="'+T('إغلاق','Close')+'">×</button></div>';
+    h+='<div class="cmh"><div class="cmbar"><button type="button" class="cxg cmback">'+T('رجوع','Back')+'</button><button type="button" class="cxg cmdev">'+T('الأجهزة','Devices')+'</button><button type="button" class="cxg cmsw">'+T('مقارنة','Compare')+'</button></div><button type="button" class="cmx" aria-label="'+T('إغلاق','Close')+'">×</button></div>';
     var H0=h;
     var mid=ver.ov>=0?'<span>'+T('الأقوى','Strongest')+'</span><b>'+bd(nm[ver.ov])+'</b>':'<span>'+T('الأجهزة متقاربة','Very close')+'</span>';
     var pans=K.map(function(k,i){
@@ -2850,8 +2857,10 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var dvs=[].slice.call(det.querySelectorAll('.cxv'));
     var R2=mkReel(det.querySelector('.cxpz'),function(i){dvs.forEach(function(v,j){v.classList.toggle('on',j===i);});});
     sum.parentNode.classList.add('det');R2.start();
-    function close(){alive=false;el.remove();document.body.style.overflow='';}
-    el.addEventListener('click',function(e){var t=e.target;if(t.classList.contains('cmbk')||t.classList.contains('cmx')){close();return;}var sh=el.querySelector('.cmsh');if(t.closest('.cmsw')){window.pnBot.pick(K);return;}if(t.closest('.cmdb')){sh.classList.add('det');sh.scrollTop=0;R2.start();return;}if(t.closest('.cmbc')){sh.classList.remove('det');sh.scrollTop=0;R1.start();return;}var o=t.closest&&t.closest('button[data-o]');if(o){var kk=o.getAttribute('data-o');close();ctx.key=kk;process('اطلب');}});
+    function fit(){var sh=el.querySelector('.cmsh');if(!sh||!sh.classList.contains('det'))return;sh.classList.remove('c1','c2','c3');['c1','c2','c3'].some(function(c){if(sh.scrollHeight<=sh.clientHeight+1)return true;sh.classList.add(c);return false;});}
+setTimeout(fit,60);setTimeout(fit,700);window.addEventListener('resize',fit);
+    function close(){alive=false;window.removeEventListener('resize',fit);el.remove();document.body.style.overflow='';}
+    el.addEventListener('click',function(e){var t=e.target;if(t.classList.contains('cmbk')||t.classList.contains('cmx')){close();return;}var sh=el.querySelector('.cmsh');if(t.closest('.cmsw')){window.pnBot.pick(K);return;}if(t.closest('.cmback')){close();return;}if(t.closest('.cmdev')){close();try{location.hash='#/';window.scrollTo(0,0);}catch(_){}return;}if(t.closest('.cmdb')){sh.classList.add('det');sh.scrollTop=0;R2.start();return;}if(t.closest('.cmbc')){sh.classList.remove('det');sh.scrollTop=0;R1.start();return;}var o=t.closest&&t.closest('button[data-o]');if(o){var kk=o.getAttribute('data-o');close();ctx.key=kk;process('اطلب');}});
     return ver;}
   function notUnderstood(){sayQ(T('لم أفهم قصدك','I did not get that'),[T('جرّب أن تقول مثلاً:','Try saying, for example:')],[[T('افتح آيفون 17 برو ماكس','Open iPhone 17 Pro Max'),'افتح ايفون 17 برو ماكس'],[T('كم سعر إس 26 ألترا','Price of S26 Ultra'),'كم سعر اس 26 الترا'],[T('اختر لي جهازاً','Help me choose'),'محتار ساعدني اختار']],12000);}
   function ok_(){setState('happy');setTimeout(done,1400);}
