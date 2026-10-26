@@ -839,6 +839,9 @@ body.lock .fab { display:none; }
 #view-land.land::before{content:"";position:fixed;z-index:0;pointer-events:none;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 56px);bottom:14px;border-radius:30px;background:linear-gradient(150deg,rgba(255,255,255,.58),rgba(255,255,255,.2));border:1.5px solid rgba(255,255,255,.95);box-shadow:0 18px 50px rgba(70,50,150,.16),inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.45);-webkit-backdrop-filter:blur(8px) saturate(1.2);backdrop-filter:blur(8px) saturate(1.2)}
 #view-land.land>*:not(#lskip):not(#balls){position:relative;z-index:1}
 body.on-land #pnbar{background:transparent!important;box-shadow:none!important}
+
+body:not(.on-land) #pnbar{position:sticky!important;top:0;z-index:60!important;background:linear-gradient(180deg,rgba(241,242,247,.96),rgba(241,242,247,.8))!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.pncmp .cxlg{display:none!important}.pncmp .cxsub{font-size:14px;color:#2b2f3a;margin:10px 0 8px}
 body.on-land #view-land.land{margin-top:-48px;padding-top:48px}
 @media(min-width:900px){#view-land.land::before{left:max(12px,calc(50% - 560px));right:max(12px,calc(50% - 560px))}}
 /* glass strip behind the left column of the device page */
@@ -2788,7 +2791,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       var ns=vs2.map(function(x){return x.n;}),mx=Math.max.apply(null,ns),pos=ns.filter(Boolean),mn=pos.length?Math.min.apply(null,pos):0,full=ns.every(Boolean);
       var bw=-1;if(full){var bv=M.low?mn:mx,bi=[];ns.forEach(function(v,ii){if(v===bv)bi.push(ii);});if(bi.length===1)bw=bi[0];}var F={sc:ns.map(function(v){return !full?55:(M.low?92*mn/v:92*v/mx);}),win:bw,sh:1};
       return '<div class="cxv">'+K.map(function(k,i){return colHTML(F,i,'',M.l?'<span class="lb">'+M.l+'</span> '+bd(vs2[i].t):'');}).join('')+'</div>';}).join('');
-    h+='<div class="cxpage det">'+head(OV>=0?T('الأقوى: ','Strongest: ')+bd(nm[OV]):T('الأجهزة متقاربة','Very close'))
+    h+='<div class="cxpage det">'+head(OV>=0?T('الجهاز الأقوى: ','Strongest device: ')+bd(nm[OV]):T('الأجهزة متقاربة','Very close'))
       +'<div class="cxst" style="--ph:'+PH+'px"><div class="cxpn">'+dviews+'</div><div class="cxfl"></div>'+prism(GR.map(function(g){return esc(tx(g.t));}))+'</div>'
       +'<div class="cxgs"><div class="cxgbg"><div class="cxgph">'+K.map(function(k){var u=window.PNIMG&&window.PNIMG[k];return u?'<img alt="" src="'+u+'">':'';}).join('')+'</div></div><div class="cxgl"></div></div>'
       +'<div class="cxo2">'+K.map(function(k,i){return '<button type="button" class="cxg" data-o="'+esc(k)+'">'+T('اطلب ','Order ')+bd(nm[i])+'</button>';}).join('')+'</div></div>';
