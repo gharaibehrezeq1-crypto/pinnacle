@@ -1987,7 +1987,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbot canvas{position:absolute;left:50%;top:0;width:71px;height:119px;margin-left:-35.5px;filter:drop-shadow(0 6px 7px rgba(30,20,90,.25));pointer-events:none}
 .pnbot.rev canvas{transform:scaleX(-1)}
 .pnbot .pnhint{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:30px;white-space:nowrap;font:500 9.5px/1.2 var(--font-body,Arial);color:#4a4170;opacity:.85;text-shadow:0 0 4px #fff,0 0 4px #fff,0 0 6px #fff;pointer-events:none;transition:opacity .25s}
-.pnbot.used .pnhint,.pnbot.listen .pnhint,.pnbot.always .pnhint,.pnbot.bon .pnhint,.pnbot.happy .pnhint{opacity:0}
+.pnbot.listen .pnhint,.pnbot.always .pnhint,.pnbot.bon .pnhint,.pnbot.happy .pnhint{opacity:0}
 .pnbot .pnnm{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:4px;white-space:nowrap;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.95);border:1.5px solid #fff;box-shadow:0 10px 22px -10px rgba(70,50,200,.5),inset 0 1.5px 0 #fff;font:700 12px/1.3 var(--font-body,Arial);color:#1b1440;pointer-events:none;transition:opacity .2s}
 .pnbot .pnnm::after{content:'';position:absolute;left:50%;bottom:-4px;width:8px;height:8px;margin-left:-4px;background:rgba(255,255,255,.95);transform:rotate(45deg);border-right:1.5px solid #fff;border-bottom:1.5px solid #fff}
 .pnbot.talk .pnnm{opacity:0}
@@ -2164,7 +2164,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
 .pnbub small{display:block;font:500 11px var(--font-body,Arial);color:#6e6e73;margin-bottom:2px}
 @media (prefers-reduced-motion:reduce){.pnbot *{animation:none!important}}
 </style>
-<button type="button" class="pnbot" id="pnbot" aria-label="سهل"><div class="pnw"><span class="pnnm" id="pnnm">أنا سهل</span><span class="pnhint" id="pnhint">اضغط عليّ وتحدّث معي</span><canvas id="pncv" width="192" height="320"></canvas><svg class="fx wv" viewBox="0 0 114 174" fill="none" stroke-linecap="round" stroke-width="4"><path d="M10 50Q2 80 10 110" stroke="#7a6cff"/><path d="M104 50Q112 80 104 110" stroke="#7a6cff"/><path d="M2 40Q-10 80 2 120" stroke="#34d3c0"/><path d="M112 40Q124 80 112 120" stroke="#34d3c0"/></svg><svg class="fx st" viewBox="0 0 114 174"><path d="M12 22l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#7a6cff"/><path d="M100 14l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" fill="#34d3c0"/></svg></div></button>
+<button type="button" class="pnbot" id="pnbot" aria-label="سهل"><div class="pnw"><span class="pnnm" id="pnnm">أنا سهل</span><span class="pnhint" id="pnhint">اضغط عليّ ليضوي الميكروفون</span><canvas id="pncv" width="192" height="320"></canvas><svg class="fx wv" viewBox="0 0 114 174" fill="none" stroke-linecap="round" stroke-width="4"><path d="M10 50Q2 80 10 110" stroke="#7a6cff"/><path d="M104 50Q112 80 104 110" stroke="#7a6cff"/><path d="M2 40Q-10 80 2 120" stroke="#34d3c0"/><path d="M112 40Q124 80 112 120" stroke="#34d3c0"/></svg><svg class="fx st" viewBox="0 0 114 174"><path d="M12 22l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#7a6cff"/><path d="M100 14l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" fill="#34d3c0"/></svg></div></button>
 <div class="pnbub" id="pnbub" role="status" aria-live="polite"></div>
 <script id="pnbot-js">
 (function(){
@@ -2781,7 +2781,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
       var ns=vs2.map(function(x){return x.n;}),mx=Math.max.apply(null,ns),pos=ns.filter(Boolean),mn=pos.length?Math.min.apply(null,pos):0,full=ns.every(Boolean);
       var bw=-1;if(full){var bv=M.low?mn:mx,bi=[];ns.forEach(function(v,ii){if(v===bv)bi.push(ii);});if(bi.length===1)bw=bi[0];}var F={sc:ns.map(function(v){return !full?55:(M.low?92*mn/v:92*v/mx);}),win:bw,sh:1};
       return '<div class="cxv">'+K.map(function(k,i){return colHTML(F,i,'',M.l?'<span class="lb">'+M.l+'</span> '+bd(vs2[i].t):'');}).join('')+'</div>';}).join('');
-    h+='<div class="cxpage det"><div class="cxtop2"><button type="button" class="cxg cmbc">'+T('‹ الملخص','‹ Summary')+'</button></div>'+head(T('التفاصيل','Details'))
+    h+='<div class="cxpage det">'+head(OV>=0?T('الأقوى: ','Strongest: ')+bd(nm[OV]):T('الأجهزة متقاربة','Very close'))
       +'<div class="cxst" style="--ph:'+PH+'px"><div class="cxpn">'+dviews+'</div><div class="cxfl"></div>'+prism(GR.map(function(g){return esc(tx(g.t));}))+'</div>'
       +'<div class="cxgs"><div class="cxgbg"><div class="cxgph">'+K.map(function(k){var u=window.PNIMG&&window.PNIMG[k];return u?'<img alt="" src="'+u+'">':'';}).join('')+'</div></div><div class="cxgl"></div></div>'
       +'<div class="cxo2">'+K.map(function(k,i){return '<button type="button" class="cxg" data-o="'+esc(k)+'">'+T('اطلب ','Order ')+bd(nm[i])+'</button>';}).join('')+'</div></div>';
@@ -2849,7 +2849,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var R1=mkReel(sum.querySelector('.cxpz'),function(i){vs.forEach(function(v,j){v.classList.toggle('on',j===i);});});
     var dvs=[].slice.call(det.querySelectorAll('.cxv'));
     var R2=mkReel(det.querySelector('.cxpz'),function(i){dvs.forEach(function(v,j){v.classList.toggle('on',j===i);});});
-    R1.start();
+    sum.parentNode.classList.add('det');R2.start();
     function close(){alive=false;el.remove();document.body.style.overflow='';}
     el.addEventListener('click',function(e){var t=e.target;if(t.classList.contains('cmbk')||t.classList.contains('cmx')){close();return;}var sh=el.querySelector('.cmsh');if(t.closest('.cmsw')){window.pnBot.pick(K);return;}if(t.closest('.cmdb')){sh.classList.add('det');sh.scrollTop=0;R2.start();return;}if(t.closest('.cmbc')){sh.classList.remove('det');sh.scrollTop=0;R1.start();return;}var o=t.closest&&t.closest('button[data-o]');if(o){var kk=o.getAttribute('data-o');close();ctx.key=kk;process('اطلب');}});
     return ver;}
@@ -3010,7 +3010,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     }).catch(function(){local();});}
   // ===== auto-listen: starts by itself (remembered), else on the first touch anywhere =====
   var userOff=false,autoTries=0;
-  function autoListen(){if(always||userOff||autoTries>=3||document.body.classList.contains('lock')||document.body.classList.contains('pnoff'))return;autoTries++;toggleAlways();}
+  function autoListen(){return;if(always||userOff||autoTries>=3||document.body.classList.contains('lock')||document.body.classList.contains('pnoff'))return;autoTries++;toggleAlways();}
   
   document.addEventListener('pointerdown',function(e){if(always||userOff||autoTries>=3)return;if(bot.contains(e.target)||(e.target.closest&&e.target.closest('.pnbub,input,textarea,#pncmp')))return;autoListen();},true);
   // watchdog: keep the ear alive
