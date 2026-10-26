@@ -842,7 +842,7 @@ body.on-land #pnbar{background:transparent!important;box-shadow:none!important}
 
 .pncmp .cmh{padding-top:calc(46px + env(safe-area-inset-top,0px))!important}
 body:not(.on-land) #pnbar{position:sticky!important;top:0;z-index:60!important;background:linear-gradient(180deg,rgba(241,242,247,.96),rgba(241,242,247,.8))!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-body.cmpopen:not(.on-land) #pnbar{position:fixed!important;top:0;left:0;right:0;z-index:320!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}body.cmpopen:not(.on-land) #pndrop{z-index:330!important}
+body.cmpopen #pnbar{position:fixed!important;top:0;left:0;right:0;z-index:320!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}body.cmpopen #pndrop{z-index:330!important}body.cmpopen #pnback[hidden]{display:inline-flex!important}body.cmpopen #pnbar[hidden]{display:flex!important}
 .pncmp .cxlg{display:none!important}.pncmp .cxsub{font-size:14px;color:#2b2f3a;margin:10px 0 8px}
 body.on-land #view-land.land{margin-top:-48px;padding-top:48px}
 @media(min-width:900px){#view-land.land::before{left:max(12px,calc(50% - 560px));right:max(12px,calc(50% - 560px))}}
