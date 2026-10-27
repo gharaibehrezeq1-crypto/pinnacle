@@ -6,9 +6,9 @@
 
 /* ===== v61: colour dots ===== */
 .spimg img{transition:opacity .25s ease;cursor:pointer}
-.spdots{display:flex;justify-content:center;gap:12px;margin-top:14px}
-.spdots button{width:22px;height:22px;border-radius:50%;border:0;padding:0;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2);cursor:pointer;transition:transform .2s}
-.spdots button.sel{box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),0 0 0 2px #fff,0 0 0 3.5px #1d1d1f;transform:scale(1.1)}
+.spdots{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 12px;margin-top:14px;padding:0 4px}
+.spdots button{width:18px;height:18px;flex:none;border-radius:50%;border:0;padding:0;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2);cursor:pointer;transition:transform .2s}
+.spdots button.sel{box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),0 0 0 2px #fff,0 0 0 3.5px #1d1d1f;transform:scale(1.05)}
 .spdots button[disabled]{opacity:.3;cursor:default}
 .spcat{text-align:center;font:700 12.5px var(--font-body);color:#1b1440;margin-top:6px;min-height:16px}
 .spcn{text-align:center;font:500 12px var(--font-body);color:#6e6e73;margin-top:10px}
@@ -1737,7 +1737,7 @@ document.querySelectorAll('#view-home section.brand .row').forEach(function(row)
       var cap=document.createElement('div');cap.className='spcat';pan.parentNode.insertBefore(cap,pan);
       function show(i){if(i===cur)return;cur=i;items.forEach(function(el,j){el.classList.toggle('on',j===i);});
         var c=DATA[i],x='';c.rows.forEach(function(r){x+='<div class="sr"><div class="t"><b>'+esc(r[0])+'</b><span class="v">'+esc(r[1])+'</span></div>'+(r[2]?'<small>'+esc(r[2])+'</small>':'')+'</div>';});
-        pan.innerHTML=x;pan.hidden=false;pan.classList.remove('pnin');void pan.offsetWidth;pan.classList.add('pnin');if(cap)cap.textContent=c.k;if(window.pnLang)window.pnLang();}
+        pan.innerHTML=x;pan.hidden=false;pan.classList.remove('pnin');void pan.offsetWidth;pan.classList.add('pnin');if(cap)cap.textContent=c.k;if(window.pnLang)window.pnLang();if(c.k==='البطارية'&&window.pnIsEN&&window.pnIsEN()){pan.querySelectorAll('.sr b').forEach(function(e){if(e.textContent.trim()==='Storage')e.textContent='Capacity';});}}
       cat.style.marginTop='-38px';window.pnCarousel(cat,items,{axis:'y',h:42,R:(cfg.b?Math.round(112*Math.sin(Math.PI/5)/Math.sin(2*Math.PI/Math.max(items.length,3))):112),vh:250,speed:7,onFront:function(i){show(i);},onTap:show});})();
 if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='https://wa.me/?text='+encodeURIComponent((window.pnIsEN&&window.pnIsEN()?"Hello, I'd like to order ":'مرحبًا، بدي أطلب ')+NAME);document.getElementById('spbuy').appendChild(wa);}(function(){var a=P.querySelector('.spagent'),sb=document.getElementById('spbuy');if(a&&sb)sb.appendChild(a);})();
     setTimeout(function(){var sp=document.getElementById('pnspecs'),sm=P.querySelector('.spmain>summary');if(!sp||!sm)return;var cs=getComputedStyle(sp);sm.style.backgroundImage=cs.backgroundImage;sm.style.backgroundColor=cs.backgroundColor;sm.style.webkitBackdropFilter=sm.style.backdropFilter=cs.backdropFilter;},50);
