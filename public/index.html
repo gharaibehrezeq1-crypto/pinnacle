@@ -3275,4 +3275,77 @@ setTimeout(fit,60);setTimeout(fit,700);window.addEventListener('resize',fit);
   window.pnOrderOpen=open;window.pnOrderClose=close;window.pnOrderFill=fill;
 })();
 </script>
+<style id="pnpol-css">
+.pnpl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:16px auto 4px;max-width:520px;font:400 12px/1.6 var(--font-body,Arial)}
+.pnpl a{color:#4a4170;text-decoration:none;border-bottom:1px solid rgba(74,65,112,.25);cursor:pointer;padding-bottom:1px}
+#pnpol{position:fixed;inset:0;z-index:500;display:flex;justify-content:center;align-items:flex-end;direction:rtl;font-family:var(--font-body,Arial);color:#1b1440}
+html[lang=en] #pnpol{direction:ltr}
+#pnpol[hidden]{display:none}
+#pnpol .pbk{position:absolute;inset:0;background:rgba(30,30,40,.4);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#pnpol .psh{position:relative;width:min(720px,100%);height:92vh;height:92dvh;border-radius:28px 28px 0 0;overflow:hidden;display:flex;flex-direction:column;background:radial-gradient(60% 40% at 10% 0%,rgba(150,120,255,.32),transparent 70%),radial-gradient(60% 40% at 100% 30%,rgba(80,225,205,.3),transparent 70%),radial-gradient(60% 40% at 40% 100%,rgba(255,168,196,.32),transparent 70%),#f1f2f7;box-shadow:0 -20px 50px -20px rgba(40,30,90,.45)}
+#pnpol .ph{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px 6px}
+#pnpol .ph b{font:600 18px/1.3 var(--font-body,Arial)}
+#pnpol .px{flex:none;width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(255,255,255,.95);background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(255,255,255,.4));color:#1b1440;font:400 22px/1 var(--font-body,Arial);padding:0 0 3px;cursor:pointer;box-shadow:0 6px 14px -8px rgba(40,50,80,.5)}
+#pnpol .pt{display:flex;gap:8px;overflow-x:auto;padding:8px 18px 10px;scrollbar-width:none}
+#pnpol .pt::-webkit-scrollbar{display:none}
+#pnpol .pt button{flex:none;border:1.5px solid rgba(255,255,255,.95);border-radius:999px;padding:8px 15px;font:500 13px/1 var(--font-body,Arial);color:#1b1440;cursor:pointer;background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.3));box-shadow:0 6px 12px -8px rgba(90,70,190,.5)}
+#pnpol .pt button.on{background:linear-gradient(135deg,rgba(150,120,255,.35),rgba(80,225,205,.35));box-shadow:0 0 0 1.5px #1b1440}
+#pnpol .pb{flex:1;overflow-y:auto;padding:6px 18px 40px;overscroll-behavior:contain}
+#pnpol .pc{border:1.5px solid rgba(255,255,255,.95);border-radius:22px;padding:6px 18px 14px;background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(255,255,255,.28));box-shadow:0 14px 28px -18px rgba(70,50,160,.35)}
+#pnpol h3{margin:16px 0 4px;font:600 15px/1.5 var(--font-body,Arial)}
+#pnpol p{margin:0 0 6px;font:400 14px/1.9 var(--font-body,Arial);color:#2f2a52}
+#pnpol .pd{margin:14px 2px 0;font:400 12px/1.6 var(--font-body,Arial);color:#6b6490}
+</style>
+<script id="pnpol-js">
+(function(){
+var EN=function(){return !!(window.pnIsEN&&window.pnIsEN());};
+var P=[
+{id:'privacy',t:['الخصوصية','Privacy'],b:[
+['ما الذي نجمعه','What we collect','عند إتمام طلب تكتب بنفسك اسمك ورقم هاتفك وعنوانك. لا نطلب بيانات بطاقات أو كلمات مرور، ولا نستلم أي دفع عبر الموقع.','When you place an order you type your name, phone number and address yourself. We never ask for card details or passwords, and no payment is taken on this site.'],
+['كيف نستخدمها','How we use it','نستخدم هذه البيانات فقط لتأكيد طلبك وتوصيله والتواصل معك بشأنه عبر واتساب. لا نبيع بياناتك ولا نشاركها مع أي جهة إلا بالقدر اللازم لتسليم طلبك.','We use this data only to confirm and deliver your order and to contact you about it on WhatsApp. We do not sell your data or share it with anyone except as needed to deliver your order.'],
+['واتساب','WhatsApp','يصل الطلب إلينا عبر واتساب، وتخضع المحادثة أيضًا لسياسة الخصوصية الخاصة بواتساب.','Orders reach us through WhatsApp, so the conversation is also covered by WhatsApp’s own privacy policy.'],
+['المساعد سهل والميكروفون','The Sahl assistant and the microphone','يجيب سهل من بيانات الموقع داخل متصفحك. الميكروفون لا يعمل إلا بعد أن تضغط على سهل، وقد يُرسَل الصوت إلى خدمة تحويل الكلام إلى نص لتحويله إلى كتابة فقط، ولا نحتفظ بالتسجيلات.','Sahl answers from the site’s own data inside your browser. The microphone only works after you tap Sahl; audio may be sent to a speech-to-text service solely to turn it into text, and we do not keep recordings.'],
+['ما يُحفظ في متصفحك','What stays in your browser','نحفظ في متصفحك تفضيلات بسيطة فقط، مثل اللغة. لا نستخدم حاليًا أدوات تتبع إعلانية. وإذا أضفنا أدوات إحصاء مستقبلًا نحدّث هذه الصفحة.','We keep only simple preferences in your browser, such as language. We do not currently use advertising trackers; if we add analytics later we will update this page.'],
+['حقوقك','Your rights','تستطيع في أي وقت أن تطلب منا تعديل بياناتك أو حذفها بمراسلتنا على واتساب.','You can ask us at any time to correct or delete your data by messaging us on WhatsApp.']]},
+{id:'returns',t:['الاستبدال والإرجاع','Exchange & returns'],b:[
+['الاستبدال','Exchange','يمكنك استبدال الجهاز خلال 3 أيام من الاستلام إذا كانت العبوة ما زالت مغلقة.','You can exchange the device within 3 days of receiving it, as long as the box is still sealed.'],
+['الفحص عند الاستلام','Inspect on delivery','تفحص الجهاز أمام المندوب قبل أن تدفع، فإذا لم يكن كما اتفقنا لا تدفع ولا تستلمه.','Check the device in front of the courier before you pay. If it is not as agreed, do not pay and do not accept it.'],
+['الدعم بعد الاستلام','Support after delivery','نقدّم دعمًا لمدة 7 أيام بعد الاستلام لأي استفسار أو مشكلة في الطلب.','We provide 7 days of support after delivery for any question or problem with your order.'],
+['الأجهزة المفتوحة','Opened devices','الأجهزة التي فُتحت عبوتها لا تشملها سياسة الاستبدال، وتُعالج الأعطال المصنعية عبر ضمان الوكيل الرسمي.','Devices whose box has been opened are not covered by the exchange policy; manufacturing faults are handled through the official agent’s warranty.'],
+['كيف تطلب','How to request','راسلنا على واتساب مع اسم الجهاز وتاريخ الاستلام وسنرتب الأمر معك.','Message us on WhatsApp with the device name and delivery date and we will arrange it with you.']]},
+{id:'warranty',t:['الضمان','Warranty'],b:[
+['ضمان الوكيل الرسمي','Official agent warranty','أجهزتنا تأتي بضمان الوكيل الرسمي في الأردن، ونذكر اسم الوكيل في صفحة كل جهاز.','Our devices come with the official agent’s warranty in Jordan, and the agent is named on each device page.'],
+['مدة الضمان وشروطه','Duration and terms','مدة الضمان وشروطه يحددها الوكيل الرسمي لكل علامة، ونؤكدها لك عند تأكيد الطلب.','The warranty duration and terms are set by each brand’s official agent, and we confirm them with you when you confirm the order.'],
+['عند حدوث عطل','If something breaks','تتم الصيانة عبر مراكز الوكيل المعتمدة، ونساعدك في ترتيب الأمر والتواصل معهم.','Service is carried out through the agent’s authorised centres, and we help you arrange it and get in touch with them.'],
+['ما لا يشمله الضمان','What is not covered','الأضرار الناتجة عن السقوط أو السوائل أو سوء الاستخدام أو الصيانة خارج مراكز الوكيل، وفق شروط الوكيل.','Damage from drops, liquids, misuse or repairs outside the agent’s centres, in line with the agent’s terms.']]},
+{id:'delivery',t:['التوصيل والدفع','Delivery & payment'],b:[
+['التوصيل','Delivery','نوصّل إلى باب البيت في جميع مناطق الأردن.','We deliver to your door anywhere in Jordan.'],
+['الدفع','Payment','الدفع عند الاستلام بعد فحص الجهاز، ولا نستلم دفعًا إلكترونيًا عبر الموقع.','Payment is on delivery, after you inspect the device. We do not take online payments on this site.'],
+['تأكيد الطلب','Order confirmation','نؤكد معك على واتساب التفاصيل كلها قبل التوصيل: الجهاز واللون والسعة والسعر وموعد التسليم وتكلفة التوصيل إن وجدت.','Before delivery we confirm everything with you on WhatsApp: the device, colour, storage, price, delivery time and any delivery fee.']]},
+{id:'terms',t:['الشروط','Terms'],b:[
+['الأسعار والتوفر','Prices and availability','الأسعار بالدينار الأردني وقد تتغير. السعر المعتمد هو الذي نؤكده معك على واتساب، ويخضع توفر الجهاز واللون والسعة للتأكيد.','Prices are in Jordanian dinar and may change. The price we confirm with you on WhatsApp is the one that applies, and availability of device, colour and storage is subject to confirmation.'],
+['المواصفات والصور','Specs and images','المواصفات والصور مأخوذة من مصادر الشركات المصنّعة، وقد تختلف قليلًا بحسب الإصدار أو السوق.','Specs and images come from the manufacturers’ own sources and may differ slightly by edition or market.'],
+['من نحن','Who we are','Pinnacle متجر مستقل لبيع الهواتف العليا في الأردن. العلامات التجارية وأسماء الأجهزة ملك لأصحابها.','Pinnacle is an independent store for premium phones in Jordan. Brand and device names belong to their owners.'],
+['التعديل','Changes','قد نحدّث هذه الصفحات من وقت لآخر، ويسري التحديث من تاريخ نشره.','We may update these pages from time to time; updates apply from the date they are published.']]}
+];
+var el=null,cur=0;
+function lang(){return EN()?1:0;}
+function ui(a,e){return EN()?e:a;}
+function render(){var L=lang(),p=P[cur];
+ el.querySelector('.ph b').textContent=ui('السياسات','Policies');
+ el.querySelector('.pt').innerHTML=P.map(function(x,i){return '<button type="button" data-i="'+i+'" class="'+(i===cur?'on':'')+'">'+x.t[L]+'</button>';}).join('');
+ el.querySelector('.pb').innerHTML='<div class="pc">'+p.b.map(function(r){return '<h3>'+r[L]+'</h3><p>'+r[L+2]+'</p>';}).join('')+'</div><div class="pd">'+ui('آخر تحديث: 27 أكتوبر 2026','Last updated: 27 October 2026')+'</div>';
+ el.querySelector('.pb').scrollTop=0;}
+function open(id){if(!el){el=document.createElement('div');el.id='pnpol';el.setAttribute('role','dialog');el.innerHTML='<div class="pbk"></div><div class="psh"><div class="ph"><b></b><button type="button" class="px" aria-label="Close">×</button></div><div class="pt"></div><div class="pb"></div></div>';document.body.appendChild(el);
+ el.addEventListener('click',function(e){if(e.target.closest('.px')||e.target.classList.contains('pbk')){close();return;}var b=e.target.closest('.pt button');if(b){cur=+b.getAttribute('data-i');render();}});}
+ for(var i=0;i<P.length;i++)if(P[i].id===id)cur=i;el.hidden=false;document.body.style.overflow='hidden';render();}
+function close(){if(el)el.hidden=true;document.body.style.overflow='';}
+window.pnPolicy=open;
+function addLinks(){document.querySelectorAll('footer, .hfoot').forEach(function(f){if(f.querySelector('.pnpl'))return;var d=document.createElement('div');d.className='pnpl';d.innerHTML=P.map(function(x){return '<a data-pol="'+x.id+'" role="button" tabindex="0">'+x.t[lang()]+'</a>';}).join('');f.appendChild(d);});}
+function relabel(){document.querySelectorAll('.pnpl a').forEach(function(a){var id=a.getAttribute('data-pol');for(var i=0;i<P.length;i++)if(P[i].id===id)a.textContent=P[i].t[lang()];});}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.pnpl a');if(a){e.preventDefault();open(a.getAttribute('data-pol'));}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el&&!el.hidden)close();});
+addLinks();setInterval(relabel,1500);
+})();
+</script>
 </body></html>
