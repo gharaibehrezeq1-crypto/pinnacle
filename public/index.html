@@ -86,6 +86,7 @@ html[lang=en] .sc>summary,html[lang=en] .sr{direction:ltr}
 html[lang=en] .sr small{text-align:start}
 /* ===== v56: Devices panel on every page ===== */
 #pndrop{position:fixed!important;top:calc(58px + env(safe-area-inset-top,0px))!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:min(380px,calc(100vw - 24px))!important;max-height:calc(100dvh - 84px)!important;margin:0!important;overflow-y:auto;padding:8px;z-index:56;direction:rtl;animation:ddIn .35s cubic-bezier(.2,.8,.2,1) both}
+#pndrop>.dtop{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:3}.dtop .dhome{flex:1;min-width:0}.dclose{flex:none;width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(255,255,255,.95);background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.35));color:#1b1440;font:400 22px/1 var(--font-body,Arial);padding:0 0 3px;cursor:pointer;box-shadow:0 6px 14px -8px rgba(40,50,80,.5)}
 #pndrop[hidden]{display:none!important}
 html[lang=en] #pndrop,#pnspecs{direction:ltr}
 #pnbar{gap:6px!important;padding-left:12px!important;padding-right:12px!important}.pngrp{gap:6px!important}#pnbar button{height:30px!important;padding:0 11px!important;font-size:12.5px!important}
@@ -1511,13 +1512,13 @@ var trustT=0,BALLS=null,ballRaf=0,ballT=0;
     location.hash='#/';});
   lg.addEventListener('click',function(){document.getElementById('blang').click();});
   function build(){var tl=document.createElement('div');tl.innerHTML=document.getElementById('brandtiles').innerHTML;
-    var tiles=tl.querySelectorAll('a.tile'),fp=document.querySelectorAll('#fabpanel details.bd'),h='<a class="dhome" href="#/">الرئيسية</a>';
+    var tiles=tl.querySelectorAll('a.tile'),fp=document.querySelectorAll('#fabpanel details.bd'),h='<div class="dtop"><a class="dhome" href="#/">الرئيسية</a><button type="button" class="dclose" aria-label="إغلاق">×</button></div>';
     [].forEach.call(tiles,function(a,i){var d=fp[i],ms=d?[].map.call(d.querySelectorAll('li a'),function(x){return '<a href="'+x.getAttribute('href')+'">'+x.textContent+'</a>';}).join(''):'';
       var lg=a.querySelector('.tl').innerHTML,nm=(lg.match(/aria-label="(apple|xiaomi)"/)||[])[1];
       h+='<section class="dbr"><a class="dbh" href="'+a.getAttribute('href')+'"><span class="bl">'+lg+'</span>'+(nm?'<span class="bn">'+nm.charAt(0).toUpperCase()+nm.slice(1)+'</span>':'')+'</a><div class="dms">'+ms+'</div></section>';});
     pd.innerHTML=h;if(window.pnLang)window.pnLang();}
-  dv.addEventListener('click',function(e){e.stopPropagation();if(pd.hidden){build();pd.hidden=false;pd.scrollTop=0;dv.setAttribute('aria-expanded','true');}else{pd.hidden=true;dv.setAttribute('aria-expanded','false');}});
-  pd.addEventListener('click',function(e){if(e.target.closest('a'))pd.hidden=true;});
+  dv.addEventListener('click',function(e){e.stopPropagation();if(pd.hidden){build();pd.hidden=false;pd.scrollTop=0;try{var bb=bar.getBoundingClientRect().bottom+8;pd.style.setProperty('top',bb+'px','important');pd.style.setProperty('max-height','calc(100dvh - '+(bb+18)+'px)','important');}catch(_){}dv.setAttribute('aria-expanded','true');}else{pd.hidden=true;dv.setAttribute('aria-expanded','false');}});
+  pd.addEventListener('click',function(e){if(e.target.closest('.dclose')){pd.hidden=true;dv.setAttribute('aria-expanded','false');return;}if(e.target.closest('a'))pd.hidden=true;});
   document.addEventListener('click',function(e){if(!pd.hidden&&!pd.contains(e.target)&&!dv.contains(e.target))pd.hidden=true;});
 })();
 </script>
