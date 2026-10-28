@@ -3337,6 +3337,7 @@ var P=[
 ['من نحن','Who we are','Pinnacle متجر مستقل لبيع الهواتف العليا في الأردن. العلامات التجارية وأسماء الأجهزة ملك لأصحابها.','Pinnacle is an independent store for premium phones in Jordan. Brand and device names belong to their owners.'],
 ['التعديل','Changes','قد نحدّث هذه الصفحات من وقت لآخر، ويسري التحديث من تاريخ نشره.','We may update these pages from time to time; updates apply from the date they are published.']]}
 ];
+var ORD=['delivery','returns','warranty','privacy','terms'];P.sort(function(a,b){return ORD.indexOf(a.id)-ORD.indexOf(b.id);});
 var el=null,cur=0;
 function lang(){return EN()?1:0;}
 function ui(a,e){return EN()?e:a;}
@@ -3361,14 +3362,15 @@ addLinks();setInterval(function(){addLinks();relabel();},800);
 })();
 </script>
 <style id="pnfoot-css">
-.pnpl.pnpl-v{display:grid!important;direction:ltr;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;max-width:520px;margin:30px auto 120px!important;padding:0 16px}
-.pnpl-v .pc1,.pnpl-v .pc3{display:flex;flex-direction:column;gap:11px}
-.pnpl-v .pc1{align-items:flex-start;text-align:left}.pnpl-v .pc3{align-items:flex-end;text-align:right}
-.pnpl-v .pc2{display:flex;justify-content:center}
-.pnpl-v a{font-size:13px;direction:rtl}
-html[lang=en] .pnpl-v a{direction:ltr}
+.pnpl.pnpl-v{display:grid!important;direction:rtl;grid-template-columns:1fr auto;align-items:center;gap:14px;max-width:520px;margin:30px auto 120px!important;padding:0 16px}
+.pnpl-v .pc1{display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-align:right}
+.pnpl-v .pc2{display:flex;justify-content:flex-start}
+.pnpl-v a[data-pol]{font-size:14px}
+#view-home .pnpl-v .pnso.pnsof,#pnspecpage .pnpl-v .pnso.pnsof{display:flex!important;position:static!important;flex-direction:column;align-items:flex-start;gap:10px;animation:none!important;left:auto!important;bottom:auto!important}
+#view-home .pnpl-v .pnsof .pnsb,#pnspecpage .pnpl-v .pnsof .pnsb{height:46px!important;padding:0 18px 0 7px!important;gap:9px!important;border-radius:999px!important}
+#view-home .pnpl-v .pnsof .pnsb i,#pnspecpage .pnpl-v .pnsof .pnsb i{width:32px!important;height:32px!important}
+#view-home .pnpl-v .pnsof .pnsb span,#pnspecpage .pnpl-v .pnsof .pnsb span{font:500 13px/1 var(--font-body,Arial)!important}
 .home[data-brand] .pnso:not(.pnsof){display:none!important}
-#view-home .pnpl-v .pnso.pnsof,#pnspecpage .pnpl-v .pnso.pnsof{display:flex!important;position:static!important;flex-direction:column;align-items:center;gap:6px;animation:none!important;left:auto!important;bottom:auto!important}
 </style>
 <script id="pnfoot-js">
 (function(){var LONG=['ret','pay','return','delivery','shipping','payment'];
@@ -3376,12 +3378,10 @@ function ids(q){return [].map.call(q.querySelectorAll('a[data-pol]'),function(a)
 function go(){var src=document.querySelector('#view-home .pnso:not(.pnsof)');if(!src)return;
 ['pnspecpage','view-home'].forEach(function(id){var v=document.getElementById(id),q=v&&v.querySelector(':scope > .pnpl-v');if(!q||q.getAttribute('data-f')==='1')return;
 var as=ids(q);if(!as.length)return;
-var withLen=as.map(function(a){return [a,a.textContent.length];}).sort(function(x,y){return y[1]-x[1];});
-var longs=withLen.slice(0,2).map(function(x){return x[0];});
-var c1=document.createElement('div');c1.className='pc1';var c2=document.createElement('div');c2.className='pc2';var c3=document.createElement('div');c3.className='pc3';
+var c1=document.createElement('div');c1.className='pc1';var c2=document.createElement('div');c2.className='pc2';
 var cl=src.cloneNode(true);cl.classList.add('pnsof');c2.appendChild(cl);
-as.forEach(function(a){(longs.indexOf(a)>=0?c3:c1).appendChild(a);});
-q.innerHTML='';q.appendChild(c1);q.appendChild(c2);q.appendChild(c3);q.setAttribute('data-f','1');});}
+as.forEach(function(x){c1.appendChild(x);});
+q.innerHTML='';q.appendChild(c1);q.appendChild(c2);q.setAttribute('data-f','1');});}
 go();setInterval(go,800);})();
 </script>
 </body></html>
