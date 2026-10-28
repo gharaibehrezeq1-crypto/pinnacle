@@ -3357,4 +3357,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el&&!el.hid
 addLinks();setInterval(function(){addLinks();relabel();},800);
 })();
 </script>
+<style id="pnfoot-css">
+.pnpl-v{flex-direction:column!important;align-items:center;flex-wrap:nowrap!important;gap:10px!important;text-align:center;margin:30px auto 120px!important}
+.pnpl-v a{font-size:13px}
+#pnspecpage .pnso.pnso-d{display:flex;flex-direction:column;gap:5px;align-items:flex-start;position:fixed;left:16px;right:auto;top:auto;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:90}
+</style>
+<script id="pnfoot-js">
+(function(){function go(){var sp=document.getElementById('pnspecpage'),src=document.querySelector('#view-home .pnso');if(sp&&src&&!sp.querySelector('.pnso-d')){var c=src.cloneNode(true);c.classList.add('pnso-d');sp.appendChild(c);}}go();setInterval(go,800);})();
+</script>
 </body></html>
