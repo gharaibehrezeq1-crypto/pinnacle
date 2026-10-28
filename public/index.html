@@ -1273,10 +1273,10 @@ var trustT=0,BALLS=null,ballRaf=0,ballT=0;
       if(state==='rest'){
         var e=t-t0;put(ry-Math.abs(Math.sin(Math.min(1,e/500)*Math.PI*2))*(1-Math.min(1,e/500))*9);
         if(e>rest){var n;do{n=Math.floor(Math.random()*spots.length);}while(n===cur);
-          from=x;to=spots[n];cur=n;dur=900+Math.abs(to-from)*5.5;state='roll';t0=t;tr=ang;}
+          from=x;to=spots[n];cur=n;dur=1200+Math.abs(to-from)*7.5;state='roll';t0=t;tr=ang;}
       } else {
         var k=Math.min(1,(t-t0)/dur),ee=ease(k);x=from+(to-from)*ee;ang=tr+(x-from)/r;put(ry);
-        if(k>=1){state='rest';t0=t;rest=1100+Math.random()*1800;}
+        if(k>=1){state='rest';t0=t;rest=1900+Math.random()*2400;}
       }
       setR(requestAnimationFrame(frame));
     }
@@ -1584,7 +1584,7 @@ document.querySelectorAll('#view-home section.brand .row').forEach(function(row)
   var cards=[].slice.call(row.querySelectorAll('a.card'));if(cards.length<2)return;
   var more=document.createElement('a');more.className='pnmore';more.textContent='التفاصيل ‹';more.href=cards[0].getAttribute('href');
   row.classList.add('pnrow');row.insertAdjacentElement('afterend',more);
-  window.pnCarousel(row,cards,{w:190,h:262,speed:14,gap:30,fill:true,pin:true,onFront:function(i,el){more.href=el.getAttribute('href');}});});
+  window.pnCarousel(row,cards,{w:190,h:262,speed:10,gap:30,fill:true,pin:true,onFront:function(i,el){more.href=el.getAttribute('href');}});});
 })();
 </script>
 <script>
@@ -1745,7 +1745,7 @@ document.querySelectorAll('#view-home section.brand .row').forEach(function(row)
       function show(i){if(i===cur)return;cur=i;items.forEach(function(el,j){el.classList.toggle('on',j===i);});
         var c=DATA[i],x='';c.rows.forEach(function(r){x+='<div class="sr"><div class="t"><b>'+esc(r[0])+'</b><span class="v">'+esc(r[1])+'</span></div>'+(r[2]?'<small>'+esc(r[2])+'</small>':'')+'</div>';});
         pan.innerHTML=x;pan.hidden=false;pan.classList.remove('pnin');void pan.offsetWidth;pan.classList.add('pnin');if(cap)cap.textContent=c.k;if(window.pnLang)window.pnLang();if(c.k==='البطارية'&&window.pnIsEN&&window.pnIsEN()){pan.querySelectorAll('.sr b').forEach(function(e){if(e.textContent.trim()==='Storage')e.textContent='Capacity';});}}
-      cat.style.marginTop='-38px';window.pnCarousel(cat,items,{axis:'y',h:42,R:(cfg.b?Math.round(112*Math.sin(Math.PI/5)/Math.sin(2*Math.PI/Math.max(items.length,3))):112),vh:250,speed:7,onFront:function(i){show(i);},onTap:show});})();
+      cat.style.marginTop='-38px';window.pnCarousel(cat,items,{axis:'y',h:42,R:(cfg.b?Math.round(112*Math.sin(Math.PI/5)/Math.sin(2*Math.PI/Math.max(items.length,3))):112),vh:250,speed:5,onFront:function(i){show(i);},onTap:show});})();
 if(window.PNWAEL){var wa=window.PNWAEL;wa.setAttribute('data-wa','');wa.href='https://wa.me/?text='+encodeURIComponent((window.pnIsEN&&window.pnIsEN()?"Hello, I'd like to order ":'مرحبًا، بدي أطلب ')+NAME);document.getElementById('spbuy').appendChild(wa);}(function(){var a=P.querySelector('.spagent'),sb=document.getElementById('spbuy');if(a&&sb)sb.appendChild(a);})();
     setTimeout(function(){var sp=document.getElementById('pnspecs'),sm=P.querySelector('.spmain>summary');if(!sp||!sm)return;var cs=getComputedStyle(sp);sm.style.backgroundImage=cs.backgroundImage;sm.style.backgroundColor=cs.backgroundColor;sm.style.webkitBackdropFilter=sm.style.backdropFilter=cs.backdropFilter;},50);
   }
@@ -2812,7 +2812,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var alive=true;
     function mkReel(st,onAct){var dr=st.querySelector('.cxdr'),fs=[].slice.call(st.querySelectorAll('.cxf')),N=fs.length,STP=360/N,R=46,FHh=2*R*Math.tan(Math.PI/Math.max(N,3));
       fs.forEach(function(f,i){f.style.height=FHh+'px';f.style.top=(-FHh/2)+'px';f.style.transform='rotateX('+(i*STP)+'deg) translateZ('+R+'px)';});
-      var ang=0,vel=0,mode='idle',t0=0,lastX=0,lt=0,snapFn=null,act=-1,R_={},lastT=0,resT=0,SPIN=9;
+      var ang=0,vel=0,mode='idle',t0=0,lastX=0,lt=0,snapFn=null,act=-1,R_={},lastT=0,resT=0,SPIN=6;
       function idleThen(){clearTimeout(resT);resT=setTimeout(function(){if(mode==='idle')mode='spin';},2500);}
       function paint(){dr.style.transform='rotateY(16deg) rotateX('+ang+'deg)';var best=999,ai=0;
         fs.forEach(function(f,i){var d=(((ang+i*STP)%360)+540)%360-180,ad=Math.abs(d);f.style.setProperty('--sh','rgba(80,60,170,'+Math.min(.5,ad/150).toFixed(2)+')');if(ad<best){best=ad;ai=i;}});
