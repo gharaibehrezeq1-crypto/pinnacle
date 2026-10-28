@@ -1988,7 +1988,7 @@ body.pnfo .pnbot,body.pnfo .pnbub{z-index:93!important}
 body.pnoff .pnbot,body.pnoff .pnbub{display:none!important}
 .pnrev{display:none;position:fixed;right:14px;bottom:88px;z-index:95;width:54px;height:54px;padding:0;border-radius:50%;border:2.5px solid #fff;background:#fff center/cover no-repeat;box-shadow:0 4px 16px rgba(60,40,140,.35);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .pnrev:active{transform:scale(.93)}
-body.pnoff .pnrev{display:block}
+body.pnoff .pnrev{display:block}body.lock .pnrev,body.cmpopen .pnrev{display:none!important}
 .pnbx{pointer-events:auto;position:sticky;top:0;float:left;margin:0 0 2px 6px;width:22px;height:22px;border-radius:50%;background:rgba(91,79,199,.12);color:#5b4fc7;font:700 15px/22px system-ui,sans-serif;text-align:center;cursor:pointer;z-index:2;-webkit-tap-highlight-color:transparent}
 .pnfe{min-height:18px;margin:0 0 6px;font-size:12.5px;color:#c0334d}
 .pnfb{display:flex;gap:8px}.pnfb button{flex:1;border:0;border-radius:14px;padding:12px 10px;font:600 15px inherit;font-family:inherit;cursor:pointer}
@@ -2590,7 +2590,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     if(!keys.length&&!tp&&!fd.miss.length&&/^(طيب|طب|بدي|اوكي|ok|okay|تمام|يلا|ايوه|اه|ممكن|لو سمحت|شو|ايش|وش|كم|قديش|هل|و|ثم|بس|اي|ايه|يعني|اشي|شي)$/.test(n)){return;}
     var NAV=/(دخلني|ادخلني|دخلوني|دخلنا|فوت|فوتني|فوتلي|خشني|خشلي|اطلع علي|طلعني|تدخل|تفتح|تفتحلي|تفتحي|تعرض|تعرضلي|تورجيني|توريني|تنقلني|تاخذني|تخذني|توديني|تدخلني|تحولني|تطلعني|تروح|افتح|افتحلي|افتحي|وريني|ورجيني|ورني|اعرض|اعرضلي|روح|روحني|خذني|خدني|وديني|ودني|ودي|اذهب|انتقل|انتقلي|انقلني|نقلني|انقل|حولني|حول|ادخلني|ادخل|طلعني|اطلع|وصلني|شوفلي|شوف لي|عاين|اشوف|افتح لي|open|show me|show|go to|take me|navigate|بدي (اشوف|افتح|ادخل|اروح|انتقل|اطلع))/,NAVONLY=/(^| )(صفحه|صفحة)( |$)/;
     var BUYV=/(اشتري|اشتريه|اطلب|اطلبه|شراء|اكمل الطلب|اكمل عمليه|buy|order|purchase|checkout)/;
-    var WANT=/(بدي|اريد|ابغي|ابغا|ابي|i want|i would like|i need)/,NOTBUY=/(اعرف|اسال|اشوف|افهم|معلومات|مواصفات|اقارن|الفرق|ايش|شو الفرق)/;
+    var WANT=/(بدي|اريد|ابغي|ابغا|ابي|i want|i would like|i need)/,NOTBUY=/(اعرف|اسال|اشوف|افهم|معلومات|مواصفات|اقارن|قارن|مقارنه|compare|الفرق|ايش|شو الفرق|ايهم|احسن من|افضل من)/;
     var BUY2=/(كمل الطلب|كمل الشراء|كمل عمليه|خلص الطلب|خلصلي|خلصني|خلص الشراء|سجل لي طلب|سجل طلب|سجلي طلب|ابدا الطلب|ابدا الشراء|احجز|حجز|ضيفه|ضيف الجهاز|حطه|حط الجهاز|تمم|اتمم|تمم لي|اكمل|كمل)/;
     var isBuy=BUYV.test(n)||(BUY2.test(n)&&!NAV.test(n)&&(keys.length||ctx.key||curKey())&&!tp)||(WANT.test(n)&&!NAV.test(n)&&(keys.length||fd.miss.length||(ctx.key&&/(اياه|اياها)/.test(n)))&&!NOTBUY.test(n)&&(!tp||tp==='price'));
     if(isBuy){
@@ -2896,7 +2896,7 @@ setTimeout(fit,60);setTimeout(fit,700);window.addEventListener('resize',fit);
     r.onresult=function(e){var fin='',intr='';
       for(var i=e.resultIndex;i<e.results.length;i++){var tr=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=' '+tr;else intr+=' '+tr;}
       if(state!=='happy'){setState('listen');clearTimeout(calmT);calmT=setTimeout(function(){if(state==='listen')setState('idle');},2500);}
-      if(intr.trim()){lastInterim=intr.trim();showHearing(lastInterim);if(cmpHold){clearTimeout(cmpHoldT);cmpHoldT=setTimeout(function(){var h=cmpHold;cmpHold='';if(h){window.__pnNoAuto=1;try{process(h);}finally{window.__pnNoAuto=0;}}},3500);}clearTimeout(intT);intT=setTimeout(function(){if(!lastInterim)return;var q=nz(lastInterim);if(q.split(' ').length<2){return;}if(/(^| )(صفحه|على|علي|الى|الي|ل|من|عن|و|بين|ولا|او|مع|في|كم|شو|بدي|انتقل|روح|افتح|وديني|انقلني|خذني|ودني|ورجيني|وريني|قارن)$/.test(q)){intT=setTimeout(function(){if(lastInterim)commit(lastInterim);},3500);return;}commit(lastInterim);},2200);}
+      if(intr.trim()){lastInterim=intr.trim();showHearing(lastInterim);if(cmpHold){clearTimeout(cmpHoldT);cmpHoldT=setTimeout(function(){var h=cmpHold;cmpHold='';if(h){window.__pnNoAuto=1;try{process(h);}finally{window.__pnNoAuto=0;}}},3500);}clearTimeout(intT);intT=setTimeout(function(){if(!lastInterim)return;var q=nz(lastInterim);if(q.split(' ').length<2){intT=setTimeout(function(){if(lastInterim)commit(lastInterim);},2500);return;}if(/(^| )(صفحه|على|علي|الى|الي|ل|من|عن|و|بين|ولا|او|مع|في|كم|شو|بدي|انتقل|روح|افتح|وديني|انقلني|خذني|ودني|ورجيني|وريني|قارن)$/.test(q)){intT=setTimeout(function(){if(lastInterim)commit(lastInterim);},3500);return;}commit(lastInterim);},2200);}
       if(fin.trim()){clearTimeout(intT);commit(fin.trim());}};
     r.onerror=function(e){
       if(e.error==='not-allowed'||e.error==='service-not-allowed'){always=false;bot.classList.remove('always','rest');say(T('اسمح باستخدام الميكروفون من إعدادات المتصفح ثم اضغط عليّ.','Allow the microphone in browser settings, then tap me.'),5000);}
@@ -3054,13 +3054,16 @@ setTimeout(fit,60);setTimeout(fit,700);window.addEventListener('resize',fit);
     sayQ(T('أهلاً بك، أنا سهل','Hi, I am Sahl'),[T('اضغط عليّ لتشغيل الميكروفون. وإذا توقف، اضغط عليّ حتى يظهر اللون الأخضر.','Tap me to turn on the mic. If it stops, tap me again until the dot is green.')],null,30000);}
   (function(){var wi=setInterval(function(){if(!document.body.classList.contains('lock')){clearInterval(wi);setTimeout(function(){if(!always&&!userOff&&!document.body.classList.contains('pnoff'))autoListen();},1200);}},400);})();
   // ===== close button: the customer can remove Sahl from the screen =====
-  try{localStorage.removeItem('pnoff');if(/[?&]sahl=1/.test(location.search))sessionStorage.removeItem('pnoff');if(sessionStorage.getItem('pnoff')==='1'){document.body.classList.add('pnoff');userOff=true;}}catch(e){}
+  try{localStorage.removeItem('pnoff');}catch(e){}document.body.classList.add('pnoff');userOff=true;
   (function(){var x=document.createElement('span');x.className='pnx';x.setAttribute('role','button');x.setAttribute('aria-label',T('إغلاق سهل','Close Sahl'));x.title=T('إغلاق سهل','Close Sahl');x.textContent='×';bot.appendChild(x);
     ['pointerdown','pointerup','touchstart','mousedown'].forEach(function(ev){x.addEventListener(ev,function(e){e.stopPropagation();},{passive:true});});
     x.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();
       userOff=true;always=false;clearTimeout(restartT);try{rec&&rec.abort();}catch(_){}recOn=false;try{stopMic();}catch(_){}
       bub.classList.remove('on');bot.classList.remove('always','rest','listen');
       document.body.classList.add('pnoff');try{sessionStorage.setItem('pnoff','1');localStorage.setItem('pnmic','0');}catch(_){}});})();
+  function collapseSahl(){userOff=true;always=false;clearTimeout(restartT);try{rec&&rec.abort();}catch(_){}recOn=false;try{stopMic();}catch(_){}
+    clearTimeout(cmpHoldT);cmpHold='';bub.classList.remove('on');bot.classList.remove('always','rest','listen');document.body.classList.add('pnoff');}
+  var lastHash=location.hash;addEventListener('hashchange',function(){if(location.hash===lastHash)return;lastHash=location.hash;if(Date.now()-handledAt<7000)return;if(!document.body.classList.contains('pnoff'))collapseSahl();});
   (function(){var r=document.createElement('button');r.type='button';r.className='pnrev';r.setAttribute('aria-label',T('إعادة سهل','Bring Sahl back'));r.title=T('إعادة سهل','Bring Sahl back');
     r.style.backgroundImage='url(/a/3e6f3fc8b9bc.webp)';document.body.appendChild(r);
     var rp=null,rd=null,rm=false;try{rp=JSON.parse(localStorage.getItem('pnrevpos')||'null');}catch(_){}
@@ -3072,7 +3075,7 @@ setTimeout(fit,60);setTimeout(fit,700);window.addEventListener('resize',fit);
     r.addEventListener('pointerup',rup);r.addEventListener('pointercancel',rup);r.style.touchAction='none';
     r.addEventListener('click',function(){if(rm){rm=false;return;}
       document.body.classList.remove('pnoff');try{sessionStorage.removeItem('pnoff');}catch(_){}userOff=false;autoTries=0;apply();
-      bot.classList.add('wave');setTimeout(function(){bot.classList.remove('wave');},1600);setTimeout(function(){discover(true);},350);});})();
+      bot.classList.add('wave');setTimeout(function(){bot.classList.remove('wave');},1600);setTimeout(function(){discover(true);},350);setTimeout(function(){if(!always)toggleAlways();},900);});})();
   // ===== idle manager: trust nudges, "why didn't you buy?", page dwell =====
   var SITE0=Date.now(),lastAct=Date.now(),lastNudge=Date.now(),nudged=0,usedBot=false,everOrd=false,dwell=0,lastDwell=0,pgT=Date.now(),pgKey='',askSeen=null,askAt=0;
   function sget(k){try{return Number(sessionStorage.getItem(k)||0);}catch(e){return 0;}}
@@ -3358,11 +3361,27 @@ addLinks();setInterval(function(){addLinks();relabel();},800);
 })();
 </script>
 <style id="pnfoot-css">
-.pnpl-v{flex-direction:column!important;align-items:center;flex-wrap:nowrap!important;gap:10px!important;text-align:center;margin:30px auto 120px!important}
-.pnpl-v a{font-size:13px}
-#pnspecpage .pnso.pnso-d{display:flex;flex-direction:column;gap:5px;align-items:flex-start;position:fixed;left:16px;right:auto;top:auto;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:90}
+.pnpl.pnpl-v{display:grid!important;direction:ltr;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;max-width:520px;margin:30px auto 120px!important;padding:0 16px}
+.pnpl-v .pc1,.pnpl-v .pc3{display:flex;flex-direction:column;gap:11px}
+.pnpl-v .pc1{align-items:flex-start;text-align:left}.pnpl-v .pc3{align-items:flex-end;text-align:right}
+.pnpl-v .pc2{display:flex;justify-content:center}
+.pnpl-v a{font-size:13px;direction:rtl}
+html[lang=en] .pnpl-v a{direction:ltr}
+.home[data-brand] .pnso:not(.pnsof){display:none!important}
+#view-home .pnpl-v .pnso.pnsof,#pnspecpage .pnpl-v .pnso.pnsof{display:flex!important;position:static!important;flex-direction:column;align-items:center;gap:6px;animation:none!important;left:auto!important;bottom:auto!important}
 </style>
 <script id="pnfoot-js">
-(function(){function go(){var sp=document.getElementById('pnspecpage'),src=document.querySelector('#view-home .pnso');if(sp&&src&&!sp.querySelector('.pnso-d')){var c=src.cloneNode(true);c.classList.add('pnso-d');sp.appendChild(c);}}go();setInterval(go,800);})();
+(function(){var LONG=['ret','pay','return','delivery','shipping','payment'];
+function ids(q){return [].map.call(q.querySelectorAll('a[data-pol]'),function(a){return a;});}
+function go(){var src=document.querySelector('#view-home .pnso:not(.pnsof)');if(!src)return;
+['pnspecpage','view-home'].forEach(function(id){var v=document.getElementById(id),q=v&&v.querySelector(':scope > .pnpl-v');if(!q||q.getAttribute('data-f')==='1')return;
+var as=ids(q);if(!as.length)return;
+var withLen=as.map(function(a){return [a,a.textContent.length];}).sort(function(x,y){return y[1]-x[1];});
+var longs=withLen.slice(0,2).map(function(x){return x[0];});
+var c1=document.createElement('div');c1.className='pc1';var c2=document.createElement('div');c2.className='pc2';var c3=document.createElement('div');c3.className='pc3';
+var cl=src.cloneNode(true);cl.classList.add('pnsof');c2.appendChild(cl);
+as.forEach(function(a){(longs.indexOf(a)>=0?c3:c1).appendChild(a);});
+q.innerHTML='';q.appendChild(c1);q.appendChild(c2);q.appendChild(c3);q.setAttribute('data-f','1');});}
+go();setInterval(go,800);})();
 </script>
 </body></html>
