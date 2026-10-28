@@ -3384,6 +3384,15 @@ function sync(){L.classList.toggle('phgone',!p.hidden);}sync();
 new MutationObserver(sync).observe(p,{attributes:true,attributeFilter:['hidden']});})();
 </script>
 <style id="pnltag-css">.ltag{margin:2px 0 8px;text-align:center;font:600 14px/1.5 var(--font-body,Arial);color:#2a2352;text-shadow:0 0 8px rgba(255,255,255,.9)}</style>
+<style id="pnsp-css">
+.spgrid>#pnspecs{grid-column:1/-1!important;order:3;width:100%!important;margin:6px 0 0!important;position:relative}
+.spgrid>#pnspecs .sr{padding:12px 14px}
+.spgrid .spimg{align-self:center}
+</style>
+<script id="pnsp-js">
+(function(){function mv(){var g=document.querySelector('#pnspecpage .spgrid');if(!g)return;var p=g.querySelector('#pnspecs');if(p&&p.parentNode!==g)g.appendChild(p);}
+mv();setInterval(mv,500);})();
+</script>
 <style id="pnfoot-css">
 .pnpl.pnpl-v{display:grid!important;direction:rtl;grid-template-columns:1fr auto;align-items:center;gap:14px;max-width:520px;margin:30px auto 120px!important;padding:0 16px}
 .pnpl-v .pc1{display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-align:right}
