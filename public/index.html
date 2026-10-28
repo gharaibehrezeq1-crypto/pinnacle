@@ -2575,7 +2575,7 @@ body.lock .pnbot,.pnbot[hidden]{display:none!important}
     var CMPV=/(^| )(ت?قارن|اقارن|قارنلي|قارن لي|مقارنه|المقارنه|compare)( |$)/.test(n0);
     if(sess.cmpPend&&Date.now()-sess.cmpT<45000&&keys.length===1&&keys[0]!==sess.cmpPend&&!tp){var pa=sess.cmpPend;sess.cmpPend=null;process('قارن بين '+dn(pa)+' و '+dn(keys[0]));return;}
     if(CMPV&&keys.length===1&&!tp){var pr0=[ctx.key,curKey()].concat((sess.seen||[]).slice().reverse()).filter(function(x){return x&&x!==keys[0]&&D()[x];})[0];ask=null;
-      if(pr0){process('قارن بين '+dn(pr0)+' و '+dn(keys[0]));return;}
+      if(pr0&&!window.__pnNoAuto){process('قارن بين '+dn(pr0)+' و '+dn(keys[0]));return;}
       sess.cmpPend=keys[0];sess.cmpT=Date.now();sayQ(T('المقارنة','Compare'),[T('مع أي جهاز تريد مقارنة ','Compare with which phone? ')+dn(keys[0])+'؟'],null,12000);return;}
     if(CMPV&&keys.length<2&&!tp){var sn0=sess.seen||[];ask=null;if(sn0.length>=2){process('قارن بين '+dn(sn0[sn0.length-2])+' و '+dn(sn0[sn0.length-1]));return;}
       sayQ(T('المقارنة','Compare'),[T('اذكر جهازين وسأقارن بينهما، مثلاً: «قارن بين آيفون 17 برو ماكس وجالكسي إس 26 ألترا».','Name two phones, e.g. "compare iPhone 17 Pro Max and S26 Ultra".')],null,12000);return;}
@@ -2882,7 +2882,13 @@ setTimeout(fit,60);setTimeout(fit,700);window.addEventListener('resize',fit);
   var always=false,recOn=false,pend=false,restartT=null,startedAt=0,fast=0,intT=null,lastInterim='',handledN='',handledAt=0,calmT=null;
   function commit(t){var n=nz(t);if(!n)return;var now=Date.now();
     if(handledN&&now-handledAt<2500&&(n===handledN||handledN.indexOf(n)===0))return;
-    handledN=n;handledAt=now;lastInterim='';clearTimeout(calmT);if(state==='listen')setState('idle');lastHeard=t;holdUntil=0;pendSay=null;clearTimeout(pendT);process(t);}
+    handledN=n;handledAt=now;lastInterim='';clearTimeout(calmT);if(state==='listen')setState('idle');lastHeard=t;holdUntil=0;pendSay=null;clearTimeout(pendT);
+    var isC=/(^| )(ت?قارن|اقارن|قارنلي|مقارنه|المقارنه|الفرق بين|compare)( |$)/.test(n);
+    if(cmpHold){clearTimeout(cmpHoldT);t=cmpHold+' '+t;cmpHold='';isC=true;}
+    var nd=0;try{nd=findDevices(t).keys.length;}catch(e){}
+    if(isC&&nd<2){cmpHold=t;clearTimeout(cmpHoldT);cmpHoldT=setTimeout(function(){var h=cmpHold;cmpHold='';if(!h)return;window.__pnNoAuto=1;try{process(h);}finally{window.__pnNoAuto=0;}},nd?4200:3000);return;}
+    process(t);}
+  var cmpHold='',cmpHoldT=null;
   function runRec(){
     if(!always||recOn)return;pend=false;clearTimeout(restartT);
     var r=new SR();rec=r;r.lang=EN()?'en-US':'ar-JO';r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
@@ -2890,7 +2896,7 @@ setTimeout(fit,60);setTimeout(fit,700);window.addEventListener('resize',fit);
     r.onresult=function(e){var fin='',intr='';
       for(var i=e.resultIndex;i<e.results.length;i++){var tr=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=' '+tr;else intr+=' '+tr;}
       if(state!=='happy'){setState('listen');clearTimeout(calmT);calmT=setTimeout(function(){if(state==='listen')setState('idle');},2500);}
-      if(intr.trim()){lastInterim=intr.trim();showHearing(lastInterim);clearTimeout(intT);intT=setTimeout(function(){if(!lastInterim)return;var q=nz(lastInterim);if(q.split(' ').length<2){return;}if(/(^| )(صفحه|على|علي|الى|الي|ل|من|عن|و|بين|ولا|او|مع|في|كم|شو|بدي|انتقل|روح|افتح|وديني|انقلني|خذني|ودني|ورجيني|وريني|قارن)$/.test(q)){intT=setTimeout(function(){if(lastInterim)commit(lastInterim);},3500);return;}commit(lastInterim);},2200);}
+      if(intr.trim()){lastInterim=intr.trim();showHearing(lastInterim);if(cmpHold){clearTimeout(cmpHoldT);cmpHoldT=setTimeout(function(){var h=cmpHold;cmpHold='';if(h){window.__pnNoAuto=1;try{process(h);}finally{window.__pnNoAuto=0;}}},3500);}clearTimeout(intT);intT=setTimeout(function(){if(!lastInterim)return;var q=nz(lastInterim);if(q.split(' ').length<2){return;}if(/(^| )(صفحه|على|علي|الى|الي|ل|من|عن|و|بين|ولا|او|مع|في|كم|شو|بدي|انتقل|روح|افتح|وديني|انقلني|خذني|ودني|ورجيني|وريني|قارن)$/.test(q)){intT=setTimeout(function(){if(lastInterim)commit(lastInterim);},3500);return;}commit(lastInterim);},2200);}
       if(fin.trim()){clearTimeout(intT);commit(fin.trim());}};
     r.onerror=function(e){
       if(e.error==='not-allowed'||e.error==='service-not-allowed'){always=false;bot.classList.remove('always','rest');say(T('اسمح باستخدام الميكروفون من إعدادات المتصفح ثم اضغط عليّ.','Allow the microphone in browser settings, then tap me.'),5000);}
@@ -3172,7 +3178,7 @@ setTimeout(fit,60);setTimeout(fit,700);window.addEventListener('resize',fit);
       if(r){var k=r.getAttribute('data-k'),ix=sel.indexOf(k);if(ix>-1){sel.splice(ix,1);r.classList.remove('on');}else if(sel.length<4){sel.push(k);r.classList.add('on');}upd();return;}
       if(t.classList.contains('pk-go')&&sel.length>=2){var ks=sel.slice();el.remove();openCmp(ks);}});}
   var cmpB=document.getElementById('pncmpb');if(cmpB)cmpB.addEventListener('click',function(){openPicker();});
-  window.pnBot={setState:setState,say:say,final:process,find:findDevices,pick:openPicker};
+  window.pnBot={setState:setState,say:say,final:process,commit:commit,find:findDevices,pick:openPicker};
 })();
 </script>
 
