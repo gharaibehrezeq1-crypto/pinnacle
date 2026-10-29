@@ -1212,7 +1212,7 @@ var trustT=0,BALLS=null,ballRaf=0,ballT=0;
   }
   L.addEventListener('pointerdown',function(e){
     if(!ballRaf||!BALLS)return;
-    if(e.target.closest&&e.target.closest('#lpanel,#lskip,#landtrig,.lbrowse'))return;
+    if(e.target.closest&&e.target.closest('#lpanel,#lskip,#landtrig'))return;
     var bd=ballBounds();if(e.clientY<bd.t-8)return;
     PT.down=true;PT.id=e.pointerId;PT.x=PT.px=PT.sx=e.clientX;PT.y=PT.py=PT.sy=e.clientY;PT.vx=PT.vy=0;PT.lt=PT.st=performance.now();
     var best=null,bdist=1e9;
@@ -3424,8 +3424,6 @@ mv();setInterval(mv,500);function im(){var p=document.querySelector('#pnspecpage
 </style>
 <style id="pnsoon-css">.brand .soon{width:100%;text-align:center;margin:40px 0 60px;font:600 18px/1.5 var(--font-body,Arial);color:#4a4170}</style>
 <style id="pn4-css">
-.lbrowse{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px auto 0;min-width:190px;height:44px;padding:0 24px;border-radius:999px;border:1.5px solid rgba(255,255,255,.92);background:radial-gradient(60% 90% at 8% 0%,rgba(150,120,255,.5),rgba(150,120,255,0) 72%),radial-gradient(55% 90% at 100% 100%,rgba(80,225,205,.55),rgba(80,225,205,0) 72%),linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.35));color:#1b1440;font:600 15px var(--font-body,Arial);cursor:pointer;box-shadow:inset 2px 3px 7px -3px rgba(255,255,255,.95),inset -3px -4px 8px -4px rgba(110,90,230,.4),0 10px 18px -10px rgba(120,95,235,.55);position:relative;z-index:2}
-.land-in:has(#lpanel[hidden]) .lbrowse{display:none}
 #pndrop>.dsr{position:static;top:auto;padding:8px 2px 6px}
 .dsr input{width:100%;box-sizing:border-box;height:42px;border-radius:999px;border:1.5px solid rgba(255,255,255,.95);background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.4));padding:0 18px;font:500 15px var(--font-body,Arial);color:#1b1440;outline:none;box-shadow:inset 0 1.5px 0 #fff,0 8px 16px -12px rgba(90,70,190,.5);direction:rtl}
 html[lang=en] .dsr input{direction:ltr}
@@ -3443,9 +3441,6 @@ var EN=function(){return (document.documentElement.lang||'').toLowerCase().index
 var T=function(a,e){return EN()?e:a;};
 /* order number: PN-MMDD-#### */
 window.pnNewId=function(){var d=new Date(),p=function(n){return n<10?'0'+n:''+n;};var id='PN-'+p(d.getMonth()+1)+p(d.getDate())+'-'+(1000+Math.floor(Math.random()*9000));window.__pnLastId=id;return id;};
-/* landing: browse button */
-function addBrowse(){var li=document.querySelector('#view-land .land-in');if(!li||li.querySelector('.lbrowse'))return;var b=document.createElement('button');b.type='button';b.className='lbrowse';b.textContent=T('تصفح الأجهزة','Browse phones');b.addEventListener('click',function(e){e.stopPropagation();var d=document.getElementById('pndev');if(d)d.click();});li.appendChild(b);}
-addBrowse();setInterval(function(){addBrowse();var b=document.querySelector('.lbrowse');if(b)b.textContent=T('تصفح الأجهزة','Browse phones');},900);
 /* devices dropdown: search */
 var AL=[[/آيفون|أيفون|ايفون|ايفُن|آي فون|اي فون/g,'iphone'],[/جالكسي|غالاكسي|جلاكسي|جالاكسي/g,'galaxy'],[/سامسونج|سامسونغ/g,'samsung galaxy'],[/اوبو|أوبو/g,'oppo reno'],[/رينو/g,'reno'],[/هونر|هونور/g,'honor'],[/ماجيك|ماجك/g,'magic'],[/شاومي/g,'xiaomi'],[/ألترا|الترا/g,'ultra'],[/برو/g,'pro'],[/ماكس/g,'max'],[/بلس/g,'plus']];
 function nz(t){t=(t||'').toLowerCase().replace(/[٠-٩]/g,function(c){return '٠١٢٣٤٥٦٧٨٩'.indexOf(c);});AL.forEach(function(r){t=t.replace(r[0],' '+r[1]+' ');});return t.replace(/\s+/g,' ').trim();}
