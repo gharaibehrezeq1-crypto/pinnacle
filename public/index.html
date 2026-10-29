@@ -3388,7 +3388,7 @@ function addLinks(){var pd=document.getElementById('pndrop');if(pd&&!pd.querySel
  ['pnspecpage','view-home'].forEach(function(id){var v=document.getElementById(id);if(v&&!v.querySelector(':scope > .pnpl')){var q=document.createElement('div');q.className='pnpl pnpl-v';q.innerHTML=linksHTML();v.appendChild(q);}});
  document.querySelectorAll('footer, .hfoot').forEach(function(f){if(f.querySelector('.pnpl'))return;var d=document.createElement('div');d.className='pnpl';d.innerHTML=P.map(function(x){return '<a data-pol="'+x.id+'" role="button" tabindex="0">'+x.t[lang()]+'</a>';}).join('');f.appendChild(d);});}
 function relabel(){document.querySelectorAll('.pnpl a').forEach(function(a){var id=a.getAttribute('data-pol');for(var i=0;i<P.length;i++)if(P[i].id===id)a.textContent=P[i].t[lang()];});}
-document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.pnpl a');if(a){e.preventDefault();open(a.getAttribute('data-pol'));}});
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.pnpl a[data-pol]');if(a){e.preventDefault();open(a.getAttribute('data-pol'));}});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el&&!el.hidden)close();});
 addLinks();setInterval(function(){addLinks();relabel();},800);
 })();
