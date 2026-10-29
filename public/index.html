@@ -212,6 +212,9 @@ html[lang=en] #pnback svg{transform:scaleX(-1)}
 #view-device[data-theme=apple] .stat b{font-size:clamp(18px,5vw,28px)!important;white-space:nowrap}
 #view-device[data-theme=apple] .opt .ref{grid-column:1/-1;text-align:start}
 </style>
+<style id="pnsb-css">body.on-land .pnrev{display:none!important}
+.gb.gsahl{background-color:rgba(236,241,250,.18);box-shadow:0 0 0 1px rgba(190,200,222,.85),inset 0 -5px 8px rgba(70,85,120,.28),inset 0 5px 6px rgba(255,255,255,.9),0 12px 18px -8px rgba(120,100,230,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.gb.gsahl .lb{background:url(/a/sahl-glass.webp) center 70%/86% auto no-repeat,radial-gradient(circle at 32% 24%,rgba(255,255,255,.7) 0,rgba(255,255,255,.2) 30%,rgba(255,255,255,.05) 58%,rgba(150,165,205,.4) 100%)}</style>
 </head><body>
 <title>Pinnacle · iPhone 18 Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1145,6 +1148,10 @@ var trustT=0,BALLS=null,ballRaf=0,ballT=0;
       host.appendChild(el);
       out.push({el:el,lb:el.firstChild,r:d/2,href:href,x:0,y:0,vx:0,vy:0,sq:0,ax:'y',ox:0,oy:0,gr:false,live:false,spawn:0,wt:0,wx:0,wy:0});
     });
+    var se=document.createElement('div');se.className='gb gsahl';se.style.setProperty('--d','66px');se.setAttribute('role','button');se.setAttribute('tabindex','0');se.setAttribute('aria-label','سهل');
+    se.innerHTML='<div class="lb"></div><i class="sh"></i><i class="sp"></i><i class="sp2"></i>';host.appendChild(se);
+    se.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var r=document.querySelector('.pnrev');if(r)r.click();}});
+    out.push({el:se,lb:se.firstChild,r:33,href:'#sahl',x:0,y:0,vx:0,vy:0,sq:0,ax:'y',ox:0,oy:0,gr:false,live:false,spawn:0,wt:0,wx:0,wy:0});
     return out;
   }
   function ballBounds(){
@@ -1232,7 +1239,7 @@ var trustT=0,BALLS=null,ballRaf=0,ballT=0;
     PT.down=false;
     if(PT.grab){var g2=PT.grab;PT.grab=null;g2.gr=false;g2.el.classList.remove('gr');
       var moved=Math.hypot(PT.x-PT.sx,PT.y-PT.sy),held=performance.now()-PT.st;
-      if(e&&e.type==='pointerup'&&moved<10&&held<650){PT.hand=false;location.hash=g2.href;return;}
+      if(e&&e.type==='pointerup'&&moved<10&&held<650){PT.hand=false;if(g2.href==='#sahl'){var rv=document.querySelector('.pnrev');if(rv)rv.click();}else location.hash=g2.href;return;}
       var sp=Math.hypot(PT.vx,PT.vy),k=sp>950?950/sp:1;g2.vx=PT.vx*k;g2.vy=PT.vy*k;}
     PT.hand=false;
   }
