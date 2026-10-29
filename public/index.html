@@ -215,6 +215,9 @@ html[lang=en] #pnback svg{transform:scaleX(-1)}
 <style id="pnsb-css">body.on-land .pnrev{display:none!important}
 .gb.gsahl{background-color:rgba(236,241,250,.18);box-shadow:0 0 0 1px rgba(190,200,222,.85),inset 0 -5px 8px rgba(70,85,120,.28),inset 0 5px 6px rgba(255,255,255,.9),0 12px 18px -8px rgba(120,100,230,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 .gb.gsahl .lb{background:url(/a/sahl-glass.webp) center 70%/86% auto no-repeat,radial-gradient(circle at 32% 24%,rgba(255,255,255,.7) 0,rgba(255,255,255,.2) 30%,rgba(255,255,255,.05) 58%,rgba(150,165,205,.4) 100%)}</style>
+<style id="pnsb2-css">.sahlin{flex:none;width:30px;height:30px;padding:0;margin:0 0 0 8px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);cursor:pointer;vertical-align:middle;-webkit-tap-highlight-color:transparent;background:url(/a/sahl-glass.webp) center 70%/86% auto no-repeat,radial-gradient(circle at 32% 24%,rgba(255,255,255,.7) 0,rgba(255,255,255,.2) 30%,rgba(255,255,255,.05) 58%,rgba(150,165,205,.4) 100%);background-color:rgba(236,241,250,.3);box-shadow:0 0 0 1px rgba(190,200,222,.85),inset 0 -3px 5px rgba(70,85,120,.25),inset 0 3px 4px rgba(255,255,255,.9),0 6px 10px -5px rgba(120,100,230,.5)}
+.sahlin:active{transform:scale(.93)}
+body.pnsin .pnrev{display:none!important}</style>
 </head><body>
 <title>Pinnacle · iPhone 18 Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3491,4 +3494,13 @@ as.forEach(function(x){c1.appendChild(x);});
 q.innerHTML='';q.appendChild(c1);q.appendChild(c2);q.setAttribute('data-f','1');});}
 go();setInterval(go,800);})();
 </script>
+<script id="pnsb-js">(function(){
+function add(){var any=false;document.querySelectorAll('#view-home .bh,.spbrand').forEach(function(h){
+  if(!h.querySelector('.sahlin')){var b=document.createElement('button');b.type='button';b.className='sahlin';b.setAttribute('aria-label','سهل');
+    ['pointerdown','mousedown','touchstart'].forEach(function(ev){b.addEventListener(ev,function(e){e.stopPropagation();},{passive:true});});
+    b.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();var r=document.querySelector('.pnrev');if(r&&document.body.classList.contains('pnoff'))r.click();else if(r){var bt=document.querySelector('.pnbot,#pnbot');}});
+    h.appendChild(b);}
+  if(h.offsetParent!==null)any=true;});
+  document.body.classList.toggle('pnsin',any);}
+add();setInterval(add,700);addEventListener('hashchange',function(){setTimeout(add,60);});})();</script>
 </body></html>
