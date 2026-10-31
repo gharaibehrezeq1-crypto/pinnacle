@@ -51,3 +51,15 @@ iPhone 17 Pro 780، 17 Pro Max 850، 17 660، 18 Pro Max 1299، 18 Pro 1150، Ga
 - صفحات السياسات (الخصوصية، الاستبدال والإرجاع، الضمان، التوصيل والدفع، الشروط) نافذة `window.pnPolicy(id)` بالعربي والإنجليزي، روابطها أسفل كل صفحة. النصوص تعتمد فقط على ما هو مكتوب بالموقع (توصيل لباب البيت، دفع عند الاستلام، استبدال 3 أيام إذا العبوة مغلقة، دعم 7 أيام، ضمان الوكيل). بانتظار تأكيد صاحب المتجر: مدة الضمان لكل وكيل، تكلفة/مدة التوصيل، وأن الأجهزة جديدة بعبواتها.
 - إنفينكس حُذفت. الوكيل لكل علامة يظهر تحت اسم الجهاز (iSystem، BMS، MASS AVENUE، Cell Avenue).
 - ناقص: وصف الموقع وOpen Graph وfavicon وrobots/sitemap، رقم واتساب `WA_NUMBER`، سطر «الأسعار تجريبية» بالفوتر يحذف قبل الإطلاق.
+
+## Remaining work checklist (always list ALL of these when the user asks "what's left")
+1. WhatsApp store number (WA_NUMBER) — user provides last
+2. Missing images: Magic V5, Magic 8 Pro, Reno15 F
+3. Specs: Honor/Xiaomi devices + compare entries
+4. CliQ alias + update Payment policy text
+5. Estimated delivery time
+6. Real Facebook page URL (current one is a share link)
+7. Optional: order tracking (needs DB + privacy policy update)
+8. Launch checks: domain/email, full test order from phone
+9. Theme: burgundy #421525 + snow white #FEFEFE — palette approved? then build from scratch at /theme (preview only, main untouched)
+10. LAST STEP: desktop/laptop layout (two-column device page, tidy top bar, ball area) — user wants this done last; always remind him
