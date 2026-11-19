@@ -64,7 +64,7 @@ html[lang="ar"] .order{font-family:"IBM Plex Sans Arabic",sans-serif}
 .sh-b{flex:1;overflow-y:auto;padding:6px 20px 34px}
 .sh-b h3{margin:16px 0 2px;font-size:14px}
 .sh-b p{color:#5d5048;font-size:13.5px;line-height:1.8;margin:0 0 4px}
-.sh-b .dt{margin-top:14px;font-size:12px;color:var(--mut)}
+.sh-b details{border-bottom:1px solid var(--line)}.sh-b summary{cursor:pointer;padding:14px 0;font-size:15px;color:var(--ink);list-style:none}.sh-b summary::-webkit-details-marker{display:none}.sh-b details p{margin:0 0 14px;color:var(--mut)}.sh-b .dt{margin-top:14px;font-size:12px;color:var(--mut)}
 .fld{display:block;margin:14px 0 0;font-size:13px;color:var(--mut)}
 .fld input,.fld textarea{display:block;width:100%;margin-top:5px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);font:400 16px/1.5 var(--font);padding:8px 0;outline:none;border-radius:0}
 html[lang="ar"] .fld input,html[lang="ar"] .fld textarea{font-family:"IBM Plex Sans Arabic",sans-serif}
@@ -182,8 +182,18 @@ function renderPol(){
  var p=POL[polCur];shT.textContent=p.t[L()];shTabs.style.display="none";
  shBody.innerHTML=p.b.map(function(r){return "<h3>"+r[L()]+"</h3><p>"+r[L()+2]+"</p>"}).join("")+'<div class="dt">'+TXT[lang].upd+"</div>";shBody.scrollTop=0;
 }
+var FAQ=[
+ ["When will my order arrive?","متى يصل طلبي؟","After you send your order we confirm everything with you on WhatsApp, including the delivery time. Delivery is free anywhere in Jordan.","بعد إرسال طلبك نؤكد معك كل التفاصيل على واتساب، ومنها موعد التوصيل. التوصيل مجاني لكل مناطق الأردن."],
+ ["How do I pay?","كيف أدفع؟","You pay in cash when the order arrives. Nothing is paid on the site.","تدفع نقدًا عند استلام الطلب. لا يوجد أي دفع عبر الموقع."],
+ ["What is the difference between the packs?","ما الفرق بين العبوات؟","Only the number of cloths: 6, 12 or 18. Each pack is one colour.","الفرق في عدد الفوط فقط: 6 أو 12 أو 18. كل عبوة بلون واحد."],
+ ["Can I change the colour?","هل أستطيع تبديل اللون؟","Yes, within 3 days of receiving it, as long as the pack is still sealed. Message us on WhatsApp.","نعم، خلال 3 أيام من الاستلام بشرط أن تكون العبوة مغلقة. راسلنا على واتساب."],
+ ["Can I return a pack?","هل أستطيع إرجاع عبوة؟","Extra sealed packs can be returned within 3 days and we refund the difference. Opened packs cannot be returned.","يمكن إرجاع العبوات الزائدة المغلقة خلال 3 أيام ونرجع لك الفرق. العبوات المفتوحة لا تُرجع."],
+ ["How do I contact you?","كيف أتواصل معكم؟","Through WhatsApp. Send us your order number and we will help you.","عبر واتساب. أرسل لنا رقم طلبك وسنساعدك."]];
+function renderFaq(){shT.textContent=lang==="ar"?"الأسئلة الشائعة":"Questions";shTabs.style.display="none";
+ shBody.innerHTML=FAQ.map(function(r){return '<details><summary>'+r[L()]+'</summary><p>'+r[L()+2]+'</p></details>'}).join("");shBody.scrollTop=0;
+ var ds=shBody.querySelectorAll("details");ds.forEach(function(d){d.addEventListener("toggle",function(){if(d.open)ds.forEach(function(o){if(o!==d)o.open=false})})})}
 var SH=[["Delivery","التوصيل"],["Returns","الاستبدال"],["Privacy","الخصوصية"],["Terms","الشروط"]];
-function renderPolLinks(){var c=g("pols");c.innerHTML="";POL.forEach(function(p,i){var b=document.createElement("button");b.type="button";b.textContent=SH[i][L()];b.addEventListener("click",function(){polCur=i;mode="pol";showSheet();renderPol()});c.appendChild(b)})}
+function renderPolLinks(){var c=g("pols");c.innerHTML="";POL.forEach(function(p,i){var b=document.createElement("button");b.type="button";b.textContent=SH[i][L()];b.addEventListener("click",function(){polCur=i;mode="pol";showSheet();renderPol()});c.appendChild(b)});var q=document.createElement("button");q.type="button";q.textContent=lang==="ar"?"الأسئلة":"FAQ";q.addEventListener("click",function(){mode="faq";showSheet();renderFaq()});c.appendChild(q)}
 function normPhone(v){var d=String(v||"").replace(/\D/g,"");if(d.indexOf("00962")===0)d=d.slice(5);else if(d.indexOf("962")===0)d=d.slice(3);if(d.charAt(0)==="0")d=d.slice(1);return /^7[789]\d{7}$/.test(d)?"0"+d:""}
 function newId(){var d=new Date(),p=function(n){return n<10?"0"+n:""+n};return "PN-"+p(d.getMonth()+1)+p(d.getDate())+"-"+(1000+Math.floor(Math.random()*9000))}
 function nowStr(){var d=new Date(),p=function(n){return n<10?"0"+n:n};return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"  "+p(d.getHours())+":"+p(d.getMinutes())}
@@ -221,7 +231,7 @@ function previewInvoice(){
  g("rOk").addEventListener("click",function(){var p=g("rconf").querySelector("p");if(p)p.textContent=t.sent(curOrder.id)});
  g("rEdit").addEventListener("click",function(){g("rc").innerHTML="";g("fN").focus()});
 }
-function rerender(){if(mode==="pol")renderPol();else if(mode==="form")openForm()}
+function rerender(){if(mode==="faq")renderFaq();else if(mode==="pol")renderPol();else if(mode==="form")openForm()}
 function go(){showSheet();openForm()}g("orderBtn").addEventListener("click",go);g("nowBtn").addEventListener("click",go);
 g("shX").addEventListener("click",closeSheet);
 sheet.addEventListener("click",function(e){if(e.target===sheet)closeSheet()});
